@@ -1,0 +1,12 @@
+procedure first {
+	x= x+y+z;
+	while i{
+		y=x+i+2;
+		while i{
+			y=x+i+2;
+			x=2;
+		}
+		x=2; 
+	}
+	z=z+1;
+}
