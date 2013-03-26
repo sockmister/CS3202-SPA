@@ -1,0 +1,38 @@
+16
+cat: Follows*
+1 - Test1	// synonym, synonym
+query
+-1
+5000
+2 - Test2 // synonym, integer
+query
+-1
+5000
+3 - Test3 // synonym, _
+query
+-1
+5000
+4 - Test4 // integer, synonym
+query
+-1
+5000
+5 - Test5 // integer, integer
+query
+-1
+5000
+6 - Test6 // integer, _
+query
+-1
+5000
+7 - Test7 // _ , synonym
+query
+-1
+5000
+8 - Test8 // _ , _
+query
+-1
+5000
+9 - Test9 // _ , integer
+query
+-1
+5000

@@ -1,0 +1,1093 @@
+217
+cat: Pattern Testing 
+1 - Pattern
+assign a1;
+Select a1 pattern a1(_,_)
+3, 4, 5, 6, 7, 8, 9, 11
+5000
+2 - Pattern
+assign a1;
+Select a1 pattern a1("i",_)
+5, 7
+5000
+3 - Pattern
+assign a1;
+Select a1 pattern a1("x",_)
+3, 4, 6, 11
+5000
+4 - Pattern
+assign a1;
+Select a1 pattern a1(_,_"x"_)
+3, 4, 8, 11
+5000
+5 - Pattern
+assign a1;
+Select a1 pattern a1("x",_"x"_)
+3, 4, 11
+5000
+6 - Pattern
+assign a1;
+Select a1 pattern a1(_,_"p"_)
+none
+5000
+7 - Pattern
+assign a1,a2;
+Select a1 pattern a2(_,_"p"_)
+none
+5000
+8 - Pattern
+assign a1,a2;
+Select a1 pattern a2(_,_"x"_)
+3, 4, 5, 6, 7, 8, 9, 11
+5000
+cat: Uses Testing
+9 - Uses
+stmt s1;
+Select s1 such that Uses (s1, _)
+1, 2, 3, 4, 5, 8, 9, 10, 11
+5000
+10 - Uses
+while w1;
+Select w1 such that Uses (w1, _)
+1, 2, 10
+5000
+11 - Uses
+assign a1; variable v1;
+Select a1 such that Uses (a1, v1)
+3, 4, 5, 8, 9, 11
+5000
+12 - Uses
+stmt s1; variable v1;
+Select s1 such that Uses (s1, v1)
+1, 2, 3, 4, 5, 8, 9, 10, 11
+5000
+13 - Uses
+constant c1; while w1; variable v1;
+Select c1 such that Uses (w1, v1)
+0, 1, 2, 5
+5000
+14 - Uses
+while w1; variable v1;
+Select w1 such that Uses (1, v1)
+1, 2, 10
+5000
+15 - Uses
+variable v1;
+Select v1 such that Uses (1, v1)
+i, j, x
+5000
+16 - Uses
+variable v1;
+Select v1 such that Uses (2, v1)
+j, x
+5000
+17 - Uses
+variable v1;
+Select v1 such that Uses (6, v1)
+none
+5000
+18 - Uses
+stmt s1;
+Select s1 such that Uses (s1, "i")
+1, 5, 8
+5000
+19 - Uses
+stmt s1; while w1;
+Select s1 such that Uses (w1, "i")
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+5000
+20 - Uses
+prog_line n1;
+Select n1 such that Uses (n1, "x")
+1, 2, 3, 4, 8, 10, 11
+5000
+21 - Uses
+stmt s1;
+Select s1 such that Uses (s1, "b")
+none
+5000
+22 - Uses
+variable v1;
+Select v1 such that Uses (15, v1)
+none
+5000
+23 - Uses
+while w1; stmt s1;
+Select w1 such that Uses (s1, "z")
+1, 2, 10
+5000
+24 - Uses
+constant c1; stmt s1;
+Select c1 such that Uses (s1,_)
+0, 1, 2, 5
+5000
+25 - Uses
+variable v1;
+Select v1 such that Uses (1, "x")
+i, j, x, z, y
+5000
+26 - Uses
+constant c1;
+Select c1 such that Uses (4, "x")
+0, 1, 2, 5
+5000
+27 - Uses
+constant c1;
+Select c1 such that Uses (8, "j")
+none
+5000
+28 - Uses
+constant c1;
+Select c1 such that Uses (8, _)
+0, 1, 2, 5
+5000
+29 - Uses
+constant c1;
+Select c1 such that Uses (7, _)
+none
+5000
+30 - Uses, pattern
+assign a1; variable v1;
+Select a1 pattern a1("y",_) such that Uses (a1, v1)
+9
+5000
+31 - Uses, pattern
+assign a1; variable v1;
+Select a1 pattern a1(_,_"z"_) such that Uses (a1, v1)
+8, 9
+5000
+32 - Uses, pattern
+assign a1; variable v1;
+Select a1 pattern a1(_,_"z"_) such that Uses (15, v1)
+none
+5000
+33 - Uses, pattern
+assign a1;
+Select a1 pattern a1("z",_"z"_) such that Uses (1, "i")
+8
+5000
+34 - Uses, pattern
+assign a1;
+Select a1 pattern a1(_,_"i"_) such that Uses (1, "i")
+5, 8
+5000
+35 - Uses, pattern
+assign a1;
+Select a1 pattern a1(_,_"i"_) such that Uses (1, "y")
+none
+5000
+36 - Uses, pattern
+assign a1;
+Select a1 pattern a1(_,_"i"_) such that Uses (1, "x")
+5, 8
+5000
+37 - Uses, pattern
+assign a1; while w1;
+Select w1 pattern a1("y",_) such that Uses(w1, "i")
+1
+5000
+38 - Uses, pattern
+assign a1; while w1;
+Select w1 pattern a1 ("n",_) such that Uses(w1, "i")
+none
+5000
+39 - Uses, pattern
+assign a1; while w1;
+Select a1 pattern a1 ("x",_) such that Uses(w1, "i")
+3, 4, 6, 11
+5000
+cat: Modifies Testing
+40 - Modifies
+stmt s1;
+Select s1
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+5000
+41 - Modifies
+stmt s1,s2;
+Select s2 such that Modifies(s1,_)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+5000
+42 - Modifies
+stmt s1;
+Select s1 such that Modifies(s1,"x")
+1, 2, 3, 4, 6, 10, 11
+5000
+43 - Modifies
+stmt s1;
+Select s1 such that Modifies(s1,"y")
+9
+5000
+44 - Modifies
+stmt s1;
+Select s1 such that Modifies(s1,"j")
+none
+5000
+45 - Modifies
+stmt s1;
+Select s1 such that Modifies(s1,"p")
+none
+5000
+46 - Modifies
+while w1;
+Select w1 such that Modifies(w1,"x")
+1, 2, 10
+5000
+47 - Modifies
+constant c1;
+Select c1
+0, 1, 2, 5
+5000
+48 - Modifies
+variable v1; stmt s1;
+Select v1 such that Modifies(s1,v1)
+i, x, z, y
+5000
+49 - Modifies
+variable v1;
+Select v1 such that Modifies(3,v1)
+x
+5000
+50 - Modifies
+variable v1;
+Select v1 such that Modifies(1,v1)
+i, x
+5000
+51 - Modifies
+variable v1; while w1;
+Select v1 such that Modifies(w1,v1)
+i, x
+5000
+52 - Modifies
+variable v1; assign a1;
+Select v1 such that Modifies(a1,v1)
+i, x, z, y
+5000
+53 - Modifies
+assign a1;
+Select a1
+3, 4, 5, 6, 7, 8, 9, 11
+5000
+54 - Modifies
+assign a1;
+Select a1 such that Modifies(a1,"x")
+3, 4, 6, 11
+5000
+55 - Modifies, pattern
+variable v1; assign a1;
+Select v1 such that Modifies(a1,v1) pattern a1(_,_)
+i, x, z, y
+5000
+56 - Modifies, pattern
+variable v1; assign a1;
+Select v1 such that Modifies(a1,v1) pattern a1(_,_)
+i, x, z, y
+5000
+57 - Modifies, pattern
+variable v1; assign a1;
+Select v1 such that Modifies(a1,v1) pattern a1("x",_)
+x
+5000
+58 - Modifies, pattern
+variable v1; assign a1;
+Select v1 such that Modifies(a1,v1) pattern a1("j",_)
+none
+5000
+59 - Modifies, pattern
+variable v1; assign a1;
+Select a1 such that Modifies(a1,v1) pattern a1("x",_)
+3, 4, 6, 11
+5000
+60 - Modifies, pattern
+variable v1; assign a1;
+Select a1 such that Modifies(a1,v1) pattern a1(_,_"x"_)
+3, 4, 8, 11
+5000
+61 - Modifies, pattern
+variable v1; assign a1;
+Select a1 such that Modifies(a1,v1) pattern a1("x",_"x"_)
+3, 4, 11
+5000
+cat: Parent Testing
+62 - Parent
+stmt s1;
+Select s1 such that Parent(1, 1)
+none
+5000
+63 - Parent
+stmt s2;
+Select s2 such that Parent(1, 2)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+5000
+64 - Parent
+stmt s1;
+Select s1 such that Parent(1, 12)
+none
+5000
+65 - Parent
+variable v1;
+Select v1 such that Parent(1, 2)
+i, j, x, z, y
+5000
+66 - Parent
+prog_line n1;
+Select n1 such that Parent(1, n1)
+2, 4, 5
+5000
+67 - Parent
+prog_line n1;
+Select n1 such that Parent(1, 2)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+5000
+68 - Parent
+stmt s1;
+Select s1 such that Parent(s1,s1)
+none
+5000
+69 - Parent
+assign a1;
+Select a1 such that Parent(2, 3)
+3, 4, 5, 6, 7, 8, 9, 11
+5000
+70 - Parent
+constant c1;
+Select c1 such that Parent(10,11)
+0, 1, 2, 5
+5000
+71 - Parent
+while w1;
+Select w1 such that Parent(1, w1)
+2
+5000
+72 - Parent
+while w1;
+Select w1 such that Parent(w1, 2)
+1
+5000
+73 - Parent
+while w1,w2;
+Select w1 such that Parent(w1, w2)
+1
+5000
+74 - Parent
+while w1,w2;
+Select w2 such that Parent(w1, w2)
+2
+5000
+75 - Parent
+assign a1,a2;
+Select a2 such that Parent(a1, a2)
+none
+5000
+76 - Parent
+assign a1,a2;
+Select a1 such that Parent(a1, a2)
+none
+5000
+77 - Parent
+while w2;
+Select w2 such that Parent(_, 2)
+1, 2, 10
+5000
+78 - Parent
+while w1;
+Select w1 such that Parent(_, 1)
+none
+5000
+79 - Parent
+assign a1;
+Select a1 such that Parent(_, _)
+3, 4, 5, 6, 7, 8, 9, 11
+5000
+80 - Parent
+stmt s1;
+Select s1 such that Parent(s1,3)
+2
+5000
+81 - Parent
+stmt s1;
+Select s1 such that Parent(10, s1)
+11
+5000
+82 - Parent, pattern
+stmt s1; assign a1;
+Select s1 such that Parent(s1,3) pattern a1("x",_)
+2
+5000
+83 - Parent, pattern
+assign a1; stmt s1;
+Select s1 such that Parent(s1,3) pattern a1("b",_)
+none
+5000
+84 - Parent, pattern
+assign a1; stmt s1;
+Select s1 such that Parent(s1,3) pattern a1(_,_)
+2
+5000
+85 - Parent, pattern
+assign a1; stmt s1;
+Select s1 such that Parent(s1,2) pattern a1(_,_"i"_)
+1
+5000
+86 - Parent, pattern
+assign a1; stmt s1;
+Select s1 pattern a1("x",_) such that Parent(s1,3)
+2
+5000
+87 - Parent, pattern
+assign a1; stmt s1;
+Select s1 pattern a1("b",_) such that Parent(s1,3)
+none
+5000
+88 - Parent, pattern
+assign a1;
+Select a1 such that Parent(_,_) pattern a1("i",_"x"_)
+none
+5000
+89 - Parent, pattern
+assign a1;
+Select a1 pattern a1("i",_"x"_) such that Parent(1,_)
+none
+5000
+90 - Parent, pattern
+assign a1;
+Select a1 such that Parent(_,_) pattern a1("x",_"x"_)
+3, 4, 11
+5000
+91 - Parent, pattern
+assign a1;
+Select a1 pattern a1("x",_"x"_) such that Parent(_,_)
+3, 4, 11
+5000
+92 - Parent, pattern
+assign a1;
+Select a1 pattern a1("x#3",_"x"_) such that Parent(_,_)
+none
+5000
+93 - Parent, pattern
+assign a1; variable v1;
+Select v1 such that Parent(_,11) pattern a1("y",_"z"_)
+i, j, x, z, y
+5000
+94 - Parent, pattern
+assign a1; variable v1;
+Select v1 pattern a1("y",_"z"_) such that Parent(_,11)
+i, j, x, z, y
+5000
+95 - Parent, pattern
+assign a1; while w1;
+Select w1 such that Parent(1,5) pattern a1(_,_"z"_)
+1, 2, 10
+5000
+96 - Parent, pattern
+assign a1; while w1;
+Select w1 pattern a1(_,_"z"_) such that Parent(1,5)
+1, 2, 10
+5000
+97 - Parent, pattern
+constant c1; assign a1;
+Select c1 such that Parent(1,4) pattern a1("x",_)
+0, 1, 2, 5
+5000
+98 - Parent, pattern
+constant c1; assign a1;
+Select c1 pattern a1(_,_"z"_) such that Parent(1,5)
+0, 1, 2, 5
+5000
+99 - Parent, pattern
+prog_line n1; assign a1;
+Select n1 pattern a1(_,_"z"_) such that Parent(_,3)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+5000
+100 - Parent, pattern
+prog_line n1; assign a1;
+Select n1 such that Parent(_,3) pattern a1(_,_"z"_)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+5000
+101 - Parent, pattern
+assign a1,a2;
+Select a1 such that Parent(_,3) pattern a2(_,_"z"_)
+3, 4, 5, 6, 7, 8, 9, 11
+5000
+102 - Parent, pattern
+assign a1,a2;
+Select a1 pattern a2(_,_"z"_) such that Parent(_,3)
+3, 4, 5, 6, 7, 8, 9, 11
+5000
+103 - Parent, pattern
+assign a1;
+Select a1 such that Parent(_,3) pattern a1(_,_"z"_)
+8, 9
+5000
+cat: Parent* Testing
+104 - ParentTrans
+stmt s1;
+Select s1 such that Parent*(1, 1)
+none
+5000
+105 - ParentTrans
+stmt s2;
+Select s2 such that Parent*(1, 2)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+5000
+106 - ParentTrans
+stmt s1;
+Select s1 such that Parent*(1, 12)
+none
+5000
+107 - ParentTrans
+variable v1;
+Select v1 such that Parent*(1, 2)
+i, j, x, z, y
+5000
+108 - ParentTrans
+prog_line n1;
+Select n1 such that Parent*(1, n1)
+2, 3, 4, 5
+5000
+109 - ParentTrans
+prog_line n1;
+Select n1 such that Parent*(1, 2)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+5000
+110 - ParentTrans
+stmt s1;
+Select s1 such that Parent*(s1,s1)
+none
+5000
+111 - ParentTrans
+assign a1;
+Select a1 such that Parent*(2, 3)
+3, 4, 5, 6, 7, 8, 9, 11
+5000
+112 - ParentTrans
+constant c1;
+Select c1 such that Parent*(10,11)
+0, 1, 2, 5
+5000
+113 - ParentTrans
+while w1;
+Select w1 such that Parent*(1, w1)
+2
+5000
+114 - ParentTrans
+while w1;
+Select w1 such that Parent*(w1, 2)
+1
+5000
+115 - ParentTrans
+while w1,w2;
+Select w1 such that Parent*(w1, w2)
+1
+5000
+116 - ParentTrans
+while w1,w2;
+Select w2 such that Parent*(w1, w2)
+2
+5000
+117 - ParentTrans
+assign a1,a2;
+Select a2 such that Parent*(a1, a2)
+none
+5000
+118 - ParentTrans
+assign a1,a2;
+Select a1 such that Parent*(a1, a2)
+none
+5000
+119 - ParentTrans
+while w2;
+Select w2 such that Parent*(_, 2)
+1, 2, 10
+5000
+120 - ParentTrans
+while w1;
+Select w1 such that Parent*(_, 1)
+none
+5000
+121 - ParentTrans
+assign a1;
+Select a1 such that Parent*(_, _)
+3, 4, 5, 6, 7, 8, 9, 11
+5000
+122 - ParentTrans
+stmt s1;
+Select s1 such that Parent*(s1,3)
+1, 2
+5000
+123 - ParentTrans
+stmt s1;
+Select s1 such that Parent*(10, s1)
+11
+5000
+124 - ParentTrans, pattern
+stmt s1; assign a1;
+Select s1 such that Parent*(s1,3) pattern a1("x",_)
+1, 2
+5000
+125 - ParentTrans, pattern
+assign a1; stmt s1;
+Select s1 such that Parent*(s1,3) pattern a1("b",_)
+none
+5000
+126 - ParentTrans, pattern
+assign a1; stmt s1;
+Select s1 such that Parent*(s1,3) pattern a1(_,_)
+1, 2
+5000
+127 - ParentTrans, pattern
+assign a1; stmt s1;
+Select s1 such that Parent*(s1,2) pattern a1(_,_"i"_)
+1
+5000
+128 - ParentTrans, pattern
+assign a1; stmt s1;
+Select s1 pattern a1("x",_) such that Parent*(s1,3)
+1, 2
+5000
+129 - ParentTrans, pattern
+assign a1; stmt s1;
+Select s1 pattern a1("b",_) such that Parent*(s1,3)
+none
+5000
+130 - ParentTrans, pattern
+assign a1;
+Select a1 such that Parent*(_,_) pattern a1("i",_"x"_)
+none
+5000
+131 - ParentTrans, pattern
+assign a1;
+Select a1 pattern a1("i",_"x"_) such that Parent*(1,_)
+none
+5000
+132 - ParentTrans, pattern
+assign a1;
+Select a1 such that Parent*(_,_) pattern a1("x",_"x"_)
+3, 4, 11
+5000
+133 - ParentTrans, pattern
+assign a1;
+Select a1 pattern a1("x",_"x"_) such that Parent*(_,_)
+3, 4, 11
+5000
+134 - ParentTrans, pattern
+assign a1;
+Select a1 pattern a1("x#3",_"x"_) such that Parent*(_,_)
+none
+5000
+135 - ParentTrans, pattern
+assign a1; variable v1;
+Select v1 such that Parent*(_,11) pattern a1("y",_"z"_)
+i, j, x, z, y
+5000
+136 - ParentTrans, pattern
+assign a1; variable v1;
+Select v1 pattern a1("y",_"z"_) such that Parent*(_,11)
+i, j, x, z, y
+5000
+137 - ParentTrans, pattern
+assign a1; while w1;
+Select w1 such that Parent*(1,5) pattern a1(_,_"z"_)
+1, 2, 10
+5000
+138 - ParentTrans, pattern
+assign a1; while w1;
+Select w1 pattern a1(_,_"z"_) such that Parent*(1,5)
+1, 2, 10
+5000
+139 - ParentTrans, pattern
+constant c1; assign a1;
+Select c1 such that Parent*(1,4) pattern a1("x",_)
+0, 1, 2, 5
+5000
+140 - ParentTrans, pattern
+constant c1; assign a1;
+Select c1 pattern a1(_,_"z"_) such that Parent*(1,5)
+0, 1, 2, 5
+5000
+141 - ParentTrans, pattern
+prog_line n1; assign a1;
+Select n1 pattern a1(_,_"z"_) such that Parent*(_,3)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+5000
+142 - ParentTrans, pattern
+prog_line n1; assign a1;
+Select n1 such that Parent*(_,3) pattern a1(_,_"z"_)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+5000
+143 - ParentTrans, pattern
+assign a1,a2;
+Select a1 such that Parent*(_,3) pattern a2(_,_"z"_)
+3, 4, 5, 6, 7, 8, 9, 11
+5000
+144 - ParentTrans, pattern
+assign a1,a2;
+Select a1 pattern a2(_,_"z"_) such that Parent*(_,3)
+3, 4, 5, 6, 7, 8, 9, 11
+5000
+145 - ParentTrans, pattern
+assign a1;
+Select a1 such that Parent*(_,3) pattern a1(_,_"z"_)
+8, 9
+5000
+cat: Follows Testing
+146 - Follows
+stmt s1;
+Select s1 such that Follows(1, s1)
+6
+5000
+147 - Follows
+stmt s1;
+Select s1 such that Follows(s1, 5)
+4
+5000
+148 - Follows
+stmt s1;
+Select s1 such that Follows(s1, 11)
+none
+5000
+149 - Follows
+stmt s1;
+Select s1 such that Follows(s1, 10)
+9
+5000
+150 - Follows
+stmt s1;
+Select s1 such that Follows(s1, 1)
+none
+5000
+151 - Follows
+stmt s1;
+Select s1 such that Follows(5, s1)
+none
+5000
+152 - Follows
+stmt s1;
+Select s1 such that Follows(10, s1)
+none
+5000
+153 - Follows
+stmt s1;
+Select s1 such that Follows(11, s1)
+none
+5000
+154 - Follows
+stmt s1;
+Select s1 such that Follows(s1, s1)
+none
+5000
+155 - Follows
+stmt s1;
+Select s1 such that Follows(1, 6)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+5000
+156 - Follows
+stmt s1;
+Select s1 such that Follows(1, 2)
+none
+5000
+157 - Follows
+stmt s1;
+Select s1 such that Follows(10, 11)
+none
+5000
+158 - Follows
+stmt s1;
+Select s1 such that Follows(9, 10)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+5000
+159 - Follows
+stmt s1;
+Select s1 such that Follows(s1, _)
+1, 2, 4, 6, 7, 8, 9
+5000
+160 - Follows
+stmt s1;
+Select s1 such that Follows(_, s1)
+4, 5, 6, 7, 8, 9, 10
+5000
+161 - Follows
+stmt s1;
+Select s1 such that Follows(_, _)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+5000
+162 - Follows, pattern
+stmt s1; assign a1;
+Select s1 such that Follows(1, s1) pattern a1(_,_)
+6
+5000
+163 - Follows, pattern
+stmt s1; assign a1;
+Select s1 pattern a1(_,_) such that Follows(1, s1) 
+6
+5000
+164 - Follows, pattern
+stmt s1; assign a1;
+Select a1 such that Follows(1, s1) pattern a1(_,_)
+3, 4, 5, 6, 7, 8, 9, 11
+5000
+165 - Follows, pattern
+stmt s1; assign a1;
+Select s1 such that Follows(s1, 9) pattern a1("y",_)
+8
+5000
+166 - Follows, pattern
+stmt s1; assign a1;
+Select a1 pattern a1("x",_) such that Follows(s1, 11)
+none
+5000
+167 - Follows, pattern
+stmt s1; assign a1;
+Select a1 pattern a1("x",_) such that Follows(s1, 8)
+3, 4, 6, 11
+5000
+168 - Follows, pattern
+stmt s1; assign a1;
+Select a1 pattern a1("x",_) such that Follows(a1, 8)
+none
+5000
+169 - Follows, pattern
+stmt s1; assign a1;
+Select a1 pattern a1("i",_) such that Follows(a1, 8)
+7
+5000
+170 - Follows, pattern
+stmt s1; assign a1;
+Select s1 such that Follows(s1, 7) pattern a1("z",_"z"_)
+6
+5000
+171 - Follows, pattern
+stmt s1; assign a1;
+Select a1 such that Follows(a1, 9) pattern a1("z",_"z"_)
+8
+5000
+172 - Follows, pattern
+stmt s1; assign a1;
+Select s1 such that Follows(a1, 9) pattern a1("z",_"z"_)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+5000
+173 - Follows, pattern
+stmt s1; assign a1;
+Select a1 pattern a1("x",_"x"_) such that Follows(s1, 5)
+3, 4, 11
+5000
+174 - Follows, pattern
+stmt s1; assign a1;
+Select s1 such that Follows(s1, 11) pattern a1("z",_"z"_)
+none
+5000
+175 - Follows, pattern
+stmt s1; assign a1;
+Select a1 pattern a1("x",_"x"_) such that Follows(a1, 1)
+none
+5000
+176 - Follows, pattern
+stmt s1; assign a1;
+Select a1 such that Follows(4, s1) pattern a1(_,_"i"_)
+5, 8
+5000
+177 - Follows, pattern
+stmt s1; assign a1;
+Select a1 such that Follows(4, a1) pattern a1(_,_"i"_)
+5
+5000
+178 - Follows, pattern
+stmt s1; assign a1;
+Select a1 such that Follows(4, s1) pattern a1(_,_"x"_)
+3, 4, 8, 11
+5000
+179 - Follows, pattern
+stmt s1; assign a1;
+Select s1 such that Follows(1, 6) pattern a1("x", _)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+5000
+180 - Follows, pattern
+stmt s1; assign a1;
+Select a1 such that Follows(1, 6) pattern a1("y", _)
+9
+5000
+cat: Follows* Testing
+181 - FollowsTrans
+stmt s1;
+Select s1 such that Follows*(1, s1)
+6, 7, 8, 9, 10
+5000
+182 - FollowsTrans
+stmt s1;
+Select s1 such that Follows*(s1, 5)
+2, 4
+5000
+183 - FollowsTrans
+stmt s1;
+Select s1 such that Follows*(s1, 11)
+none
+5000
+184 - FollowsTrans
+stmt s1;
+Select s1 such that Follows*(s1, 10)
+1, 6, 7, 8, 9,
+5000
+185 - FollowsTrans
+stmt s1;
+Select s1 such that Follows*(s1, 1)
+none
+5000
+186 - FollowsTrans
+stmt s1;
+Select s1 such that Follows*(5, s1)
+none
+5000
+187 - FollowsTrans
+stmt s1;
+Select s1 such that Follows*(10, s1)
+none
+5000
+188 - FollowsTrans
+stmt s1;
+Select s1 such that Follows*(11, s1)
+none
+5000
+189 - FollowsTrans
+stmt s1;
+Select s1 such that Follows*(s1, s1)
+none
+5000
+190 - FollowsTrans
+stmt s1;
+Select s1 such that Follows*(1, 2)
+none
+5000
+191 - FollowsTrans
+stmt s1;
+Select s1 such that Follows*(1, 6)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+5000
+192 - FollowsTrans
+stmt s1;
+Select s1 such that Follows*(3, 10)
+none
+5000
+193 - FollowsTrans
+stmt s1;
+Select s1 such that Follows*(3, 5)
+none
+5000
+194 - FollowsTrans
+stmt s1;
+Select s1 such that Follows*(6, 11)
+none
+5000
+195 - FollowsTrans
+stmt s1;
+Select s1 such that Follows*(5, 10)
+none
+5000
+196 - FollowsTrans
+stmt s1;
+Select s1 such that Follows*(s1, _)
+1, 2, 4, 6, 7, 8, 9
+5000
+197 - FollowsTrans
+stmt s1;
+Select s1 such that Follows*(_, s1)
+4, 5, 6, 7, 8, 9, 10
+5000
+198 - FollowsTrans
+stmt s1;
+Select s1 such that Follows(_, _)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+5000
+199 - FollowsTrans, pattern
+stmt s1; assign a1;
+Select s1 such that Follows*(1, s1) pattern a1(_,_)
+6, 7, 8, 9, 10
+5000
+200 - FollowsTrans, pattern
+stmt s1; assign a1;
+Select s1 pattern a1(_,_) such that Follows*(1, s1) 
+6, 7, 8, 9, 10
+5000
+201 - FollowsTrans, pattern
+stmt s1; assign a1;
+Select a1 such that Follows*(1, s1) pattern a1(_,_)
+3, 4, 5, 6, 7, 8, 9, 11
+5000
+202 - FollowsTrans, pattern
+stmt s1; assign a1;
+Select s1 such that Follows*(s1, 9) pattern a1("y",_)
+1, 6, 7, 8
+5000
+203 - FollowsTrans, pattern
+stmt s1; assign a1;
+Select a1 pattern a1("x",_) such that Follows*(s1, 11)
+none
+5000
+204 - FollowsTrans, pattern
+stmt s1; assign a1;
+Select s1 such that Follows*(s1, 11) pattern a1("z",_"z"_)
+none
+5000
+205 - FollowsTrans, pattern
+stmt s1; assign a1;
+Select a1 pattern a1("x",_) such that Follows*(s1, 8)
+3, 4, 6, 11
+5000
+206 - FollowsTrans, pattern
+stmt s1; assign a1;
+Select a1 pattern a1("x",_) such that Follows*(a1, 8)
+6
+5000
+207 - FollowsTrans, pattern
+stmt s1; assign a1;
+Select a1 pattern a1("i",_) such that Follows*(a1, 8)
+7
+5000
+208 - FollowsTrans, pattern
+stmt s1; assign a1;
+Select s1 such that Follows*(s1, 7) pattern a1("z",_"z"_)
+1, 6
+5000
+209 - FollowsTrans, pattern
+stmt s1; assign a1;
+Select a1 such that Follows*(a1, 9) pattern a1("z",_"z"_)
+8
+5000
+210 - FollowsTrans, pattern
+stmt s1; assign a1;
+Select s1 such that Follows*(a1, 10) pattern a1("z",_"z"_)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+5000
+211 - FollowsTrans, pattern
+stmt s1; assign a1;
+Select a1 pattern a1("x",_"x"_) such that Follows*(s1, 5)
+3, 4, 11
+5000
+212 - FollowsTrans, pattern
+stmt s1; assign a1;
+Select a1 pattern a1("x",_"x"_) such that Follows*(a1, 1)
+none
+5000
+213 - FollowsTrans, pattern
+stmt s1; assign a1;
+Select a1 such that Follows*(4, s1) pattern a1(_,_"i"_)
+5, 8
+5000
+214 - FollowsTrans, pattern
+stmt s1; assign a1;
+Select a1 such that Follows*(2, a1) pattern a1(_,_"i"_)
+5
+5000
+215 - FollowsTrans, pattern
+stmt s1; assign a1;
+Select a1 such that Follows*(4, s1) pattern a1(_,_"x"_)
+3, 4, 8, 11
+5000
+216 - FollowsTrans, pattern
+stmt s1; assign a1;
+Select s1 such that Follows*(1, 6) pattern a1("x", _)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+5000
+217 - FollowsTrans, pattern
+stmt s1; assign a1;
+Select a1 such that Follows*(1, 10) pattern a1("y", _)
+9
+5000

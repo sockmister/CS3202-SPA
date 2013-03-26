@@ -1,0 +1,19 @@
+procedure first {
+	z=10;
+	x=z+5;
+	y=x*z+4;
+	d=x+y*12;
+	x=x+2;
+	d=d+z+x;
+	y=y+1;
+	e=d+z*x;
+	while i {
+		e=x-y;
+		if z then {
+			y=y+z;
+			i=y+1;}else {
+			x=y+z;
+			x=x+1;
+			i=i-1;}
+		x=y+z;}
+	e=e+2;}

@@ -1,0 +1,77 @@
+15
+cat: Complex Queries of Relation and Pattern 
+1 - Uses, Modifies, FollowsTrans, Pattern, and
+assign a1;
+Select a1 such that Uses(a1,"x") and Modifies(a1,"z") and Uses(a1,"z") and Follows*(7,a1) pattern a1("z",_)
+8
+5000
+2 - Uses, Parent, and
+while w1,w2;
+Select w1 such that Uses(w1,"x") and Uses(w1,"i") and Parent(w1,w2)
+1
+5000
+3 - Uses, Modifies, Parent, and
+while w1,w2;
+Select w1 such that Uses(w1,"x") and Uses(w1,"i") and Parent(w1,w2) and Modifies(w1,"j")
+none
+5000
+4 - Uses, Modifies, and
+while w1;
+Select w1 such that Uses(w1,"x") and Modifies(w1,"x")
+1, 2, 10, 12, 13, 14, 15, 16
+5000
+5 - Uses, Modifies, and
+while w1;
+Select w1 such that Uses(w1,"x") and Modifies(w1,"x") and Uses(w1,"i") and Modifies(w1,"i")
+1
+5000
+6 - Modifies, Uses, pattern, and
+assign a1;
+Select a1 such that Modifies(a1,"y") and Uses(a1,"x") pattern a1(_,_"z"_)
+18
+5000
+7 - Parent, Uses, Modifies, pattern, and
+prog_line n1; assign a1;
+Select n1 such that Parent(32,33) and Uses(23,"varA") and Modifies(28,"varD") pattern a1(_,_"varA"_)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57
+5000
+8 - ParentTrans, Modifies, and
+while w1;
+Select w1 such that Parent*(w1,43) and Modifies(w1,"varLoop10")
+32, 33, 34, 35, 36, 38, 39, 40, 41, 42
+5000
+9 - ParentTrans, pattern, Modifies, FollowsTrans, and
+while w1; assign a1,a2;
+Select w1 such that Parent*(w1,43) and Modifies(w1,"varLoop10") and Follows*(w1,35) pattern a2(_,_"varLoop1"_) pattern a1(_,_)
+none
+5000
+10 - ParentTrans, Modifies, FollowsTrans, pattern, and
+constant c1; while w1; assign a1,a2;
+Select c1 such that Parent*(w1,43) pattern a1(_,_) such that Modifies(w1,"varLoop10") and Follows*(w1,57) pattern a2(_,_"varLoop1"_)
+0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 12345
+5000
+11 - ParentTrans, Modifies, Uses, and
+while w1; variable v1;
+Select v1 such that Parent*(w1,51) and Modifies(w1,v1) and Uses(w1,v1)
+varLoop5, varLoop10, varLoop9, varLoop8, varLoop7, varLoop6, varLoop4, varLoop2, varLoop1
+5000
+12 - ParentTrans, Modifies, Uses, patterm, FollowsTrans, and
+variable v1; while w1; assign a1,a2;
+Select v1 such that Parent*(w1,51) and Modifies(w1,v1) and Uses(w1,v1) pattern a1(_,_) and pattern a2(_,_"varLoop1"_) such that Parent*(w1,51) and Modifies(w1,v1) and Uses(w1,v1) pattern a1(_,_) and pattern a2(_,_"varLoop1"_) such that Parent*(w1,51) and Modifies(w1,v1) and Uses(w1,v1) pattern a1(_,_) and pattern a2(_,_"varLoop1"_) such that Parent*(w1,51) and Modifies(w1,v1) and Uses(w1,v1) pattern a1(_,_) and pattern a2(_,_"varLoop1"_) such that Parent*(w1,51) and Modifies(w1,v1) and Uses(w1,v1) pattern a1(_,_) and pattern a2(_,_"varLoop1"_) such that Parent*(w1,51) and Modifies(w1,v1) and Uses(w1,v1) pattern a1(_,_) and pattern a2(_,_"varLoop1"_) such that Parent*(w1,51) and Modifies(w1,v1) and Uses(w1,v1) pattern a1(_,_) and pattern a2(_,_"varLoop1"_) such that Parent*(w1,51) and Modifies(w1,v1) and Uses(w1,v1) pattern a1(_,_) and pattern a2(_,_"varLoop1"_) such that Parent*(w1,51) and Modifies(w1,v1) and Uses(w1,v1) pattern a1(_,_) and pattern a2(_,_"varLoop1"_) such that Parent*(w1,51) and Modifies(w1,v1) and Uses(w1,v1) pattern a1(_,_) and pattern a2(_,_"varLoop1"_) such that Parent*(w1,51) and Modifies(w1,v1) and Uses(w1,v1) pattern a1(_,_) and pattern a2(_,_"varLoop1"_) such that Parent*(w1,51) and Modifies(w1,v1) and Uses(w1,v1) pattern a1(_,_) and pattern a2(_,_"varLoop1"_) such that Parent*(w1,51) and Modifies(w1,v1) and Uses(w1,v1) pattern a1(_,_) and pattern a2(_,_"varLoop1"_) such that Parent*(w1,51) and Modifies(w1,v1) and Uses(w1,v1) pattern a1(_,_) and pattern a2(_,_"varLoop1"_)
+varLoop5, varLoop10, varLoop9, varLoop8, varLoop7, varLoop6, varLoop4, varLoop2, varLoop1
+5000
+13 - Parent, ParentTrans, Modifies, Uses, pattern, Follows*, and
+stmt s1,s2; assign a1,a2,a3; 
+Select s1 such that Parent*(s1,37) and Modifies(s1,"varLastLoop") pattern a1("varLastLoop",_"varLoop5"_) such that Follows*(s1,55) pattern a2(_,_"varLoop8"_) such that Uses(s1,"loop3") and Uses(s1,"loop4") pattern a3(_,_) such that Parent(s2,37)
+34
+5000
+14 - Parent, ParentTrans, Modifies, Uses, pattern, Follows*, and
+stmt s1,s2; assign a1,a2,a3; 
+Select s1 such that Parent*(s1,37) and Parent(s2,37) and Modifies(s1,"varLastLoop") and Follows*(s1,55) and Uses(s1,"loop3") and Uses(s1,"loop4") pattern a1("varLastLoop",_"varLoop5"_) pattern a2(_,_"varLoop8"_) pattern a3(_,_)
+34
+5000
+15 - Parent, ParentTrans, Modifies, Uses, pattern, Follows*, and
+stmt s1,s2; assign a1,a2,a3; while w1;
+Select w1 such that Parent*(s1,37) and Parent(s2,37) and Modifies(s1,"varLastLoop") and Follows*(s1,55) and Uses(s1,"loop3") and Uses(s1,"loop4") pattern a1("varLastLoop",_"varLoop5"_) pattern a2(_,_"varLoop8"_) pattern a3(_,_) such that Parent*(w1,55)
+32, 33
+5000

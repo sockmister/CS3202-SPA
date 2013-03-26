@@ -1,0 +1,15 @@
+procedure Second {
+
+  while i {
+    while j {
+      x = 2 + x; }
+  x = 2 + x;
+  i = 1 + i; }
+x = 0;
+  i = 5;
+  z = z + x + i;
+  y = 2 + z;
+
+while j {
+x = 2 + x; }
+}

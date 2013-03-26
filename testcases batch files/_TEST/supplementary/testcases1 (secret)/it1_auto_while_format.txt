@@ -1,0 +1,36 @@
+System Integration(while)
+Select w1 such that Modifies(w1, "q") and Uses(w1, "p") with w1.stmt#=1
+
+Select w1 such that Modifies(w1, "q") and Uses(w1, "p") with w1.stmt#=10
+10
+Select w1 such that Modifies(w1, _) and Uses(w1, _) with w1.stmt#=w2.stmt#
+7 10 17 20 23 27 34 46 49 57 74 95
+Select w1 such that Modifies(w1, _) and Uses(w1, _) and Follows*(w1,w2)
+
+Select w1 such that Uses(w1, "x") and Modifies(w1, _) and Parent*(w2,w1)
+20 23 27 46 49 57 74
+Select w1 such that Follows*(18, w1) and Uses(w1, "p")
+20
+Select w2 such that Follows*(w1, 43) and Parent*(w2, w1) and Uses(w2, "p")
+17 20 23 27
+Select w1 such that Uses(w1, v1) and Parent*(w2,w1) and Modifies(w1, "z") with v1.varName="x"
+20 23 27 46 49 57 74
+Select w1 such that Parent*(w1, 86) and Uses(w1, v1) with v1.varName="i"
+
+Select w1 such that Parent*(w1, w2) and Uses(w1, "x") and Follows*(w1, a1) with a1.stmt#=16 with v1.varName="x" pattern a1(_, _"z"_)
+7
+Select w1 such that Parent*(w1, w2) and Uses(w1, "y") and Uses(w2, "x") and Follows*(w1, a1) and Follows*(a2, w2) and Uses(w1, v1) and Uses(w2, v2) pattern a1("x", _"y"_) with n1.prog_line#=10 with v1.varName="x" with a1.stmt#=n1.prog_line#
+
+Select w1 pattern a1("z", _"x+i"_) pattern a2("y", _"2+z"_) pattern a3("a", "b") such that Follows(a1, a2) and Follows*(a2, a3) and Follows*(a1, w1) and Uses(95, "p") and Modifies(95, "q") and Modifies(n1, "s") and Uses(w3, "i") with a1.stmt#=18 with a3.stmt#=89 with n1.prog_line#=95 and Parent*(w1,w2)
+
+Select a1 such that Follows*(a2, a1) and Parent(w1,i1) and Parent(i1,a1) and Modifies("Fourth", "z") with c1.value=99 pattern a1(_,_"r"_)
+
+Select a3 such that Parent(i1, a1) and Parent(w1,i1) and Follows*(a2, a1) and Follows*(a3,w1) and Uses(w1, v1) and Uses(i1,v1) with v1.varName="p" pattern a1(_,_"r"_)
+25 26 48 90 91 92 93
+Select w1 such that Parent(w1, i1) and Parent(i1, a1) and Follows*(a2, a1) and Follows*(a3,w1) and Uses(w1, v1) and Uses(i1, v1) with v1.varName="p" with a1.stmt#=98 pattern a1(_,_"r"_)
+95
+Select w1 such that Parent (i2, i1) and Parent(i1, w1) and  Uses(w1, v1) and Parent*(w2,w1) and Modifies(w1, "z") with v1.varName="x"
+23  74
+Select w1 such that Follows(w1,a3) and Parent(w1, a1) and Parent(w1, a2) and Follows(a1, a2) and Modifies(w1, _) and Uses(w1, _) with w1.stmt#=w2.stmt#
+7 17
+Select w2 such that Follows(a1, w2) and Parent(w1, a1) and Follows*(w1, 43) and Parent*(w2, w1) and Uses(w2, "p")

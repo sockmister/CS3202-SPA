@@ -1,0 +1,61 @@
+10
+cat: suchthat,pattern,with
+1 - Test1
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select s such that Modifies(i1, "i") pattern i1(_,_,_) with s.stmt#=12
+12
+5000
+cat: suchthat,with,pattern
+2 - Test2
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select s such that Calls(p1, "testIf") with p1.procName=p2.procName pattern w1("i",_)
+1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29
+5000
+cat: pattern,suchthat,with
+3 - Test3
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select s pattern w1(v1,_) such that Uses(w1,v1)  with s.stmt#=15
+15
+5000
+cat: pattern,with,suchthat
+4 - Test4
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select s pattern w1(v1,_) with s.stmt#=15 such that Uses(w1,v1)
+15
+5000
+cat: with,suchthat,pattern
+5 - Test5
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select a with a.stmt#=n1 such that Next*(20,n1) and Parent*(w1,a) pattern a("x",_)
+26
+5000
+cat: with,pattern,suchthat
+6 - Test6
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select s with a.stmt#=n1 pattern a("x",_) such that Next*(20,n1) and Parent*(i1,a)
+none
+5000
+cat: suchthat,pattern,suchthat,pattern
+7 - Test7
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select s such that Calls(p1,p2) pattern i1("z",_,_) such that Modifies(p2,"i") with i1.stmt#=s.stmt#
+10,12,15,20,22
+5000
+cat: pattern,with,suchthat,pattern
+8 - Test8
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select BOOLEAN pattern w1("i",_) with w1.stmt#=n1 such that Modifies(p1,"i") pattern w1("i",_)
+true
+5000
+cat: with,suchthat,pattern,with
+9 - Test9
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select s with s.stmt#=n1 such that Next*(9,n1) pattern a1("x",_"y"_) with n1=a1.stmt#
+18
+5000
+cat: suchthat,pattern,with,suchthat,pattern,with,suchthat
+10 - Test10
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select s such that Next*(9,n1) pattern a1("x",_"y"_) with n1=a1.stmt# such that Next*(10,n2) pattern a1(_,"y") with n1=n2 such that Next*(n1,19)
+none
+5000

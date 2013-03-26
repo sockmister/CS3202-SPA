@@ -1,0 +1,5 @@
+procedure noWhile {
+    varNoWhile = 2+i;
+    j = j+i;
+   varNoWhile = varNoWhile + j;
+}

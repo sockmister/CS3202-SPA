@@ -1,0 +1,12 @@
+cat: suchthat,pattern,with
+cat: suchthat,with,pattern
+cat: pattern,suchthat,with
+cat: pattern,with,suchthat
+cat: with,suchthat,pattern
+cat: with,pattern,suchthat
+
+cat: suchthat,pattern,suchthat,pattern
+cat: pattern,with,suchthat,pattern
+cat: with,suchthat,pattern,with
+
+cat: suchthat,pattern,with,suchthat,pattern,with,suchthat

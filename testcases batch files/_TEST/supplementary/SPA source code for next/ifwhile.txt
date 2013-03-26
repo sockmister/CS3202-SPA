@@ -1,0 +1,16 @@
+procedure Zeta{
+	i = 0;
+	if i then {
+		g = 5;
+		while g {
+			a = b+c*b+c;
+		}
+		if i then {
+			b = a;
+		} else {
+			a=b;
+		}
+	} else {
+		c = a + t;
+	}
+}

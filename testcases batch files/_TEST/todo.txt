@@ -1,0 +1,23 @@
+suchthat
+	calls
+	follows
+	modifies_stmt
+	parent
+	uses_stmt
+pattern combination
+general
+	condition ordering
+	assign
+	bool
+	call
+	constant
+	proc
+	progline
+	stmt
+	variable
+	while
+
+later
+	tuple
+	affects
+	stress testing

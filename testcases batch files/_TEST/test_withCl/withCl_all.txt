@@ -1,0 +1,97 @@
+16
+cat: with(attrRef=attrRef)
+1 - Test1
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select s with n1.stmt#=n1.stmt#
+1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29
+5000
+cat: with(attrRef=synonym)
+2 - Test2
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select s with c1.value=p1
+none
+5000
+cat: with(attrRef=ident)
+3 - Test3
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select s with p1.procName="testIF"
+none
+5000
+cat: with(attrRef=int)
+4 - Test4
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select s with v1.varName="z"
+1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29
+5000
+cat: with(syn=attrRef)
+5 - Test5
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select s with n1=n1.stmt#
+1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29
+5000
+cat: with(syn=syn)
+6 - Test6
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select s with n1=n2
+1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29
+5000
+cat: with(syn=ident)
+7 - Test7
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select s with n1="1"
+none
+5000
+cat: with(syn=int)
+8 - Test8
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select s with n1=2
+1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29
+5000
+cat: with(ident=attrRef)
+9 - Test9
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select s with "testBOTH"=p1.procName
+none
+5000
+cat: with(ident=syn)
+10 - Test10
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select s with "100"=n1
+none
+5000
+cat: with(ident=ident)
+11 - Test11
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select s with "5"="5"
+1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29
+5000
+cat: with(ident=int)
+12 - Test12
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select s with "5"=5
+none
+5000
+cat: with(int=attrRef)
+13 - Test13
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select s with 50=s.stmt#
+none
+5000
+cat: with(int=syn)
+14 - Test14
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select s with 5=n1
+1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29
+5000
+cat: with(int=ident)
+15 - Test15
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select s with 5="testIf"
+none
+5000
+cat: with(int=int)
+16 - Test16
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select s with 100=100
+1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29
+5000

@@ -40,6 +40,9 @@ void evaluator::insertProcTable(ProcTable* _procTable){
 void evaluator::insertCFG(CFG* _cfg){
 	cfg = _cfg;
 }
+void evaluator::insertAffects(Affects* _affects){
+	affects = _affects;
+}
 
 vector<string> evaluator::evaluateQuery(queryTree* _queryTree){
 	vector<string> select1=_queryTree->getSelect(0);
@@ -51,7 +54,7 @@ vector<string> evaluator::evaluateQuery(queryTree* _queryTree){
 	queryHasTrue=false;
 	patternHasTrue=false;
 	withHasTrue=false;
-	if(!(_queryTree->getWithQuerySize()==0 && _queryTree->getSuchThatQuerySize()==0 && _queryTree->getPatternQuerySize()==0)){
+	if(select!=""){
 		if(_queryTree->getWithQuerySize()>0){
 			evaluateWith(select, selectType, _queryTree);
 		}else{	withHasTrue=true;
@@ -690,7 +693,8 @@ void evaluator::evaluateSuchThat(string _select, string _selectType, queryTree* 
 				if(queryType=="Follows" || queryType=="Follows*" || 
 					queryType=="Parent" || queryType=="Parent*" ||
 				    queryType=="Uses" || queryType=="Modifies*" ||
-					queryType=="Next" || queryType=="Next*"){
+					queryType=="Next" || queryType=="Next*" ||
+					queryType=="Affects" || queryType=="Affects*"){
 					allLeftEntry = getAllPossibleByType("stmt");
 				}else if(queryType=="Calls" || queryType=="Calls*"){
 					allLeftEntry = getAllPossibleByType("procedure");
@@ -714,7 +718,8 @@ void evaluator::evaluateSuchThat(string _select, string _selectType, queryTree* 
 			}else if(typeRight=="_"){
 				if(queryType=="Follows" || queryType=="Follows*" || 
 					queryType=="Parent" || queryType=="Parent*" ||
-					queryType=="Next" || queryType=="Next*"){
+					queryType=="Next" || queryType=="Next*" ||
+					queryType=="Affects" || queryType=="Affects*"){
 					allRightEntry = getAllPossibleByType("stmt");
 				}else if(queryType=="Uses" || queryType=="Modifies"){
 					allRightEntry = getAllPossibleByType("variable");
@@ -767,6 +772,12 @@ void evaluator::evaluateBranch(string _queryType, string _valueLeft, string _val
 	}
 	else if(_queryType=="Next*"){
 		evaluateNextStarBranch(_valueLeft, _valueRight, _allLeftEntry, _allRightEntry);
+	}
+	else if(_queryType=="Affects"){
+		evaluateAffectsBranch(_valueLeft, _valueRight, _allLeftEntry, _allRightEntry);
+	}
+	else if(_queryType=="Affects*"){
+		evaluateAffectsStarBranch(_valueLeft, _valueRight, _allLeftEntry, _allRightEntry);
 	}
 }
 
@@ -1103,6 +1114,51 @@ void evaluator::evaluateNextStarBranch(string _valueLeft, string _valueRight, ve
 	}
 }
 
+void evaluator::evaluateAffectsBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry){
+	for(int i=0; i<_allLeftEntry.size(); i++){
+		string entryLeft = _allLeftEntry.at(i);
+		int intLeft = atoi( entryLeft.c_str() );
+		vector<VALUE> correctEntry; 
+		// get CFG
+		string procName = procTable->getProcedure(intLeft);
+		cfg =  procTable->getCFG(procName);	
+		//to cut
+		for(int j=0; j<_allRightEntry.size(); j++){
+			string entryRight = _allRightEntry.at(j); 
+			int intRight = atoi( entryRight.c_str() );
+			if(affects->isAffects(intLeft, intRight)){
+				correctEntry.push_back(entryRight);
+				queryHasTrue = true;
+			}
+		}
+		if(correctEntry.size()>0){
+			table.insert(_valueLeft, entryLeft, _valueRight, correctEntry);
+		}
+	}
+}
+
+void evaluator::evaluateAffectsStarBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry){
+	for(int i=0; i<_allLeftEntry.size(); i++){
+		string entryLeft = _allLeftEntry.at(i);
+		int intLeft = atoi( entryLeft.c_str() );
+		vector<VALUE> correctEntry; 
+		// get CFG
+		string procName = procTable->getProcedure(intLeft);
+		cfg =  procTable->getCFG(procName);
+		for(int j=0; j<_allRightEntry.size(); j++){
+			string entryRight = _allRightEntry.at(j); 
+			int intRight = atoi( entryRight.c_str() );
+			if(cfg->isNextStar(intLeft, intRight)){
+				correctEntry.push_back(entryRight);
+				queryHasTrue = true;
+			}
+		}		
+		if(correctEntry.size()>0){
+			table.insert(_valueLeft, entryLeft, _valueRight, correctEntry);
+		}
+	}
+}
+
 vector<vector<string>> convertToStringVectorResults(vector<int> _intResults, string _type){
 	vector<vector<string>> result;
 	for(int i=0; i<_intResults.size(); i++){	
@@ -1171,6 +1227,8 @@ vector<string> evaluator::getAllPossibleByType(string _selectType){
 		nodeType = "callNode";
 		vector<int> getAll = ast->getAllStmtNumByType(nodeType);		 
 		return convertToStringResults(getAll, _selectType);
+	}else if(_selectType == "stmtLst"){		 
+		return getAllStmtLst();
 	}
 }
 
@@ -1193,37 +1251,82 @@ string evaluator::getProcName(string _type, string _valueOrName){
 
 vector<string> evaluator::getResults(queryTree* _queryTree){
 	vector<string> results;
-	for(int i=0; i< _queryTree->getSelectSize(); i++){
-		string select = _queryTree->getSelect(i).at(0);
-		string selectType =  _queryTree->getSelect(i).at(1);
-		vector<string> tempResults;
-		vector<string> selectResults;
+	int selectSize = _queryTree->getSelectSize();
+	if(selectSize == 0){
+		return results;
+	}else if(selectSize == 1){
+		string select = _queryTree->getSelect(0).at(0);
+		string selectType =  _queryTree->getSelect(0).at(1);
 		if(table.hasColumns(select)){
-			selectResults = table.getColumn(select);
+			return table.getColumn(select);
 		}else{
-			selectResults = getAllPossibleByType(selectType);
+			return getAllPossibleByType(selectType);
 		}
-		if(results.size()==0){
-			results=selectResults;
-		}else{
-			//optimisation R+R*s, R<s
-			if(results.size()<=selectResults.size()){
-				for(int j=0; j<results.size(); j++){
-					string singleResultClause = results.at(j);
-					for(int k=0; k<selectResults.size(); k++){
-						tempResults.push_back(singleResultClause+" "+selectResults.at(k));
-					}
-				}
-			}else{
-				for(int j=0; j<selectResults.size(); j++){
-					string singleSelectClause = selectResults.at(j);
-					for(int k=0; k<results.size(); k++){
-						tempResults.push_back(results.at(k)+" "+singleSelectClause);
-					}
-				}
+	}else{
+		vector<string> selectResults;
+		for(int i=0; i< selectSize; i++){
+			string select = _queryTree->getSelect(i).at(0);
+			string selectType =  _queryTree->getSelect(i).at(1);
+			//vector<string> tempResults;
+			if(!table.hasColumns(select)){
+				table.insert(select, getAllPossibleByType(selectType));
 			}
-			results=tempResults;
+			selectResults.push_back(select);
+			
+			/*if(table.hasColumns(select)){
+				selectResults = table.getColumn(select);
+			}else{
+				selectResults = getAllPossibleByType(selectType);
+			}
+			
+			if(results.size()==0){
+				results=selectResults;
+			}else{
+				//optimisation R+R*s, R<s
+				if(results.size()<=selectResults.size()){
+					for(int j=0; j<results.size(); j++){
+						string singleResultClause = results.at(j);
+						for(int k=0; k<selectResults.size(); k++){
+							tempResults.push_back(singleResultClause+" "+selectResults.at(k));
+						}
+					}
+				}else{
+					for(int j=0; j<selectResults.size(); j++){
+						string singleSelectClause = selectResults.at(j);
+						for(int k=0; k<results.size(); k++){
+							tempResults.push_back(results.at(k)+" "+singleSelectClause);
+						}
+					}
+				}
+				results=tempResults;
+			}*/
 		}
+		//return results;
+		return table.getTuple(selectResults);
 	}
-	return results;
+}
+
+vector<string> evaluator::getAllStmtLst(){
+	vector<string> returnAll;
+	vector<int> getAll;
+	vector<int> getAll1 = ast->getAllStmtNumByType("whileNode");
+	vector<int> getAll2 = ast->getAllStmtNumByType("ifNode");
+	getAll.insert(getAll.end(), getAll1.begin(), getAll1.end());
+	getAll.insert(getAll.end(), getAll2.begin(), getAll2.end());
+	for(int i=0; i<getAll.size(); i++){
+		returnAll.push_back( std::to_string(static_cast<long long>( getAll.at(i)+1)));
+	}
+	vector<string> allProcName =procTable->getAllProcNames();
+	for(int i=0; i<getAll2.size(); i++){
+		TNode stmtNode= ast->getStmtNode(getAll2.at(i));
+		TNode childNode= ast->getChild(ast->getChild(stmtNode, 2), 0);
+		int value= childNode.getStmtNumber();
+
+		//int value = ast->getChild(ast->getStmtNode(getAll2.at(i)) ,2).getStmtNumber();
+		returnAll.push_back( std::to_string(static_cast<long long>(value)) );
+	}
+	for(int i=0; i< allProcName.size(); i++){
+		returnAll.push_back( std::to_string(static_cast<long long>( procTable->getFirstStmt(allProcName.at(i)))));
+	}
+	return returnAll;
 }

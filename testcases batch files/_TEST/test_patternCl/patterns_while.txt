@@ -1,0 +1,19 @@
+3
+cat: while(syn,_)
+1 - Test1
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select s pattern w1(v1,_)
+1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29
+5000
+cat: while(_,_)
+2 - Test2
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select s pattern w1(_,_)
+1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29
+5000
+cat: while(ident,_)
+3 - Test3
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select s pattern w1("123098",_)
+none
+5000

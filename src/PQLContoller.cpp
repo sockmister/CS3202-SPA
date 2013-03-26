@@ -24,6 +24,7 @@ void PQLController::passInput(string queryInOneLine, list <string> &resultsList)
 	eval.insertVarTable(pkb->getVarTable());
 	eval.insertCalls(pkb->getCalls());
 	eval.insertProcTable(pkb->getProcTable());
+	eval.insertAffects(pkb->getAffects());
 
 	// Should work once Yong Wei modifies evaluator
 	vector<string> results = eval.evaluateQuery(tree);

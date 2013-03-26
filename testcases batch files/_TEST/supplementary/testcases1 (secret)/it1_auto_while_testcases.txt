@@ -1,0 +1,92 @@
+18
+cat: System Integration(while)
+1 - Test1
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select w1 such that Modifies(w1, "q") and Uses(w1, "p") with w1.stmt#=1
+none
+5000
+2 - Test2
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select w1 such that Modifies(w1, "q") and Uses(w1, "p") with w1.stmt#=10
+10
+5000
+3 - Test3
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select w1 such that Modifies(w1, _) and Uses(w1, _) with w1.stmt#=w2.stmt#
+7, 10, 17, 20, 23, 27, 34, 46, 49, 57, 74, 95
+5000
+4 - Test4
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select w1 such that Modifies(w1, _) and Uses(w1, _) and Follows*(w1,w2)
+none
+5000
+5 - Test5
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select w1 such that Uses(w1, "x") and Modifies(w1, _) and Parent*(w2,w1)
+20, 23, 27, 46, 49, 57, 74
+5000
+6 - Test6
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select w1 such that Follows*(18, w1) and Uses(w1, "p")
+20
+5000
+7 - Test7
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select w2 such that Follows*(w1, 43) and Parent*(w2, w1) and Uses(w2, "p")
+17, 20, 23, 27
+5000
+8 - Test8
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select w1 such that Uses(w1, v1) and Parent*(w2,w1) and Modifies(w1, "z") with v1.varName="x"
+20, 23, 27, 46, 49, 57, 74
+5000
+9 - Test9
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select w1 such that Parent*(w1, 86) and Uses(w1, v1) with v1.varName="i"
+none
+5000
+10 - Test10
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select w1 such that Parent*(w1, w2) and Uses(w1, "x") and Follows*(w1, a1) with a1.stmt#=16 with v1.varName="x" pattern a1(_, _"z"_)
+7
+5000
+11 - Test11
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select w1 such that Parent*(w1, w2) and Uses(w1, "y") and Uses(w2, "x") and Follows*(w1, a1) and Follows*(a2, w2) and Uses(w1, v1) and Uses(w2, v2) pattern a1("x", _"y"_) with n1.prog_line#=10 with v1.varName="x" with a1.stmt#=n1.prog_line#
+none
+5000
+12 - Test12
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select w1 pattern a1("z", _"x+i"_) pattern a2("y", _"2+z"_) pattern a3("a", "b") such that Follows(a1, a2) and Follows*(a2, a3) and Follows*(a1, w1) and Uses(95, "p") and Modifies(95, "q") and Modifies(n1, "s") and Uses(w3, "i") with a1.stmt#=18 with a3.stmt#=89 with n1.prog_line#=95 and Parent*(w1,w2)
+none
+5000
+13 - Test13
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select a1 such that Follows*(a2, a1) and Parent(w1,i1) and Parent(i1,a1) and Modifies("Fourth", "z") with c1.value=99 pattern a1(_,_"r"_)
+none
+5000
+14 - Test14
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select a3 such that Parent(i1, a1) and Parent(w1,i1) and Follows*(a2, a1) and Follows*(a3,w1) and Uses(w1, v1) and Uses(i1,v1) with v1.varName="p" pattern a1(_,_"r"_)
+25, 26, 48, 90, 91, 92, 93
+5000
+15 - Test15
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select w1 such that Parent(w1, i1) and Parent(i1, a1) and Follows*(a2, a1) and Follows*(a3,w1) and Uses(w1, v1) and Uses(i1, v1) with v1.varName="p" with a1.stmt#=98 pattern a1(_,_"r"_)
+95
+5000
+16 - Test16
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select w1 such that Parent (i2, i1) and Parent(i1, w1) and  Uses(w1, v1) and Parent*(w2,w1) and Modifies(w1, "z") with v1.varName="x"
+23, 74
+5000
+17 - Test17
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select w1 such that Follows(w1,a3) and Parent(w1, a1) and Parent(w1, a2) and Follows(a1, a2) and Modifies(w1, _) and Uses(w1, _) with w1.stmt#=w2.stmt#
+7, 17
+5000
+18 - Test18
+procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4;
+Select w2 such that Follows(a1, w2) and Parent(w1, a1) and Follows*(w1, 43) and Parent*(w2, w1) and Uses(w2, "p")
+none
+5000

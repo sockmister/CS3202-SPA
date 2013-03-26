@@ -10,12 +10,13 @@
 #include "Uses.h"
 #include "Calls.h"
 #include "ProcTable.h"
+#include "Affects.h"
 
 class PKB{
 public:
 	//constructors
 	PKB();
-	PKB(AST *, VarTable *, Follows *, Parent *, Modifies *, Uses *, ProcTable *, Calls *);
+	PKB(AST *, VarTable *, Follows *, Parent *, Modifies *, Uses *, ProcTable *, Calls *, Affects *);
 
 	//destructors
 	~PKB();
@@ -28,6 +29,7 @@ public:
 	void setUses(Uses *);
 	void setCalls(Calls *);
 	void setProcTable(ProcTable *);
+	void setAffects(Affects *);
 
 	AST* getAST();
 	VarTable* getVarTable();
@@ -37,6 +39,7 @@ public:
 	Modifies * getModifies();
 	Calls * getCalls();
 	ProcTable * getProcTable();
+	Affects * getAffects();
 
 private:
 	AST * ast;
@@ -47,6 +50,7 @@ private:
 	Uses * uses;
 	Calls * calls;
 	ProcTable * procTable;
+	Affects * affects;
 };
 
 //#endif

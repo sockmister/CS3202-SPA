@@ -1,0 +1,44 @@
+<?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
+<test_results>
+<info>
+<name>_TEST</name><parsing_time_taken>549.000000</parsing_time_taken>
+</info>
+<queries>
+<category name=" assign and while">
+<query>
+<id Test1="1" >1</id><querystr><![CDATA[procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4; Select BOOLEAN pattern a1("abc",_) and w1("i",_)]]></querystr>
+<stuans>true</stuans>
+<correct>true</correct>
+<time_taken>127.000000</time_taken>
+<passed/>
+</query>
+</category>
+<category name=" assign and if">
+<query>
+<id Test2="1" >2</id><querystr><![CDATA[procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4; Select BOOLEAN pattern a1(v1,_"y"_) and i1(v1,_,_)]]></querystr>
+<stuans>true</stuans>
+<correct>true</correct>
+<time_taken>125.000000</time_taken>
+<passed/>
+</query>
+</category>
+<category name=" assign and while and if">
+<query>
+<id Test3="1" >3</id><querystr><![CDATA[procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4; Select BOOLEAN pattern a2(v1,_) and w2(v1,_) and i2(v1,_,_)]]></querystr>
+<stuans>true</stuans>
+<correct>true</correct>
+<time_taken>272.000000</time_taken>
+<passed/>
+</query>
+</category>
+<category name=" assign and while and if and assign and if">
+<query>
+<id Test4="1" >4</id><querystr><![CDATA[procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4; Select BOOLEAN pattern a2(v1,_) and w2(v2,_) and i2(v1,_,_) and a2(v1,_) and i2(v2,_,_)]]></querystr>
+<stuans>true</stuans>
+<correct>true</correct>
+<time_taken>1315.000000</time_taken>
+<passed/>
+</query>
+</category>
+</queries>
+</test_results>

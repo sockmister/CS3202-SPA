@@ -1,0 +1,66 @@
+16
+cat: Calls*
+1 - Test1	// synonym, synonym
+query
+-1
+5000
+2 - Test2 // synonym, ident
+query
+-1
+5000
+3 - Test3 // synonym, integer
+query
+-1
+5000
+4 - Test4 // synonym, _
+query
+-1
+5000
+5 - Test5 // ident, synonym
+query
+-1
+5000
+6 - Test6 // ident, ident
+query
+-1
+5000
+7 - Test7 // ident, integer
+query
+-1
+5000
+8 - Test8 // ident, _
+query
+-1
+5000
+9 - Test9 // integer, synonym
+query
+-1
+5000
+10 - Test10 // integer, integer
+query
+-1
+5000
+11 - Test11 // integer, ident
+query
+-1
+5000
+12 - Test12 // integer, _
+query
+-1
+5000
+13 - Test13 // _ , synonym
+query
+-1
+5000
+14 - Test14 // _ , _
+query
+-1
+5000
+15 - Test15 // _ , ident
+query
+-1
+5000
+16 - Test16 // _ , integer
+query
+-1
+5000

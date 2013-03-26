@@ -1,0 +1,39 @@
+Tuple2
+Select <s1.stmt#, s2> such that Modifies(s1,v1) and Modifies(s2, "l") with v1.varName="i"
+3 11, 3 13, 6 11, 6 13, 9 11, 9 13, 10 11, 10 13
+Select <s1, s2.stmt#> such that Modifies(s1, v1) and Modifies(s2, v1) with v1.varName="f"
+3 3, 3 6, 3 8, 6 3, 6 6, 6 8, 8 3, 8 6, 8 8
+Select <a1, a1.stmt#> such that Uses(a1,"i") and Affects(a1, 13)
+none
+Select <a1.stmt#, a1> such that Uses(a1,"x") and Affects*(a1, 8)
+5 5, 7 7
+Select <n1, n2> such that Uses(n1, "x") and Affects*(n1, 20) and Modifies(n2,"c")
+17 11, 17 12, 17 14, 17 15, 17 19, 17 21
+Select <n1, v1> such that Uses(n1, v1) and Affects(n1, 20) and Next*(n1, 22) and Affects*(n1, 20)
+17 x, 17 y, 17 z
+Select <c1.value, v1> such that Uses(n1, v1) and Modifies(n1, "a") and Next(n1, 18) pattern a1(_,_"(3*5)"_) pattern w1("i", _) pattern i1("a", _, _)
+1 x, 1 y, 1 z, 2 x, 2 y, 2 z, 3 x,3 y, 3 z, 4 x, 4 y, 4 z, 5 x, 5 y, 5 z, 10 x, 10 y, 10 z
+Select <p1, p1.procName, p2, p2.procName> such that Calls(p1, p2) and Uses(p1, "j") and Modifies(p1, v1) with v1.varName="a"
+Q Q E E , E E Z Z
+Select <i1, w1> such that Uses(i1, v1) and Uses(w1, v2) and Parent*(i1, w2) and Parent*(w1, i2) pattern i1(_,_,_) pattern w1(_,_) pattern i2(_,_,_) pattern w2(_,_) with v1.varName="z" and v2.varName="i"
+6 3
+Select <a1, i1> pattern a1(_,_"(z+(3*5)*3)"_) such that Follows*(a1, i1) and Uses(i1, v1) with v1.varName="c"
+17 19
+Select <a1, i1> pattern a1(_,_"(3*5)"_) such that Follows*(a1, i1) and Uses(i1, v1) with v1.varName="c"
+17 19
+Select <a1, i1> pattern a1(_,"i+j+x") such that Uses(i1, v1) with v1.varName="z"
+13 6, 13 14, 13 19
+Select <v1.varName, c1.value> such that Modifies(a1, v1) and Uses(a2, v1) pattern a1("z", _) pattern a2(_,_"x"_)
+z 1, z 2, z 3, z 4, z 5, z 10
+Select <a1.stmt#, p1.procName, p2, v2.varName> such that Calls(p1, p2) and Parent*(i1, a1) and Parent(w1, a1) and Modifies(p1, v1) with v1.varName="f"
+10 Q E a, 10 Q E x, 10 Q E j, 10 Q E i, 10 Q E y, 10 Q E z, 10 Q E f, 10 Q E l, 10 Q E c
+Select <ca1.stmt#, ca1.procName> such that Calls(p1, p2) and Modifies(p1, "a")
+11 E, 12 Z, 15 F
+Select <w1, c1.value> pattern w1(v1,_,_) such that v1.varName="z"
+none
+Select <s1.stmt#, a1.stmt#> such that Modifies(s1, "a") and Modifies(a1, "a") with s1.stmt# = a1.stmt#
+1 1, 16 16, 17 17, 20 20
+Select <a1, a3> such that Affects(a1, a2) and Affects(a3, a4) and Modifies(a3, "a") and Modifies(a1, "i")
+10 1, 10 17
+Select <a1, a2, a3, a4, a5> such that Affects(a1, a2) and Affects(a2, a3) and Affects(a3, a4) and Affects (a4, a5)
+1 2 5 7 8, 10 10 10 10 10

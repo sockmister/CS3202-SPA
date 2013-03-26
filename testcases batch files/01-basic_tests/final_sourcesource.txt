@@ -1,0 +1,79 @@
+procedure testWhile {
+	while a {
+		b = a+abc*5-10+0;
+		while b {
+			c = d;
+			while b{
+				call testIf;
+				c = d+d-d+d-d*d;
+			}
+			abc = cba+abc*dbg+c+g-5;
+			g = b*9*m+(k-3)*n;
+		}
+		call testIf;
+	}
+}
+
+procedure testIf{
+	if i then{
+		if z then {
+			i = y+1*abc+dbg+c-5; 
+		}
+		else {
+			if z then {
+				call testBoth;
+				i = 2*((3+5)*b*(5-x))-b; 
+			}
+			else {
+				call testBoth;
+				i = i*1*b*i*1; 
+			} 
+		} 
+	}
+	else{
+		if z then{
+			y = i;
+		}
+		else {
+			i = y;
+		} 
+	}
+	x = y;
+}
+
+procedure testBoth{
+	while i {
+		if z then {
+			i = x+5+1+x+(m+y)+i+k; 
+		}
+		else {
+			if z then {
+				i = (y+1);
+				while abc {
+					y = z-y+z*2;
+					if y then {
+						z = y+z-5+(2); }
+					else {
+						x = z+5; }
+				}
+			}
+			else {
+				i = i*(1*9)-(5+5)*(b+9);
+				g = 1+2+3+4+5+6+7+8+9;
+			}	
+			while i {
+				x = y;
+			}
+		}			
+	}
+}
+
+procedure callTestIf{
+	call testIf;
+}
+
+procedure caller {
+	call testWhile;
+	call testBoth;
+	call callTestIf;
+}

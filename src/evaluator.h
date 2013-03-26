@@ -16,6 +16,7 @@
 #include "CFG.h"
 #include "TNode.h"
 #include "ASTBuilder.h"
+#include "Affects.h"
 
 using namespace std;
 typedef vector<string> QUERYBRANCH;
@@ -37,6 +38,7 @@ public:
 	Calls* calls;
 	ProcTable* procTable;
 	CFG* cfg;
+	Affects* affects;
 
 	Table table;
 	//ASTBuilder astBuilder;
@@ -55,6 +57,7 @@ public:
 	void insertCalls(Calls* _calls);
 	void insertProcTable(ProcTable* _procTable);
 	void insertCFG(CFG* _cfg);
+	void insertAffects(Affects* affects);
 
 	vector<string> evaluateQuery(queryTree* _queryTree);
 
@@ -77,6 +80,8 @@ private:
 	void evaluateCallsStarBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
 	void evaluateNextBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
 	void evaluateNextStarBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
+	void evaluateAffectsBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
+	void evaluateAffectsStarBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
 
 	//pattern
 	void evaluatePattern(queryTree* _queryTree);
@@ -95,6 +100,7 @@ private:
 	vector<vector<string>> convertSolution(vector<string> _solution);
 	string getProcName(string _typr, string _valueOrName);
 	vector<string> getResults(queryTree* _queryTree);
+	vector<string> getAllStmtLst();
 	////////cs3202////////
 
 

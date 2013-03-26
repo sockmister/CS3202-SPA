@@ -1,0 +1,152 @@
+<?xml-stylesheet type="text/xsl" href="analysis.xsl"?>
+<test_results>
+<info>
+<name>_TEST</name><parsing_time_taken>571.000000</parsing_time_taken>
+</info>
+<queries>
+<category name=" modifies(syn,syn)">
+<query>
+<id Test1="1" >1</id><querystr><![CDATA[procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4; Select n1 such that Modifies(p1, v1)]]></querystr>
+<stuans>2,4,6,7,11,13,14,16,17,18,21,23,24,26,1,3,5,19,25,9,10,12,15,20,22,8,27,28,29</stuans>
+<correct>1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29</correct>
+<time_taken>121.000000</time_taken>
+<passed/>
+</query>
+</category>
+<category name=" modifies(syn,ident)">
+<query>
+<id Test2="1" >2</id><querystr><![CDATA[procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4; Select n1 such that Modifies(p1, "i")]]></querystr>
+<stuans>2,4,6,7,11,13,14,16,17,18,21,23,24,26,1,3,5,19,25,9,10,12,15,20,22,8,27,28,29</stuans>
+<correct>1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29</correct>
+<time_taken>121.000000</time_taken>
+<passed/>
+</query>
+</category>
+<category name=" modifies(syn,int)">
+<query>
+<id Test3="1" >3</id><querystr><![CDATA[procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4; Select n1 such that Modifies(p2, 5)]]></querystr>
+<stuans></stuans>
+<correct></correct>
+<time_taken>87.000000</time_taken>
+<passed/>
+</query>
+</category>
+<category name=" modifies(syn,_)">
+<query>
+<id Test4="1" >4</id><querystr><![CDATA[procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4; Select n1 such that Modifies(p3, _)]]></querystr>
+<stuans>2,4,6,7,11,13,14,16,17,18,21,23,24,26,1,3,5,19,25,9,10,12,15,20,22,8,27,28,29</stuans>
+<correct>1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29</correct>
+<time_taken>133.000000</time_taken>
+<passed/>
+</query>
+</category>
+<category name=" modifies(ident,syn)">
+<query>
+<id Test5="1" >5</id><querystr><![CDATA[procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4; Select n1 such that Modifies("testIf", v2)]]></querystr>
+<stuans>2,4,6,7,11,13,14,16,17,18,21,23,24,26,1,3,5,19,25,9,10,12,15,20,22,8,27,28,29</stuans>
+<correct>1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29</correct>
+<time_taken>138.000000</time_taken>
+<passed/>
+</query>
+</category>
+<category name=" modifies(ident,ident)">
+<query>
+<id Test6="1" >6</id><querystr><![CDATA[procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4; Select n1 such that Modifies("testIf", "i")]]></querystr>
+<stuans>2,4,6,7,11,13,14,16,17,18,21,23,24,26,1,3,5,19,25,9,10,12,15,20,22,8,27,28,29</stuans>
+<correct>1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29</correct>
+<time_taken>233.000000</time_taken>
+<passed/>
+</query>
+</category>
+<category name=" modifies(ident,int)">
+<query>
+<id Test7="1" >7</id><querystr><![CDATA[procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4; Select n1 such that Modifies("i", 5)]]></querystr>
+<stuans></stuans>
+<correct></correct>
+<time_taken>92.000000</time_taken>
+<passed/>
+</query>
+</category>
+<category name=" modifies(ident,_)">
+<query>
+<id Test8="1" >8</id><querystr><![CDATA[procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4; Select n1 such that Modifies("callAll", _)]]></querystr>
+<stuans>2,4,6,7,11,13,14,16,17,18,21,23,24,26,1,3,5,19,25,9,10,12,15,20,22,8,27,28,29</stuans>
+<correct>1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29</correct>
+<time_taken>174.000000</time_taken>
+<passed/>
+</query>
+</category>
+<category name=" modifies(int,syn)">
+<query>
+<id Test9="1" >9</id><querystr><![CDATA[procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4; Select n1 such that Modifies(5, v1)]]></querystr>
+<stuans>2,4,6,7,11,13,14,16,17,18,21,23,24,26,1,3,5,19,25,9,10,12,15,20,22,8,27,28,29</stuans>
+<correct>1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29</correct>
+<time_taken>176.000000</time_taken>
+<passed/>
+</query>
+</category>
+<category name=" modifies(int,int)">
+<query>
+<id Test10="1" >10</id><querystr><![CDATA[procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4; Select n1 such that Modifies(5, 6)]]></querystr>
+<stuans></stuans>
+<correct></correct>
+<time_taken>111.000000</time_taken>
+<passed/>
+</query>
+</category>
+<category name=" modifies(int,ident)">
+<query>
+<id Test11="1" >11</id><querystr><![CDATA[procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4; Select n1 such that Modifies(5, "i")]]></querystr>
+<stuans></stuans>
+<correct></correct>
+<time_taken>107.000000</time_taken>
+<passed/>
+</query>
+</category>
+<category name=" modifies(int,_)">
+<query>
+<id Test12="1" >12</id><querystr><![CDATA[procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4; Select n1 such that Modifies(5, _)]]></querystr>
+<stuans>2,4,6,7,11,13,14,16,17,18,21,23,24,26,1,3,5,19,25,9,10,12,15,20,22,8,27,28,29</stuans>
+<correct>1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29</correct>
+<time_taken>162.000000</time_taken>
+<passed/>
+</query>
+</category>
+<category name=" modifies(_,syn)">
+<query>
+<id Test13="1" >13</id><querystr><![CDATA[procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4; Select n1 such that Modifies(_, v1)]]></querystr>
+<stuans></stuans>
+<correct></correct>
+<time_taken>123.000000</time_taken>
+<passed/>
+</query>
+</category>
+<category name=" modifies(_,_)">
+<query>
+<id Test14="1" >14</id><querystr><![CDATA[procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4; Select n1 such that Modifies(_, _)]]></querystr>
+<stuans></stuans>
+<correct></correct>
+<time_taken>121.000000</time_taken>
+<passed/>
+</query>
+</category>
+<category name=" modifies(_,ident)">
+<query>
+<id Test15="1" >15</id><querystr><![CDATA[procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4; Select n1 such that Modifies(_, "i")]]></querystr>
+<stuans></stuans>
+<correct></correct>
+<time_taken>118.000000</time_taken>
+<passed/>
+</query>
+</category>
+<category name=" modifies(_,int)">
+<query>
+<id Test16="1" >16</id><querystr><![CDATA[procedure p1,p2,p3,p4; while w1,w2,w3,w4; assign a,a1,a2,a3,a4; stmt s,s#,s1,s2,s3,s4; variable v1,v2,v3,v4; prog_line n1, n2, n3,n4; constant c1, c2, c3,c4; if i1, i2, i3, i4; call ca1,ca2,ca3,ca4; Select n1 such that Modifies(_, 5)]]></querystr>
+<stuans></stuans>
+<correct></correct>
+<time_taken>108.000000</time_taken>
+<passed/>
+</query>
+</category>
+</queries>
+</test_results>

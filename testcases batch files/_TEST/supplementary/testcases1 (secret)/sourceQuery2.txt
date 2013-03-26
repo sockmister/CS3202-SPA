@@ -1,0 +1,22 @@
+3
+cat: No While Loop  Testing
+1 - Parent
+while w1;
+Select w1 such that Parent(w1,2)
+none
+5000
+2 - Uses
+while w1;
+Select w1 such that Uses(1,"i")
+none
+5000
+3 - Modifies, Pattern
+constant c1; assign a1;
+Select c1 such that Modifies(2,"j") and Modifies(3,"varNoWhile") pattern a1(_,_"j"_)
+2
+5000
+4 -
+while w1;
+Select w1
+none
+5000
