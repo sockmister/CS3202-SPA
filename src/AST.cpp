@@ -272,6 +272,21 @@ bool AST::isContains(TNode tn1, TNode tn2) {
 }
 
 
+bool AST::isContainsStar(TNode tn1, TNode tn2) {
+	int parent = tn2.getParent();
+
+	do {
+		if (parent == tn1.getIndex())
+			return true;
+		else if (parent != -1)
+			parent = this->tree[parent].getParent();
+
+	} while (parent != this->rootNode || parent !=-1);
+
+	return false;
+}
+
+
 /************************************
 *       Methods for future use 
 ************************************/

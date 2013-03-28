@@ -150,6 +150,15 @@ public:
 	*/
 	bool isContains(TNode tn1, TNode tn2);
 
+	//! Check if tn2 is a child of tn1 or supergrandchild
+	/*!
+		\parm Tnode AST node
+		\parm Tnode AST node
+		\return TRUE if tn2 is a child of tn1 or supergrandchild of tn1
+	*/
+	bool isContainsStar(TNode tn1, TNode tn2);
+
+
 
 	/************************************
 	*       Methods for future use 
