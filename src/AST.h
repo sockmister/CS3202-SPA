@@ -142,6 +142,13 @@ public:
 	*/
 	bool isSibling(TNode tn1, TNode tn2);
 
+	//! Check if tn2 is a child of tn1
+	/*!
+		\parm Tnode AST node
+		\parm Tnode AST node
+		\return TRUE if tn2 is a child of tn1
+	*/
+	bool isContains(TNode tn1, TNode tn2);
 
 
 	/************************************

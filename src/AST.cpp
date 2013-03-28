@@ -258,6 +258,20 @@ bool AST::isSibling(TNode tn1, TNode tn2) {
 		return false;
 }
 
+
+bool AST::isContains(TNode tn1, TNode tn2) {
+	vector<int> children = tn1.getChildren();
+	int indexOftn2 = tn2.getIndex();
+
+	for (int i=0;i<children.size();i++) {
+		if ( children[i] == indexOftn2 )
+			return true;
+	}
+
+	return false;
+}
+
+
 /************************************
 *       Methods for future use 
 ************************************/
