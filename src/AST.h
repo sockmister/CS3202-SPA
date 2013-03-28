@@ -134,6 +134,15 @@ public:
 	*/
 	bool findMatchingPattern(STMT stmtNumber, int order, AST * patternAST);
 
+	//! Check if the two AST nodes are siblings
+	/*!
+		\parm Tnode AST node
+		\parm Tnode AST node
+		\return TRUE if tn1 and tn2 are siblings
+	*/
+	bool isSibling(TNode tn1, TNode tn2);
+
+
 
 	/************************************
 	*       Methods for future use 
