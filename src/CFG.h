@@ -8,6 +8,7 @@
 
 using namespace std;
 typedef int STMT;
+typedef int ORDER;
 typedef vector<STMT> STMTLST;
 
 class CFG
@@ -18,9 +19,10 @@ public:
 	//! Destructor
 	~CFG();
 	//! Constructor
-	CFG(vector<STMTLST>, vector<STMTLST>);
+	CFG(vector<std::pair<int,int>>*, STMT firstStmt, STMT lastStmt);
+	
+	//CFG(vector<STMTLST>, vector<STMTLST>);
 
-	//void buildCFG(STMT start, STMT end);
 
    //! If order = 0, return statements that directly precedes programLine ,  If order = 1, return statements that appears directly after programLine
    /*!
@@ -28,7 +30,7 @@ public:
 	 \parm STMT program line number
 	 \return otherwise empty STMTLST
    */
-	STMTLST nextStatement (int order, STMT programLine);
+	STMTLST nextStatement (ORDER order, STMT programLine);
 
    //! If order = 0, return statements that precedes programLine ,  If order = 1, return statements that appears after programLine
    /*!
@@ -36,7 +38,7 @@ public:
 	 \parm STMT program line number
 	 \return otherwise empty STMTLST
    */
-	STMTLST nextStatementStar (int order, STMT programLine);
+	STMTLST nextStatementStar (ORDER order, STMT programLine);
 
 
    //! Check if n2 appears directly after n1
@@ -55,25 +57,19 @@ public:
    */
 	bool isNextStar(STMT n1, STMT n2);
 
-	STMTLST affectsNext(STMT n3, STMT n4);
-
+	
 	// For testing
-	vector<STMTLST> getCFG();
-	vector<STMTLST> getBlock();
+	vector<std::pair<int,int>> * getCFG();
+
 private:
-	vector<STMTLST> Graph;
-	vector<STMTLST> Block;
 	vector<bool> visited;
-	bool skip, visitStartBlock, visitEndBlock;
-	int originalStartBlock;
-	STMTLST affectsNextDFS;
+	bool skip;
 
-	//AST* ast;
-	//Follows* follows;
-	//Parent* parent;
+	vector<std::pair<int,int>> * myCFG;
+	STMT firstStmt;
+	STMT lastStmt;
 
-	vector<bool> DFS(STMT programLine); // Depth first search
-	void affectsDFS(int,int); // modified depth first search for affects
-	STMT getBlock(STMT statementNumber);
-	STMTLST nextBlock(int order, STMT blockNumber);
+	vector<bool> DFS(int); // Depth first search
+	
 };
+

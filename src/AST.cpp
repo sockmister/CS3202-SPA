@@ -102,7 +102,7 @@ string AST::getNodeType(STMT stmtNumber) {
 		}
 	}
 	
-	return NULL;
+	return "";
 }
 
 int AST::getNoOfChild(TNode n) {
@@ -144,7 +144,7 @@ bool AST::isMatch(TNode n, NODE_TYPE nodeType) {
 		return false;
 }
 
-bool AST::findMatchingPattern(STMT stmtNumber, int order, AST * paternAST) {
+bool AST::findMatchingPattern(STMT stmtNumber, ORDER order, AST * paternAST) {
 	bool match = true, child = true, right = false;
 	vector<TNode> patternAST = paternAST->getASTVector();
 
@@ -245,7 +245,54 @@ bool AST::findMatchingPattern(STMT stmtNumber, int order, AST * paternAST) {
 		}
 		
 		return true;
+
+	
 	}
+
+	/*
+	if (order == 1) {
+		TNode patternRoot = patternAST[0];
+		
+		bool found = false;
+		while (found == false && (tree[start].getStmtNumber() == stmtNumber) ) {
+			TNode ASTNode = tree[start];
+			if (isSameNode(ASTNode, patternRoot) == true) {
+				found = true;
+				break;
+			}
+			start++;
+		}
+
+		if (found == false) 
+			return false;
+
+		for (int i=0;i<patternAST.size();i++) {
+			if (start<tree.size()) {
+				int patternNodeType = patternAST[i].getNodeType();
+				int ASTNodeType = tree[start].getNodeType();	
+			
+				if (patternNodeType != ASTNodeType) {
+					match = false;
+					break;
+				}
+				else if (patternNodeType == ASTNodeType) {
+					if ( patternNodeType == 5 || patternNodeType == 7) {
+						if (patternAST[i].getNodeValue() != tree[start].getNodeValue()) {
+							match = false;
+							break;
+						}
+					}
+				}
+				start++;
+			}
+		}
+
+		if (match == false)
+			return false;
+		else 
+			return true;
+	}
+	*/
 
 	return false;
 
@@ -371,7 +418,7 @@ bool AST::isMatchingRootNode(TNode n1, TNode n2, vector<TNode> patternAST) {
 					
 						return true;
 			}
-		}
+		} 
 		else if (n1.getChildren().size() == n2.getChildren().size())
 			return true;
 		else 
@@ -487,3 +534,5 @@ string AST::convertNodeTypeIntegerToString(int nodeType) {
 STMT AST::stmtOf(TNode n) {
 	return n.getStmtNumber();
 }
+
+

@@ -15,7 +15,7 @@ typedef string NODE_TYPE;
 typedef string LINK_TYPE;
 typedef int INDEX;
 typedef int STMT;
-
+typedef int ORDER;
 
 class AST {
 
@@ -128,11 +128,11 @@ public:
 	//! Check if the AST contains the pattern
 	/*!
 		\parm STMT statement number
-		\parm int 0 for exact match, 1 for partial match
+		\parm ORDER 0 for exact match, 1 for partial match
 		\parm vector<TNode> the partial AST of the pattern
 		\return TRUE if AST has a matching pattern
 	*/
-	bool findMatchingPattern(STMT stmtNumber, int order, AST * patternAST);
+	bool findMatchingPattern(STMT stmtNumber, ORDER order, AST * patternAST);
 
 	//! Check if the two AST nodes are siblings
 	/*!
@@ -157,8 +157,6 @@ public:
 		\return TRUE if tn2 is a child of tn1 or supergrandchild of tn1
 	*/
 	bool isContainsStar(TNode tn1, TNode tn2);
-
-
 
 	/************************************
 	*       Methods for future use 

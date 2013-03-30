@@ -13,7 +13,7 @@ using namespace std;
 
 typedef int STMT; //statement number
 typedef vector<STMT> STMTLST;
-typedef short ORDER;
+typedef int ORDER;
 
 class Follows{
  

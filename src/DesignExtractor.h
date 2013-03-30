@@ -19,7 +19,8 @@ public:
 		\param STMT start - The first statement number of the procedure
 		\param STMT end - The last statement number of the procedure
 	*/
-	void buildCFG(STMT, STMT);
+	//void buildCFG(STMT, STMT);
+	void buildCFG(TNode, vector<std::pair<int,int>>*);
 
 	//! Methods to compute design abstractions
 	//! Note that computeCalls() must be called before computeModifiesAndUses()
@@ -31,10 +32,6 @@ public:
 
 	//! Method to fill vector extra in ProcTable
 	void fillExtra(void);
-
-	// for testing
-	vector<STMTLST> getCFG();
-	vector<STMTLST> getBlock();
 
 private:
 	AST * ast;
@@ -52,6 +49,8 @@ private:
 	bool flag; //flag = true if computeCalls() has been executed already
 	vector<pair<pair<PROCNAME, PROCNAME>, STMT>> temp; //temp storage for call stmts
 
-	STMT getBlock(STMT statementNumber);
-	STMTLST nextBlock(ORDER order, STMT blockNumber);
+	int findFollows(int);
+	int findLoopback(int);
+	void setEndNode(vector<std::pair<int,int>> *);
+
 };
