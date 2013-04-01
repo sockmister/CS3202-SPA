@@ -239,11 +239,13 @@ PreProcessor::PreProcessor() {
 	tempRow.push_back("prog_line");
 	tempRow.push_back("assign");
 	tempRow.push_back("Integer");
+	tempRow.push_back("_");
 	tempRow.push_back(";");
 	tempRow.push_back("stmt");
 	tempRow.push_back("prog_line");
 	tempRow.push_back("assign");
 	tempRow.push_back("Integer");
+	tempRow.push_back("_");
 	tempRow.push_back(";");
 	allowedRelations.push_back(tempRow);
 	tempRow.clear();
@@ -254,11 +256,13 @@ PreProcessor::PreProcessor() {
 	tempRow.push_back("assign");
 	tempRow.push_back("prog_line");	
 	tempRow.push_back("Integer");
+	tempRow.push_back("_");
 	tempRow.push_back(";");
 	tempRow.push_back("stmt");
 	tempRow.push_back("assign");
 	tempRow.push_back("prog_line");	
 	tempRow.push_back("Integer");
+	tempRow.push_back("_");
 	tempRow.push_back(";");
 	allowedRelations.push_back(tempRow);
 	tempRow.clear();
