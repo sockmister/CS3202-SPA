@@ -19,7 +19,8 @@ TestWrapper::TestWrapper() {
 	AST * ast = new AST();
 	Uses * uses = new Uses(varTable);
 	Modifies * mod = new Modifies(varTable);
-	pkb = new PKB(ast, varTable, new Follows(), new Parent(), mod, uses, procTable, new Calls(procTable), new Affects(ast, mod, uses, varTable, procTable));
+	OptimisedCaller * optimisedCaller = new OptimisedCaller(ast, procTable);
+	pkb = new PKB(ast, varTable, new Follows(), new Parent(), mod, uses, procTable, new Calls(procTable), new Affects(ast, mod, uses, varTable, procTable), optimisedCaller);
 }
 
 // method for parsing the SIMPLE source
@@ -36,6 +37,8 @@ void TestWrapper::parse(std::string filename) {
 	designExtractor->computeModifiesAndUses();
 	designExtractor->computeCFG();
 	designExtractor->fillExtra();
+	designExtractor->computeOptimisedCaller();
+
 }
 
 // method to evaluating a query
