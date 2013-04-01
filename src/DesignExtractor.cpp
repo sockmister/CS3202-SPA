@@ -30,6 +30,7 @@ DesignExtractor::DesignExtractor(PKB* pkb):temp(){
 	modifies = pkb->getModifies();
 	uses = pkb->getUses();
 	calls = pkb->getCalls();
+	optimisedCaller = pkb->getOptimisedCaller();
 
 	flag = false;
 }
@@ -359,4 +360,8 @@ void DesignExtractor::fillExtra(){
 			p->push_back(proc);
 		}
 	}
+}
+
+void DesignExtractor::computeOptimisedCaller(){
+	optimisedCaller->generateOptimised();
 }

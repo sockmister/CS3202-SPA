@@ -39,6 +39,7 @@ public:
 	ProcTable* procTable;
 	CFG* cfg;
 	Affects* affects;
+	OptimisedCaller* optimisedCaller;
 
 	Table table;
 	//ASTBuilder astBuilder;
@@ -58,6 +59,7 @@ public:
 	void insertProcTable(ProcTable* _procTable);
 	void insertCFG(CFG* _cfg);
 	void insertAffects(Affects* affects);
+	void insertOptimisedCaller(OptimisedCaller* OptimisedCaller);
 
 	vector<string> evaluateQuery(queryTree* _queryTree);
 
@@ -68,7 +70,8 @@ private:
 	////////cs3202////////
 
 	//suchthat
-	void evaluateSuchThat(string _select, string _selectType, queryTree* _queryTree);
+	void evaluateSuchThat(string _select, string _selectType, vector<string> suchThatQuery);
+	//void evaluateSuchThat(string _select, string _selectType, queryTree* _queryTree);
 	void evaluateBranch(string _queryType, string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry, string _typeLeft, string _typeRight);
 	void evaluateFollowsBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
 	void evaluateFollowsStarBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
@@ -84,7 +87,8 @@ private:
 	void evaluateAffectsStarBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
 
 	//pattern
-	void evaluatePattern(queryTree* _queryTree);
+	void evaluatePattern(vector<string> patternTree);
+	//void evaluatePattern(queryTree* _queryTree);
 	void evaluatePatternBranch(string _patternStmt, string _typeStmt, string _typeLeft, string _valueLeft, string _typeRight, 
 		string _valueRight, vector<VALUE> _allStmtEntry, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
 	void evaluateIfPatternBranch(string _patternStmt, string _typeStmt, string _typeLeft, string _valueLeft, string _typeRight, 
@@ -93,14 +97,16 @@ private:
 		string _valueRight, vector<VALUE> _allStmtEntry, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
 
 	//with
-	void evaluateWith(string _select, string _selectType, queryTree* _queryTree);
+	//void evaluateWith(string _select, string _selectType, queryTree* _queryTree);
+	void evaluateWith(string _select, string _selectType, vector<string> withTree);
 
 	//helper
 	vector<string> getAllPossibleByType(string _selectType);
 	vector<vector<string>> convertSolution(vector<string> _solution);
 	string getProcName(string _typr, string _valueOrName);
 	vector<string> getResults(queryTree* _queryTree);
-	vector<string> getAllStmtLst();
+	//vector<string> getAllStmtLst();
+	vector<vector<string>> optimiseQuery(queryTree* _queryTree);
 	////////cs3202////////
 
 
