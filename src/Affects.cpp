@@ -142,6 +142,10 @@ bool Affects::isNotModifiedInAControlFlow(STMT a1, STMT a2, VARNAME v) {
 }
 
 bool Affects::isAffects(STMT a1, STMT a2) {
+	// Are a1 and a2 both assignment statements?
+	if(ast->getNodeType(a1) != "assignNode" || ast->getNodeType(a2) != "assignNode")
+		return false;
+
 	// a1 modifies value of a variable v?
 	INDEXLST variableIndex = modifies->getVariable(a1);		// Need check if > 1 variables are ever returned
 	if(variableIndex.empty())								// No variable to modify
@@ -188,6 +192,10 @@ bool Affects::isAffectsStarRecurse(STMT a1, STMT a2) {
 }
 
 bool Affects::isAffectsStar(STMT a1, STMT a2) {
+	// Are a1 and a2 both assignment statements?
+	if(ast->getNodeType(a1) != "assignNode" || ast->getNodeType(a2) != "assignNode")
+		return false;
+
 	// a1 and a2 in the same procedure?
 	PROCNAME procedure = getSameProcedure(a1, a2);
 	if(procedure == "-1")
