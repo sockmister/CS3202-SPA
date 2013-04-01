@@ -3,8 +3,6 @@
 #include "AbstractWrapper.h"
 using namespace std;
 
-
-
 evaluator::evaluator(void)
 {
 	
@@ -43,6 +41,9 @@ void evaluator::insertCFG(CFG* _cfg){
 void evaluator::insertAffects(Affects* _affects){
 	affects = _affects;
 }
+void evaluator::insertOptimisedCaller(OptimisedCaller* _optimisedCaller){
+	optimisedCaller = _optimisedCaller;
+}
 
 vector<string> evaluator::evaluateQuery(queryTree* _queryTree){
 	vector<string> select1=_queryTree->getSelect(0);
@@ -51,11 +52,16 @@ vector<string> evaluator::evaluateQuery(queryTree* _queryTree){
 	//string select2 = _queryTree->getSelect(1).at(0);
 	//string selectType2 =  _queryTree->getSelect(1).at(1);
 	vector<string> results;
-	queryHasTrue=false;
-	patternHasTrue=false;
-	withHasTrue=false;
+	//queryHasTrue=false;
+	//patternHasTrue=false;
+	//withHasTrue=false;
+	queryHasTrue=true;
+	patternHasTrue=true;
+	withHasTrue=true;
 	if(select!=""){
-		if(_queryTree->getWithQuerySize()>0){
+		
+
+		/*if(_queryTree->getWithQuerySize()>0){
 			evaluateWith(select, selectType, _queryTree);
 		}else{	withHasTrue=true;
 		}
@@ -67,6 +73,24 @@ vector<string> evaluator::evaluateQuery(queryTree* _queryTree){
 			evaluatePattern(_queryTree);
 		}else{	patternHasTrue=true;
 		}
+		*/
+
+		vector<vector<string>> optimisedQuery = optimiseQuery(_queryTree);
+		for(int i=0; i<optimisedQuery.size(); i++){
+			if(queryHasTrue && patternHasTrue && withHasTrue){
+				vector<string> singleQuery = optimisedQuery.at(i);
+				string queryType = singleQuery.at(singleQuery.size()-1);
+				if(queryType=="suchThat"){
+					evaluateSuchThat(select ,selectType,singleQuery);
+				}else if(queryType=="with"){
+					evaluateWith(select, selectType, singleQuery);
+				}if(queryType=="pattern"){
+					evaluatePattern(singleQuery);
+				}
+			}
+			else break;
+		}
+
 		if(select == "BOOLEAN"){
 			if(queryHasTrue && patternHasTrue && withHasTrue) results.push_back("true");
 			else results.push_back("false");
@@ -79,10 +103,11 @@ vector<string> evaluator::evaluateQuery(queryTree* _queryTree){
 	return results;
 }
 
-void evaluator::evaluateWith(string _select, string _selectType, queryTree* _queryTree){
-	for(int i=0; i<_queryTree->getWithQuerySize(); i++){
+void evaluator::evaluateWith(string _select, string _selectType, vector<string> withTree){
+//void evaluator::evaluateWith(string _select, string _selectType, queryTree* _queryTree){
+	//for(int i=0; i<_queryTree->getWithQuerySize(); i++){
 		withHasTrue = false;
-		WITHBRANCH withTree = _queryTree->getWithQuery(i);
+		//WITHBRANCH withTree = _queryTree->getWithQuery(i);
 		string value0 = withTree.at(0);
 		string value1 = withTree.at(1);
 		string value2 = withTree.at(2);
@@ -454,14 +479,15 @@ void evaluator::evaluateWith(string _select, string _selectType, queryTree* _que
 		}
 		
 		table.shrinkTable();
-		if(!withHasTrue) break;
-	}
+		//if(!withHasTrue) break;
+	//}
 }
 
-void evaluator::evaluatePattern( queryTree* _queryTree){
-	for(int i=0; i<_queryTree->getPatternQuerySize(); i++){
+void evaluator::evaluatePattern( vector<string> patternTree){
+//void evaluator::evaluatePattern( queryTree* _queryTree){
+	//for(int i=0; i<_queryTree->getPatternQuerySize(); i++){
 		patternHasTrue = false;
-		PATTERNBRANCH patternTree = _queryTree->getPatternQuery(i);
+		//PATTERNBRANCH patternTree = _queryTree->getPatternQuery(i);
 		string patternStmt = patternTree.at(0);
 		string patternTypeStmt = patternTree.at(1);
 		string patternValueLeft = patternTree.at(2);
@@ -503,8 +529,8 @@ void evaluator::evaluatePattern( queryTree* _queryTree){
 			evaluatePatternBranch(patternStmt,patternTypeStmt,patternTypeLeft,patternValueLeft,patternTypeRight,patternValueRight, allStmtEntry, allLeftEntry,allRightEntry);
 		}
 		table.shrinkTable();
-		if(!patternHasTrue) break;
-	}
+		//if(!patternHasTrue) break;
+	//}
 }
 
 void evaluator::evaluatePatternBranch(string _patternStmt, string _typeStmt, string _typeLeft, string _valueLeft, string _typeRight,
@@ -669,15 +695,16 @@ void evaluator::evaluateWhilePatternBranch(string _patternStmt, string _typeStmt
 	}
 }
 
-void evaluator::evaluateSuchThat(string _select, string _selectType, queryTree* _queryTree){
+void evaluator::evaluateSuchThat(string _select, string _selectType, vector<string> suchThatQuery){
+/*void evaluator::evaluateSuchThat(string _select, string _selectType, queryTree* _queryTree){
 	if (_queryTree->getSuchThatQuerySize() == 0){
 		//return convertSolution(getAllPossibleByType(_selectType));
 	}else{
-		for(int i=0; i<_queryTree->getSuchThatQuerySize(); i++){
+		for(int i=0; i<_queryTree->getSuchThatQuerySize(); i++){*/
 			queryHasTrue = false;
 			vector<VALUE> allLeftEntry;
 			vector<VALUE> allRightEntry;
-			QUERYBRANCH suchThatQuery = _queryTree->getSuchThatQuery(i);
+			//QUERYBRANCH suchThatQuery = _queryTree->getSuchThatQuery(i);
 			string typeLeft = suchThatQuery.at(2);
 			string typeRight = suchThatQuery.at(4);
 			string valueLeft = suchThatQuery.at(1);
@@ -737,9 +764,9 @@ void evaluator::evaluateSuchThat(string _select, string _selectType, queryTree* 
 			}
 			evaluateBranch(queryType,tableValueLeft, tableValueRight, allLeftEntry, allRightEntry,typeLeft, typeRight);
 			table.shrinkTable();
-			if(!queryHasTrue) break;
-		}
-	}
+			//if(!queryHasTrue) break;
+		//}
+	//}
 }
 
 void evaluator::evaluateBranch(string _queryType, string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry, string _typeLeft, string _typeRight){
@@ -1119,9 +1146,6 @@ void evaluator::evaluateAffectsBranch(string _valueLeft, string _valueRight, vec
 		string entryLeft = _allLeftEntry.at(i);
 		int intLeft = atoi( entryLeft.c_str() );
 		vector<VALUE> correctEntry; 
-		// get CFG
-		string procName = procTable->getProcedure(intLeft);
-		cfg =  procTable->getCFG(procName);	
 		//to cut
 		for(int j=0; j<_allRightEntry.size(); j++){
 			string entryRight = _allRightEntry.at(j); 
@@ -1142,13 +1166,10 @@ void evaluator::evaluateAffectsStarBranch(string _valueLeft, string _valueRight,
 		string entryLeft = _allLeftEntry.at(i);
 		int intLeft = atoi( entryLeft.c_str() );
 		vector<VALUE> correctEntry; 
-		// get CFG
-		string procName = procTable->getProcedure(intLeft);
-		cfg =  procTable->getCFG(procName);
 		for(int j=0; j<_allRightEntry.size(); j++){
 			string entryRight = _allRightEntry.at(j); 
 			int intRight = atoi( entryRight.c_str() );
-			if(cfg->isNextStar(intLeft, intRight)){
+			if(affects->isAffectsStar(intLeft, intRight)){
 				correctEntry.push_back(entryRight);
 				queryHasTrue = true;
 			}
@@ -1183,21 +1204,24 @@ vector<string> convertToStringResults(vector<int> _intResults, string _type){
 vector<string> evaluator::getAllPossibleByType(string _selectType){
 	string nodeType;	
 	if(_selectType == "stmt" || _selectType == "prog_line"){
-		vector<int> getAll = ast->getAllStmtNumByType("assignNode");
+		/*vector<int> getAll = ast->getAllStmtNumByType("assignNode");
 		vector<int> getAll1 = ast->getAllStmtNumByType("whileNode");
 		vector<int> getAll2 = ast->getAllStmtNumByType("ifNode");
 		vector<int> getAll3 = ast->getAllStmtNumByType("callNode");
 		getAll.insert(getAll.end(), getAll1.begin(), getAll1.end());
 		getAll.insert(getAll.end(), getAll2.begin(), getAll2.end());
 		getAll.insert(getAll.end(), getAll3.begin(), getAll3.end());
-		return convertToStringResults(getAll, _selectType);
+		return convertToStringResults(getAll, _selectType);*/
+		return optimisedCaller->getAllStmt();
 	}else if(_selectType == "assign"){
-		nodeType = "assignNode";
+		/*nodeType = "assignNode";
 		vector<int> getAll = ast->getAllStmtNumByType(nodeType);		 
-		return convertToStringResults(getAll, _selectType);
+		return convertToStringResults(getAll, _selectType);*/
+		return optimisedCaller->getAllAssignStmt();
 	}else if(_selectType == "while"){
-		vector<int> getAllWhile = ast->getAllStmtNumByType("whileNode");
-		return convertToStringResults(getAllWhile, _selectType);
+		/*vector<int> getAllWhile = ast->getAllStmtNumByType("whileNode");
+		return convertToStringResults(getAllWhile, _selectType);*/
+		return optimisedCaller->getAllWhileStmt();
 	}else if(_selectType == "variable"){
 		nodeType = "varNode";
 		vector<vector<string>> varResult;
@@ -1210,25 +1234,28 @@ vector<string> evaluator::getAllPossibleByType(string _selectType){
 		}
 		return varResult;*/
 	}else if(_selectType == "constant"){
-		vector<string> results = ast->getAllConstant();
-		return results; 
+		/*vector<string> results = ast->getAllConstant();
+		return results; */
 	//}else if(_selectType == "prog_line"){
 	//	vector<string> results;
 	//	return results; 
+		return optimisedCaller->getAllConstant();
 	}else if(_selectType == "procedure"){
 		vector<string> results;
 		results=procTable->getAllProcNames();
 		return results; 
 	}else if(_selectType == "if"){
-		nodeType = "ifNode";
+		/*nodeType = "ifNode";
 		vector<int> getAll = ast->getAllStmtNumByType(nodeType);		 
-		return convertToStringResults(getAll, _selectType);
+		return convertToStringResults(getAll, _selectType);*/
+		return optimisedCaller->getAllIfStmt();
 	}else if(_selectType == "call"){
-		nodeType = "callNode";
+		/*nodeType = "callNode";
 		vector<int> getAll = ast->getAllStmtNumByType(nodeType);		 
-		return convertToStringResults(getAll, _selectType);
+		return convertToStringResults(getAll, _selectType);*/
+		return optimisedCaller->getAllCallsStmt();
 	}else if(_selectType == "stmtLst"){		 
-		return getAllStmtLst();
+		return optimisedCaller->getAllStmtLst();
 	}
 }
 
@@ -1306,6 +1333,7 @@ vector<string> evaluator::getResults(queryTree* _queryTree){
 	}
 }
 
+/*
 vector<string> evaluator::getAllStmtLst(){
 	vector<string> returnAll;
 	vector<int> getAll;
@@ -1329,4 +1357,111 @@ vector<string> evaluator::getAllStmtLst(){
 		returnAll.push_back( std::to_string(static_cast<long long>( procTable->getFirstStmt(allProcName.at(i)))));
 	}
 	return returnAll;
+}*/
+
+vector<vector<string>>  evaluator::optimiseQuery(queryTree* _queryTree){
+	vector<vector<string>> tier1;
+	vector<vector<string>> tier2;
+	vector<vector<string>> tier3;
+	
+	//eval with tree
+	for(int i=0; i<_queryTree->getWithQuerySize(); i++){
+		WITHBRANCH withTree = _queryTree->getWithQuery(i);
+		string typeLeft = withTree.at(0);
+		string typeRight = withTree.at(4);
+		if( (typeLeft=="Integer" || typeLeft=="Ident") && (typeRight=="Integer" || typeRight=="Ident") ){
+			withTree.push_back("with");
+			tier1.push_back(withTree);
+		}else if( (typeLeft=="Integer" || typeLeft=="Ident") || (typeRight=="Integer" || typeRight=="Ident") ){
+			withTree.push_back("with");
+			tier2.push_back(withTree);
+		}else{
+			withTree.push_back("with");
+			tier3.push_back(withTree);
+		}
+	}
+	//eval suchthat tree
+	vector<vector<string>> tier1NextStar;
+	vector<vector<string>> tier2NextStar;
+	vector<vector<string>> tier3NextStar;
+	vector<vector<string>> tier1Affects;
+	vector<vector<string>> tier2Affects;
+	vector<vector<string>> tier3Affects;
+	vector<vector<string>> tier1AffectsStar;
+	vector<vector<string>> tier2AffectsStar;
+	vector<vector<string>> tier3AffectsStar;
+	for(int i=0; i<_queryTree->getSuchThatQuerySize(); i++){
+		QUERYBRANCH suchThatQuery = _queryTree->getSuchThatQuery(i);
+		string typeLeft = suchThatQuery.at(2);
+		string typeRight = suchThatQuery.at(4);
+		string queryType = suchThatQuery.at(0);
+		if( (typeLeft=="Integer" || typeLeft=="Ident") && (typeRight=="Integer" || typeRight=="Ident") ){
+			suchThatQuery.push_back("suchThat");
+			if(queryType=="Next*"){
+				tier1NextStar.push_back(suchThatQuery);
+			}else if(queryType=="Affects"){
+				tier1Affects.push_back(suchThatQuery);
+			}else if(queryType=="AFfects*"){
+				tier1AffectsStar.push_back(suchThatQuery);
+			}else{
+				tier1.push_back(suchThatQuery);
+			}
+		}else if( (typeLeft=="Integer" || typeLeft=="Ident") || (typeRight=="Integer" || typeRight=="Ident") ){
+			suchThatQuery.push_back("suchThat");
+			if(queryType=="Next*"){
+				tier2NextStar.push_back(suchThatQuery);
+			}else if(queryType=="Affects"){
+				tier2Affects.push_back(suchThatQuery);
+			}else if(queryType=="AFfects*"){
+				tier2AffectsStar.push_back(suchThatQuery);
+			}else{
+				tier2.push_back(suchThatQuery);
+			}
+		}else{
+			suchThatQuery.push_back("suchThat");
+			if(queryType=="Next*"){
+				tier3NextStar.push_back(suchThatQuery);
+			}else if(queryType=="Affects"){
+				tier3Affects.push_back(suchThatQuery);
+			}else if(queryType=="AFfects*"){
+				tier3AffectsStar.push_back(suchThatQuery);
+			}else{
+				tier3.push_back(suchThatQuery);
+			}
+		}
+	}
+	tier1.insert(tier1.end(), tier1NextStar.begin(), tier1NextStar.end());
+	tier1.insert(tier1.end(), tier1Affects.begin(), tier1Affects.end());
+	tier1.insert(tier1.end(), tier1AffectsStar.begin(), tier1AffectsStar.end());
+	tier2.insert(tier2.end(), tier2NextStar.begin(), tier2NextStar.end());
+	
+
+	//evaluate pattern 
+	for(int i=0; i<_queryTree->getPatternQuerySize(); i++){
+		PATTERNBRANCH patternTree = _queryTree->getPatternQuery(i);
+		string typeLeft = patternTree.at(3);
+		string typeRight = patternTree.at(4);
+		string patternValueRight = patternTree.at(5);
+		bool rightIsSingleExpression = (typeRight=="Var_name" || ((typeRight=="expr" || typeRight=="_expr") && patternValueRight.length()==1));
+		if( typeLeft=="Ident" && rightIsSingleExpression ){
+			patternTree.push_back("pattern");
+			tier1.push_back(patternTree);
+		}else if( typeLeft=="Ident" || rightIsSingleExpression ){
+			patternTree.push_back("pattern");
+			tier2.push_back(patternTree);
+		}else{
+			patternTree.push_back("pattern");
+			tier3.push_back(patternTree);
+		}
+	}
+	//combine all
+	tier2.insert(tier2.end(), tier2Affects.begin(), tier2Affects.end());
+	tier2.insert(tier2.end(), tier2AffectsStar.begin(), tier2AffectsStar.end());
+	tier3.insert(tier3.end(), tier3NextStar.begin(), tier3NextStar.end());
+	tier3.insert(tier3.end(), tier3Affects.begin(), tier3Affects.end());
+	tier3.insert(tier3.end(), tier3AffectsStar.begin(), tier3AffectsStar.end());
+
+	tier1.insert(tier1.end(), tier2.begin(), tier2.end());
+	tier1.insert(tier1.end(), tier3.begin(), tier3.end());
+	return tier1;
 }

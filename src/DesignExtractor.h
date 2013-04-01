@@ -33,6 +33,9 @@ public:
 	//! Method to fill vector extra in ProcTable
 	void fillExtra(void);
 
+	//! Method to run optimisedCaller
+	void computeOptimisedCaller(void);
+
 private:
 	AST * ast;
 	VarTable * varTable;
@@ -42,6 +45,7 @@ private:
 	Uses * uses;
 	Calls * calls;
 	ProcTable * procTable;
+	OptimisedCaller * optimisedCaller;
 
 	vector<STMTLST> Graph;
 	vector<STMTLST> Block;
