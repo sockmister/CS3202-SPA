@@ -24,6 +24,11 @@ SimpleParser::SimpleParser(ifstream * filestream, PKB * pkb){
 	tok_iter = tokens->begin();
 	legal = true;
 	currStmtNumber = 0;
+	whileLevel = 0;
+	rootWhileStmtNum = 0;
+	storeRootWhile = new rootWhile();
+	storeRootIf = new rootIf();
+	thenOrElse = 0;
 	ast = pkb->getAST();
 	modifies = pkb->getModifies();
 	follows = pkb->getFollows();
@@ -42,6 +47,11 @@ SimpleParser::SimpleParser(string inCode, PKB * pkb):
 	tok_iter(tokens->begin()),
 	legal(true),
 	currStmtNumber(0),
+	whileLevel(0),
+	rootWhileStmtNum(0),
+	storeRootWhile(new rootWhile),
+	storeRootIf(new rootIf),
+	thenOrElse(0),
 	ast(pkb->getAST()),
 	modifies(pkb->getModifies()),
 	follows(pkb->getFollows()),
@@ -55,9 +65,6 @@ SimpleParser::SimpleParser(string inCode, PKB * pkb):
 
 SimpleParser::~SimpleParser(){
 	delete tokens;
-	//delete follows;
-	//delete ast;
-	//delete varTable;
 }
 
 string SimpleParser::getCodeFromFile(ifstream * file){
@@ -207,29 +214,12 @@ INDEX SimpleParser::procedure(){
 	//here we link all the stmt nodes to stmtLst node as children.
 	ast->linkNode(ast->getNode(stmtLstNode), ast->getNode(firstChildStmtNode), "parent");
 	INDEX nextChildStmtNode = ast->getNode(firstChildStmtNode).getRightSibling();
-	//INDEX lastChildStmtNode;
-	/*
-	//If there is only one stmt in the procedure, first stmt is also the last stmt
-	if (nextChildStmtNode < 0)
+
+	while(nextChildStmtNode > 0)
 	{
-		procTable->insertLastStmt(proc, ast->getNode(firstChildStmtNode).getStmtNumber());
-		cout << "Inserting first stmt == last stmt == 1 for proc: " << proc << endl;
+		ast->linkNode(ast->getNode(stmtLstNode), ast->getNode(nextChildStmtNode), "parent");	
+		nextChildStmtNode = ast->getNode(nextChildStmtNode).getRightSibling();
 	}
-	else //more than one stmt exists for this procedure 
-	{*/
-		while(nextChildStmtNode > 0)
-		{
-			ast->linkNode(ast->getNode(stmtLstNode), ast->getNode(nextChildStmtNode), "parent");	
-			//lastChildStmtNode = nextChildStmtNode;
-			nextChildStmtNode = ast->getNode(nextChildStmtNode).getRightSibling();
-			/*
-			if (nextChildStmtNode < 0) //no more stmts to link to stmtLst node
-			{
-				procTable->insertLastStmt(proc, ast->getNode(lastChildStmtNode).getStmtNumber());
-				cout << "Inserting last stmt number: " << ast->getNode(lastChildStmtNode).getStmtNumber() << " into proc: " << proc <<endl;
-			}*/
-		}
-	//}
 
 	if (match("}") == false)
 		return -1;
@@ -272,8 +262,27 @@ INDEX SimpleParser::stmt(){
 	{
 		/****WHILE STATEMENT****/
 		consumeToken();
-
 		currStmtNumber++;
+
+		//set level of while node (value of 1 means root while node)
+		whileLevel++;
+		if (whileLevel == 1)
+			rootWhileStmtNum = currStmtNumber;
+
+		storeRootWhile->setWhileRoot(rootWhileStmtNum);
+		
+		//set rootIfThenElseList for this stmt
+		if (thenOrElse == 0)
+		{
+			vector<int> zero;
+			zero.push_back(0);
+			storeRootIf->setIfRoot(zero);
+		}
+		else
+		{
+			storeRootIf->setIfRoot(rootIfElseList);
+		}
+
 		INDEX whileNode = ast->createTNode("whileNode", currStmtNumber, ""); //create while node
 		int whileStmtNum = ast->getNode(whileNode).getStmtNumber();
 
@@ -370,6 +379,9 @@ INDEX SimpleParser::stmt(){
 		ast->linkNode(ast->getNode(whileNode), ast->getNode(controlVariableNode), "parent");
 		ast->linkNode(ast->getNode(whileNode), ast->getNode(stmtLstNode), "parent");		
 
+		//Decrement while level upon finishing to maintain value integrity
+		whileLevel--;
+
 		return whileNode;
 		/******************/
 	}
@@ -378,8 +390,30 @@ INDEX SimpleParser::stmt(){
 	{
 		/****(IF-THEN)-ELSE STATEMENT****/
 		consumeToken();
-
 		currStmtNumber++;
+
+		//Set root while for this stmt, if any
+		if (whileLevel != 0)
+			storeRootWhile->setWhileRoot(rootWhileStmtNum);
+		else
+			storeRootWhile->setWhileRoot(0);
+		
+		//set rootIfThenElseList for this stmt
+		if (thenOrElse == 0)
+		{
+			vector<int> zero;
+			zero.push_back(0);
+			storeRootIf->setIfRoot(zero);
+		}
+		else
+		{
+			storeRootIf->setIfRoot(rootIfElseList);
+		}
+
+		//Set If stmt number into ifList
+		rootIfElseList.push_back(currStmtNumber+1);
+		thenOrElse = 1; //in THEN or ELSE mode
+
 		INDEX ifNode = ast->createTNode("ifNode", currStmtNumber, ""); //Create IF node
 		int ifStmtNum = ast->getNode(ifNode).getStmtNumber();
 
@@ -470,6 +504,10 @@ INDEX SimpleParser::stmt(){
 		if (match("}") == false)
 			return -1;
 
+		//Remove last added if stmt number from list
+		if (!rootIfElseList.empty())
+			rootIfElseList.pop_back();
+
 		//Link up nodes
 		ast->linkNode(ast->getNode(ifNode), ast->getNode(controlVariableNode), "parent");
 		cout << "Linking \"IF\" node to \"THEN\" stmtLst" << endl;
@@ -483,6 +521,9 @@ INDEX SimpleParser::stmt(){
 			return -1;
 
 		//NOTE: There is no need to increment currStmtNumber because stmt numbering skips line of "else" by definition
+		
+		//Set If stmt number into ifList
+		rootIfElseList.push_back(currStmtNumber+1);
 
 		//we create a stmtLst node for "ELSE"
 		INDEX elseStmtLstNode = ast->createTNode("stmtLstNode", -1, ""); //there shouldn't be a stmtNumber for stmtLstNode (should change for future implementations)
@@ -498,8 +539,6 @@ INDEX SimpleParser::stmt(){
 
 		//at the same time we set Uses relationship for IF
 		currNodeUses = uses->getVariable(currNodeStmtNum);
-		//INDEX varIndex;
-		//VARNAME varName;
 
 		for(int i = 0; i < currNodeUses.size(); i++){
 			varIndex = currNodeUses.at(i);
@@ -557,6 +596,12 @@ INDEX SimpleParser::stmt(){
 		if (match("}") == false)
 			return -1;
 
+		//Remove last added if stmt number from list
+		if (!rootIfElseList.empty())
+			rootIfElseList.pop_back();
+
+		thenOrElse = 0;
+
 		//Link up nodes
 		cout << "Linking if node to \"ELSE\" stmtLst" << endl;
 		ast->linkNode(ast->getNode(ifNode), ast->getNode(elseStmtLstNode), "parent");	
@@ -570,6 +615,24 @@ INDEX SimpleParser::stmt(){
 		/****CALL STATEMENT****/
 		consumeToken();
 		currStmtNumber++;
+
+		//Set root while for this stmt, if any
+		if (whileLevel != 0)
+			storeRootWhile->setWhileRoot(rootWhileStmtNum);
+		else
+			storeRootWhile->setWhileRoot(0);
+
+		//set rootIfThenElseList for this stmt
+		if (thenOrElse == 0)
+		{
+			vector<int> zero;
+			zero.push_back(0);
+			storeRootIf->setIfRoot(zero);
+		}
+		else
+		{
+			storeRootIf->setIfRoot(rootIfElseList);
+		}
 
 		string callee = nextToken();
 
@@ -593,6 +656,24 @@ INDEX SimpleParser::stmt(){
 		VARNAME next = nextToken();
 		if (match(VAR_NAME) == false) 
 			return -1;
+
+		//Set root while for this stmt, if any
+		if (whileLevel != 0)
+			storeRootWhile->setWhileRoot(rootWhileStmtNum);
+		else
+			storeRootWhile->setWhileRoot(0);
+
+		//set rootIfThenElseList for this stmt
+		if (thenOrElse == 0)
+		{
+			vector<int> zero;
+			zero.push_back(0);
+			storeRootIf->setIfRoot(zero);
+		}
+		else
+		{
+			storeRootIf->setIfRoot(rootIfElseList);
+		}
 
 		//by now we have matched varname
 		INDEX leftNode = ast->createTNode("varNode", currStmtNumber, next);
@@ -847,4 +928,12 @@ void SimpleParser::initModifies(Modifies * modifies){
 AST * SimpleParser::getParserAST()
 {
 	return this->ast;
+}
+
+rootWhile * SimpleParser::getRootWhile(){
+	return this->storeRootWhile;
+}
+
+rootIf * SimpleParser::getRootIf(){
+	return this->storeRootIf;
 }

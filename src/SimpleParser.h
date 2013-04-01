@@ -11,6 +11,8 @@
 #include "Uses.h"
 #include "Modifies.h"
 #include "PKB.h"
+#include "rootWhile.h"
+#include "rootIf.h"
 
 using namespace boost;
 
@@ -25,6 +27,12 @@ private:
 	bool legal;
 	int currStmtNumber;
 	string proc;
+	int whileLevel;
+	int rootWhileStmtNum;
+	rootWhile * storeRootWhile;
+	rootIf * storeRootIf;
+	vector<int> rootIfElseList;
+	int thenOrElse; //outside of IF completely = 0, in THEN or in ELSE = 1.
 
 	//PKB Components
 	VarTable * varTable;
@@ -70,6 +78,8 @@ public:
 
 	int getTotalStmtNumber();
 	AST * getParserAST();
+	rootWhile * getRootWhile();
+	rootIf * getRootIf();
 	//void displayAST();
 
 	//PKB Methods
