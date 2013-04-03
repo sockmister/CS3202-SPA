@@ -29,8 +29,6 @@ private:
 	string proc;
 	int whileLevel;
 	int rootWhileStmtNum;
-	rootWhile * storeRootWhile;
-	rootIf * storeRootIf;
 	vector<int> rootIfElseList;
 	int thenOrElse; //outside of IF completely = 0, in THEN or in ELSE = 1.
 
@@ -43,6 +41,8 @@ private:
 	Modifies * modifies;
 	ProcTable * procTable;
 	Calls * calls;
+	rootWhile * storeRootWhile;
+	rootIf * storeRootIf;
 
 	//Methods for concrete syntax grammar
 	INDEX program();
@@ -78,8 +78,7 @@ public:
 
 	int getTotalStmtNumber();
 	AST * getParserAST();
-	rootWhile * getRootWhile();
-	rootIf * getRootIf();
+	
 	//void displayAST();
 
 	//PKB Methods

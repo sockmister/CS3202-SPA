@@ -26,8 +26,8 @@ SimpleParser::SimpleParser(ifstream * filestream, PKB * pkb){
 	currStmtNumber = 0;
 	whileLevel = 0;
 	rootWhileStmtNum = 0;
-	storeRootWhile = new rootWhile();
-	storeRootIf = new rootIf();
+	storeRootWhile = pkb->getRootWhile();
+	storeRootIf = pkb->getRootIf();
 	thenOrElse = 0;
 	ast = pkb->getAST();
 	modifies = pkb->getModifies();
@@ -49,8 +49,8 @@ SimpleParser::SimpleParser(string inCode, PKB * pkb):
 	currStmtNumber(0),
 	whileLevel(0),
 	rootWhileStmtNum(0),
-	storeRootWhile(new rootWhile),
-	storeRootIf(new rootIf),
+	storeRootWhile(pkb->getRootWhile()),
+	storeRootIf(pkb->getRootIf()),
 	thenOrElse(0),
 	ast(pkb->getAST()),
 	modifies(pkb->getModifies()),
@@ -928,12 +928,4 @@ void SimpleParser::initModifies(Modifies * modifies){
 AST * SimpleParser::getParserAST()
 {
 	return this->ast;
-}
-
-rootWhile * SimpleParser::getRootWhile(){
-	return this->storeRootWhile;
-}
-
-rootIf * SimpleParser::getRootIf(){
-	return this->storeRootIf;
 }
