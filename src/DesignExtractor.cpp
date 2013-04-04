@@ -1,8 +1,6 @@
 //Design Extractor traverses AST and compute all the remaining design abstractions: Uses, Modifies for procedure and call statement; Next; Affects
 #pragma once
-
 #include "DesignExtractor.h"
-
 #define PROGRAM 0
 #define PROCEDURE 1
 #define STMT_LST 2
@@ -15,10 +13,8 @@
 #define TIMES 9
 #define IF 10
 #define CALL 11
-
 //Default Constructor
 DesignExtractor::DesignExtractor(){}
-
 //Constructor
 DesignExtractor::DesignExtractor(PKB* pkb):temp(){
 		
@@ -33,22 +29,18 @@ DesignExtractor::DesignExtractor(PKB* pkb):temp(){
 	optimisedCaller = pkb->getOptimisedCaller();
 	storeRootWhile = pkb->getRootWhile();
 	storeRootIf = pkb->getRootIf();
-
 	flag = false;
 }
-
 void DesignExtractor::buildCFG(TNode currNode, vector<std::pair<int,int>> * graph){
 	int nodeType = currNode.getNodeType();
 	vector<int> children = currNode.getChildren();	//wtf does children return? stmt or index. becareful to use it properly
 	vector<std::pair<int,int>>::iterator it = graph->begin();
 	int currStmtNum = currNode.getStmtNumber();
-
 	switch(nodeType){
 		case PROCEDURE:
 		{
 			//go into statement list
 			buildCFG(ast->getChild(currNode, 0), graph);
-
 			//set end nodes
 			setEndNode(graph);
 			break;
@@ -68,7 +60,6 @@ void DesignExtractor::buildCFG(TNode currNode, vector<std::pair<int,int>> * grap
 			STMT followStmtNum = follows->getFollows(1,currStmtNum);
 			if(followStmtNum == -1) {
 				graph->at(currStmtNum).first = findLoopback(currStmtNum);
-
 				if(graph->at(currStmtNum).first == 0)
 					graph->at(currStmtNum).first = findFollows(currStmtNum);
 			}
@@ -83,19 +74,16 @@ void DesignExtractor::buildCFG(TNode currNode, vector<std::pair<int,int>> * grap
 			//connect to first stmt of my stmtLst
 			STMT firstStmtNum = ast->getChild(ast->getChild(currNode, 1), 0).getStmtNumber();
 			graph->at(currStmtNum).first = firstStmtNum;
-
 			//first we check if we can find follows, otherwise find a parent's follows.
 			STMT followStmtNum = follows->getFollows(1,currStmtNum);
 			if(followStmtNum == -1) {
 				graph->at(currStmtNum).second = findLoopback(currStmtNum);
-
 				if(graph->at(currStmtNum).second == 0)
 					graph->at(currStmtNum).second = findFollows(currStmtNum);
 			}
 			else{
 				graph->at(currStmtNum).second = followStmtNum;
 			}
-
 			// call buildCFG again on the stmtLst
 			buildCFG(ast->getChild(currNode, 1), graph);
 			break;
@@ -106,12 +94,10 @@ void DesignExtractor::buildCFG(TNode currNode, vector<std::pair<int,int>> * grap
 			TNode thenNode = ast->getChild(currNode, 1);
 			STMT thenStmtNum = ast->getChild(thenNode, 0).getStmtNumber();
 			graph->at(currStmtNum).first = thenStmtNum;
-
 			//connect to first stmt of else stmtLst
 			TNode elseNode = ast->getChild(currNode, 2);
 			STMT elseStmtNum = ast->getChild(elseNode, 0).getStmtNumber();
 			graph->at(currStmtNum).second = elseStmtNum;
-
 			//call buildCFG of then
 			buildCFG(thenNode, graph);
 			//call buildCFG of else
@@ -122,8 +108,6 @@ void DesignExtractor::buildCFG(TNode currNode, vector<std::pair<int,int>> * grap
 			break;
 	}
 }
-
-
 int DesignExtractor::findFollows(int currStmt){
 	//we try to find someone for this guy to point to
 	//by searching the parent, if not parent of parent, if not ...
@@ -138,10 +122,8 @@ int DesignExtractor::findFollows(int currStmt){
 			break;
 		}
 	} while (parentStmtNum != -1);
-
 	return followStmtNum;
 }
-
 int DesignExtractor::findLoopback(int currStmt){
 	
 	if(follows->getFollows(1,currStmt) == -1){
@@ -156,7 +138,6 @@ int DesignExtractor::findLoopback(int currStmt){
 			while(loopback == true){
 				if(parentStmtNum == -1)
 					loopback = false;
-
 				if(ast->getNodeType(parentStmtNum) == "whileNode" && loopback){
 					return parentStmtNum;
 					break;
@@ -169,17 +150,13 @@ int DesignExtractor::findLoopback(int currStmt){
 			}
 		}
 	}
-
 	return 0;
 }
-
 void DesignExtractor::setEndNode(vector<std::pair<int,int>> * graph){
 	for(int i = 1; i < graph->size(); ++i){
 		string nodeType = ast->getNodeType(i);
-
 		if(nodeType == "ifNode")
 			continue;
-
 		if(nodeType == "whileNode" && graph->at(i).second == 0){
 			graph->at(i).second = -1;
 		}
@@ -191,20 +168,17 @@ void DesignExtractor::setEndNode(vector<std::pair<int,int>> * graph){
 	}
 }
 	
-
 //Build CFG for each procedure
 void DesignExtractor::computeCFG(){
 /*
 	int numOfProc = procTable->getNoOfProc();
 	//CFG cfg = CFG(ast, follows, parent);
-
 	for(int i=0; i<numOfProc; i++){
 		//buildCFG(procTable->getFirstStmt(procTable->getProcName(i)), procTable->getLastStmt(procTable->getProcName(i)));
 		CFG * cfg = new CFG(Graph,Block);
 		procTable->insertCFG(procTable->getProcName(i), cfg);
 	}
 */
-
 	//starting with the program node, we look at each child of program node
 	INDEX root = ast->getRoot();
 	int numOfProc = ast->getNoOfChild(ast->getNode(root));
@@ -217,17 +191,14 @@ void DesignExtractor::computeCFG(){
 	for(int i = 0; i <= procTable->getLastStmt(*(procList.end()-1)); ++i){
 		graph->push_back(a_pair);
 	}
-
 	for(int i = 0; i < numOfProc; ++i){
 		TNode currProc = ast->getChild(ast->getNode(root), i);
 		buildCFG(currProc, graph);
-
 		
 		
 	}
 	//TODO create cfg and insert into proc table
 	int numOfProcs = procTable->getNoOfProc();
-
 	for(int i=0; i<numOfProcs; i++){		
 		CFG * cfg = new CFG(graph, procTable->getFirstStmt(procTable->getProcName(i)), procTable->getLastStmt(procTable->getProcName(i)), storeRootWhile, storeRootIf);
 		procTable->insertCFG(procTable->getProcName(i), cfg);
@@ -240,26 +211,20 @@ void DesignExtractor::computeCFG(){
 	
 	//system("PAUSE");
 }
-
 string DesignExtractor::computeCalls(){
-
 	string error = "";
 	if(flag == false){
-
 		temp = calls->getTemp();		
-
 		for(vector<pair<pair<PROCNAME, PROCNAME>, STMT>>::size_type i = 0; i<temp.size(); i++)
 		{
 			PROCINDEX caller = procTable->getProcIndex(temp[i].first.first);
 			PROCINDEX callee = procTable->getProcIndex(temp[i].first.second);
-
 			if(caller == -1)
 			{
 				error += "\rProcedure "+ temp[i].first.first+" does not exist. Setting \""+temp[i].first.first+" calls "+temp[i].first.second+"\" fails.\n";
 			}
 			else if(callee == -1)
 			{
-
 				error += "\rProcedure "+ temp[i].first.second+" does not exist. Setting \""+temp[i].first.first+" calls "+temp[i].first.second+"\" fails.\n";
 			}
 			else
@@ -267,36 +232,26 @@ string DesignExtractor::computeCalls(){
 				calls->setCalls(caller, callee);
 				
 			}
-
 		}
-
 		flag = true;
 	}
-
 	return error;
 }
-
 //compute Modifies and Uses for procedures and call statements
 void DesignExtractor::computeModifiesAndUses(){
-
 	if(flag == false){
 		computeCalls();
 	}
-
 	//Compute Modifies and Uses for procedures
 	int numOfProc = procTable->getNoOfProc();
 	PROCLIST procNames = procTable->getAllProcNames();
-
 	for(int i = 0; i<numOfProc; i++){
-
 		PROCINDXLIST myCalleesStar = calls->getCalleesStar(procNames[i]);
 		INDEXLIST modifiedByI = procTable->getModifies(procNames[i]);
 		INDEXLIST usedByI = procTable->getUses(procNames[i]);
-
 		for(int j = 0; j<myCalleesStar.size(); j++){
 				
 			INDEXLIST modifiedByJ = procTable->getModifies(procNames[myCalleesStar[j]]);
-
 			for(int k = 0; k<modifiedByJ.size(); k++)
 			{
 				INDEXLIST::iterator it = find(modifiedByI.begin(), modifiedByI.end(), modifiedByJ[k]);
@@ -304,9 +259,7 @@ void DesignExtractor::computeModifiesAndUses(){
 					procTable->insertModifies(procNames[i], varTable->getVarName(modifiedByJ[k]));
 				}
 			}
-
 			INDEXLIST usedByJ = procTable->getUses(procNames[myCalleesStar[j]]);
-
 			for(int k = 0; k<usedByJ.size(); k++)
 			{
 				INDEXLIST::iterator it = find(usedByI.begin(), usedByI.end(), usedByJ[k]);
@@ -316,7 +269,6 @@ void DesignExtractor::computeModifiesAndUses(){
 			}
 		}
 	}
-
 	//Compute Modifies and Uses for call statements and Update Modifies and Uses for their parent statements
 	for(vector<pair<pair<PROCNAME, PROCNAME>, STMT>>::size_type i = 0; i<temp.size(); i++){
 		
@@ -324,46 +276,35 @@ void DesignExtractor::computeModifiesAndUses(){
 		INDEXLIST varUsed = procTable->getUses(temp[i].first.second);
 		PROCINDEX callee = procTable->getProcIndex(temp[i].first.second);
 		STMTLST parentStmt = parent->getParentStar(temp[i].second);
-
 		for(int j=0; j<varModified.size(); j++){
 			modifies->setModifies(temp[i].second, varTable->getVarName(varModified[j]));
-
 			for(int k=0; k<parentStmt.size(); k++)
 			{
 				modifies->setModifies(parentStmt[k], varTable->getVarName(varModified[j]));
 			}
 		}
-
 		for(int j=0; j<varUsed.size(); j++){
 			uses->setUses(temp[i].second, varTable->getVarName(varUsed[j]));
-
 			for(int k=0; k<parentStmt.size(); k++)
 			{
 				uses->setUses(parentStmt[k], varTable->getVarName(varUsed[j]));
 			}
 		}
-
 	}
-
 }
-
 // fill vector extra in ProcTable
 void DesignExtractor::fillExtra(){
-
-	PROCLIST* p = procTable->getExtra();
-
-	p->push_back("Dummy"); //dummy first entry (no stmt number 0)
-
+	PROCINDEXLIST* p = procTable->getExtra();
+	p->push_back(-1); //dummy first entry (no stmt number 0)
 	for(int i = 0; i<procTable->getNoOfProc(); i++)
 	{
 		PROCNAME proc = procTable->getProcName(i);
 		for(int j = procTable->getFirstStmt(proc); j <= procTable->getLastStmt(proc); j++)
 		{
-			p->push_back(proc);
+			p->push_back(i);
 		}
 	}
 }
-
 void DesignExtractor::computeOptimisedCaller(){
 	optimisedCaller->generateOptimised();
 }
