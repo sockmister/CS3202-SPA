@@ -267,8 +267,118 @@ PreProcessor::PreProcessor() {
 	allowedRelations.push_back(tempRow);
 	tempRow.clear();
 
-	// Allowed pairings of Design Entities and attNames
+	tempRow.push_back("Contains");
+	tempRow.push_back("2");
+	tempRow.push_back("procedure");	
+	tempRow.push_back("stmtLst");	
+	tempRow.push_back("stmt");
+	tempRow.push_back("assign");
+	tempRow.push_back("call");
+	tempRow.push_back("while");
+	tempRow.push_back("if");	
+	tempRow.push_back("plus");	
+	tempRow.push_back("minus");
+	tempRow.push_back("times");	
+	tempRow.push_back("variable");	
+	tempRow.push_back("constant");	
+	tempRow.push_back("Integer");
+	tempRow.push_back("prog_line");
+	tempRow.push_back("Ident");
+	tempRow.push_back(";");
+	tempRow.push_back("procedure");	
+	tempRow.push_back("stmtLst");	
+	tempRow.push_back("stmt");
+	tempRow.push_back("assign");
+	tempRow.push_back("call");
+	tempRow.push_back("while");
+	tempRow.push_back("if");	
+	tempRow.push_back("plus");	
+	tempRow.push_back("minus");
+	tempRow.push_back("times");	
+	tempRow.push_back("variable");	
+	tempRow.push_back("constant");	
+	tempRow.push_back("Integer");
+	tempRow.push_back("prog_line");
+	tempRow.push_back("Ident");
+	tempRow.push_back(";");
+	allowedRelations.push_back(tempRow);
+	tempRow.clear();
 
+	tempRow.push_back("Contains*");
+	tempRow.push_back("2");
+	tempRow.push_back("procedure");	
+	tempRow.push_back("stmtLst");	
+	tempRow.push_back("stmt");
+	tempRow.push_back("assign");
+	tempRow.push_back("call");
+	tempRow.push_back("while");
+	tempRow.push_back("if");	
+	tempRow.push_back("plus");	
+	tempRow.push_back("minus");
+	tempRow.push_back("times");	
+	tempRow.push_back("variable");	
+	tempRow.push_back("constant");	
+	tempRow.push_back("Integer");
+	tempRow.push_back("prog_line");
+	tempRow.push_back("Ident");
+	tempRow.push_back(";");
+	tempRow.push_back("procedure");	
+	tempRow.push_back("stmtLst");	
+	tempRow.push_back("stmt");
+	tempRow.push_back("assign");
+	tempRow.push_back("call");
+	tempRow.push_back("while");
+	tempRow.push_back("if");	
+	tempRow.push_back("plus");	
+	tempRow.push_back("minus");
+	tempRow.push_back("times");	
+	tempRow.push_back("variable");	
+	tempRow.push_back("constant");	
+	tempRow.push_back("Integer");
+	tempRow.push_back("prog_line");
+	tempRow.push_back("Ident");
+	tempRow.push_back(";");
+	allowedRelations.push_back(tempRow);
+	tempRow.clear();
+
+	tempRow.push_back("Sibling");
+	tempRow.push_back("2");
+	tempRow.push_back("procedure");	
+	tempRow.push_back("stmtLst");	
+	tempRow.push_back("stmt");
+	tempRow.push_back("assign");
+	tempRow.push_back("call");
+	tempRow.push_back("while");
+	tempRow.push_back("if");	
+	tempRow.push_back("plus");	
+	tempRow.push_back("minus");
+	tempRow.push_back("times");	
+	tempRow.push_back("variable");	
+	tempRow.push_back("constant");	
+	tempRow.push_back("Integer");
+	tempRow.push_back("prog_line");
+	tempRow.push_back("Ident");
+	tempRow.push_back(";");
+	tempRow.push_back("procedure");	
+	tempRow.push_back("stmtLst");	
+	tempRow.push_back("stmt");
+	tempRow.push_back("assign");
+	tempRow.push_back("call");
+	tempRow.push_back("while");
+	tempRow.push_back("if");	
+	tempRow.push_back("plus");	
+	tempRow.push_back("minus");
+	tempRow.push_back("times");	
+	tempRow.push_back("variable");	
+	tempRow.push_back("constant");	
+	tempRow.push_back("Integer");
+	tempRow.push_back("prog_line");
+	tempRow.push_back("Ident");
+	tempRow.push_back(";");
+	allowedRelations.push_back(tempRow);
+	tempRow.clear();
+
+	// Allowed pairings of Design Entities and attNames
 	tempRow.push_back("procedure");
 	tempRow.push_back("procName");
 	allowedAttRefs.push_back(tempRow);
@@ -392,6 +502,13 @@ queryTree* PreProcessor::preProcess(string queryInOneLine) {
 	}
 	else {
 		// Must insert select and selectType == "" else Evaluator will break
+		if(qt->getSelectSize() == 1 && qt->getSelect(0)[1] == "BOOLEAN") {
+			delete qt;
+			qt = new queryTree();
+			qt->insertSelect("BOOLEAN", "BOOLEAN");
+			return qt;
+		}
+
 		delete qt;
 		qt = new queryTree();
 		qt->insertSelect("", "");
@@ -826,6 +943,13 @@ bool PreProcessor::isValidSynonymSyntax(string pendingSynonym) {
 		return false;
 }
 
+string PreProcessor::getSynonymTypeFromString(string pendingSynonym) {
+	int index = getSynonymIndex(pendingSynonym);
+	if(index == -1)
+		return "-1";
+	return getSynonymType(index);
+}
+
 // New method for CS3202
 // Method to validate a pattern and it's arguments in the query
 bool PreProcessor::isValidPattern(string pattern, string pattArg1, string pattArg2) {
@@ -849,8 +973,37 @@ bool PreProcessor::isValidPattern(string pattern, string pattArg1, string pattAr
 	}
 	// Validate pattArg2
 	string pattArg2Type;
-	if(pattArg2 != "_") {
-		if(patternType == "while") {
+
+	if(patternType == "while") {
+		if(pattArg2 == "_")
+			pattArg2Type = "_";
+		else if(getSynonymTypeFromString(pattArg2) == "stmtLst") {
+			pattArg2Type = "stmtLst";
+		}
+		else {
+			cout << "\tError: " << pattArg2 << " is not a valid 2nd argument for while pattern\n";
+			return false;
+		}
+	}
+
+	else if(patternType == "assign") {
+		if(pattArg2 == "_")
+			pattArg2Type = "_";
+		else {
+			pattArg2Type = getExprSpecType(pattArg2);
+			if(pattArg2Type == "-1") {
+				cout << "\tError: " << pattArg2 << " is not a valid 2nd argument for assign pattern\n";
+				return false;
+			}
+		}
+	}
+
+	/*if(pattArg2 != "_") {
+		if(patternType == "while" && getSynonymType(getSynonymIndex(pattArg2)) != "stmtLst") {
+			cout << "\tError: " << pattArg2 << " is not a valid 2nd argument for while pattern\n";
+			return false;
+		}
+		else if(patternType == "while" && getSynonymType(getSynonymIndex(pattArg2)) == "stmtLst") {
 			cout << "\tError: " << pattArg2 << " is not a valid 2nd argument for while pattern\n";
 			return false;
 		}
@@ -863,7 +1016,8 @@ bool PreProcessor::isValidPattern(string pattern, string pattArg1, string pattAr
 		}
 	}
 	else
-		pattArg2Type = "_";	
+		pattArg2Type = "_";	*/
+	
 	// Passed all conditions
 
 	// Correcting Format
@@ -915,16 +1069,22 @@ bool PreProcessor::isValidIfPattern(string pattern, string pattArg1, string patt
 	string pattArg2Type;
 	if(pattArg2 == "_")
 		pattArg2Type = "_";
+	else if(getSynonymTypeFromString(pattArg2) == "stmtLst") {
+		pattArg2Type = "stmtLst";
+	}
 	else {
-		cout << "\tError: " << pattArg2 << " in if pattern's arg2 is not '_'";
+		cout << "\tError: " << pattArg2 << " in if pattern's arg2 is not '_' or stmtLst";
 		return false;
 	}
 	// Validate pattArg3
 	string pattArg3Type;
 	if(pattArg3 == "_")
 		pattArg3Type = "_";
+	else if(getSynonymTypeFromString(pattArg2) == "stmtLst") {
+		pattArg3Type = "stmtLst";
+	}
 	else {
-		cout << "\tError: " << pattArg3 << " in if pattern's arg3 is not '_'";
+		cout << "\tError: " << pattArg3 << " in if pattern's arg3 is not '_' or stmtLst";
 		return false;
 	}
 	// Passed all conditions
@@ -1363,12 +1523,3 @@ bool PreProcessor::isValidRelation(std::string relation, std::string arg1, std::
 	cout << "\tError: " << relation << "(" << arg1 << ", " << arg2 << ") is not a valid relation\n";
 	return false;
 }
-
-
-
-
-	
-	//for(j=2; allowedRelations[i][j] != ";"; j++)
-	//	//validate if the type of the first argument corresponds with the allowed type in relation table
-	//	if(arg1Type == allowedRelations[i][j])
-	//		arg1Success = true;

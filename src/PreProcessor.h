@@ -20,6 +20,7 @@ public:
 
 private:
 	/* CS3202 METHODS */
+	string getSynonymTypeFromString(string pendingSynonym);
 	bool isValidTuple(string pendingTuple);
 	void parseQuery(string queryInOneLine);
 	token nextToken();
