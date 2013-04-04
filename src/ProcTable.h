@@ -14,6 +14,8 @@ using namespace std;
 */
 
 typedef int INDEX;
+typedef int PROCINDEX;
+typedef vector<PROCINDEX> PROCINDEXLIST;
 typedef vector<INDEX> INDEXLIST;
 typedef string PROCNAME;
 typedef vector<PROCNAME> PROCLIST;
@@ -77,7 +79,7 @@ class ProcTable{
   INDEX insertUses(PROCNAME procName, VARNAME varName);
 
   //! get the pointer to vector extra (used by Design Extractor)
-  PROCLIST* getExtra();
+  PROCINDEXLIST* getExtra();
 
   //! Get the procedure name of a given index
   /*!
@@ -95,13 +97,13 @@ class ProcTable{
   */
   INDEX getProcIndex(PROCNAME procName);
 
-  //! Get the name of the procedure the statement is in
-  /*!
-	return empty string if the statement does not exist
-	\param STMT statement number
-	\return name of the procedure that contains statement stmt
-  */
-  PROCNAME getProcedure(STMT stmt);
+ // //! Get the name of the procedure the statement is in
+ // /*!
+	//return empty string if the statement does not exist
+	//\param STMT statement number
+	//\return name of the procedure that contains statement stmt
+ // */
+ // PROCNAME getProcedure(STMT stmt);
 
   //! Get the statement number of the 1st statement in the procedure
   //! return -1 if procedure does not exist
@@ -111,9 +113,9 @@ class ProcTable{
   //! return -1 if procedure does not exist
   STMT getLastStmt(PROCNAME procName);
 
-  //! Get the pointer to the CFG for the procedure
-  //! return NULL if procedure does not exist
-  CFG* getCFG(PROCNAME procName);
+  //! Get the pointer to the CFG that contains stmt
+  //! return NULL if stmt does not exist
+  CFG* getCFG(STMT stmt);
 
   //! Get all the procedure names in the ProcTable
   PROCLIST getAllProcNames();
@@ -140,7 +142,7 @@ class ProcTable{
   CFGLIST CFGList;
   MODIFIES ModifiesList;			
   USES UsesList;
-  PROCLIST extra; // for retrieving name of the procedure that contains a statement
+  PROCINDEXLIST extra; // for retrieving index of the procedure that contains a statement
 
   VarTable* varTable;
   int noOfProc;						// number of procedures currently stored in this ProcTable

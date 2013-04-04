@@ -127,7 +127,7 @@
 
   // method used by Design Extractor to get a pointer to vector extra
 
-  PROCLIST* ProcTable::getExtra(){
+  PROCINDEXLIST* ProcTable::getExtra(){
 	
 	  return &extra;
   }
@@ -162,16 +162,16 @@
   }
 
 
-  // method to get the name of the procedure that contains statement stmt
-  // if the statement does not exist, return an empty string
-  PROCNAME ProcTable::getProcedure(STMT stmt){
+  //// method to get the name of the procedure that contains statement stmt
+  //// if the statement does not exist, return an empty string
+  //PROCNAME ProcTable::getProcedure(STMT stmt){
 	
-	  if(stmt>0 && stmt<extra.size()){
-		  return extra[stmt];
-	  }
+	 // if(stmt>0 && stmt<extra.size()){
+		//  return extra[stmt];
+	 // }
 
-	  return "";
-  }
+	 // return "";
+  //}
 
   // method to get the stmt number of the first stmt
   // if the procedure does not exist, return -1
@@ -200,17 +200,17 @@
 	 
   }
 
-  // method to get the CFG of a procedure
+  // method to get the CFG that contains the stmt
   // if the procedure does not exist, return NULL
-  CFG* ProcTable::getCFG(PROCNAME procName){
-	  
-	  int index = getProcIndex(procName);
-	  if(index == -1)
-	  {
-		  return NULL;
+  CFG* ProcTable::getCFG(STMT stmt){
+	
+	  if(stmt>0 && stmt<extra.size()){
+		  PROCINDEX procIndx = extra[stmt];
+		  if(procIndx>-1 && procIndx<noOfProc){
+			  return CFGList[procIndx];
+		  }
 	  }
-
-	  return CFGList[index];
+	  return NULL;
   }
 
   //method to return all the procedure names in the ProcTable
