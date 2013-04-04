@@ -31,6 +31,8 @@ DesignExtractor::DesignExtractor(PKB* pkb):temp(){
 	uses = pkb->getUses();
 	calls = pkb->getCalls();
 	optimisedCaller = pkb->getOptimisedCaller();
+	storeRootWhile = pkb->getRootWhile();
+	storeRootIf = pkb->getRootIf();
 
 	flag = false;
 }
@@ -206,7 +208,7 @@ void DesignExtractor::computeCFG(){
 	//starting with the program node, we look at each child of program node
 	INDEX root = ast->getRoot();
 	int numOfProc = ast->getNoOfChild(ast->getNode(root));
-	CFG * cfg = new CFG();
+	CFG * cfg = new CFG(storeRootWhile, storeRootIf);
 	vector<std::pair<int,int>> * graph = new vector<std::pair<int,int>>();
 	PROCLIST procList = procTable->getAllProcNames();
 	
@@ -227,7 +229,7 @@ void DesignExtractor::computeCFG(){
 	int numOfProcs = procTable->getNoOfProc();
 
 	for(int i=0; i<numOfProcs; i++){		
-		CFG * cfg = new CFG(graph, procTable->getFirstStmt(procTable->getProcName(i)), procTable->getLastStmt(procTable->getProcName(i)));
+		CFG * cfg = new CFG(graph, procTable->getFirstStmt(procTable->getProcName(i)), procTable->getLastStmt(procTable->getProcName(i)), storeRootWhile, storeRootIf);
 		procTable->insertCFG(procTable->getProcName(i), cfg);
 	}
 	

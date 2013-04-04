@@ -3,7 +3,7 @@
 PKB::PKB(){
 }
 
-PKB::PKB(AST * ast, VarTable * varTable, Follows * follows, Parent * parent, Modifies * modifies, Uses * uses, ProcTable * procTable, Calls * calls):
+PKB::PKB(AST * ast, VarTable * varTable, Follows * follows, Parent * parent, Modifies * modifies, Uses * uses, ProcTable * procTable, Calls * calls, Affects * affects, OptimisedCaller * optimisedCaller, rootWhile * storeRootWhile, rootIf * storeRootIf):
 	ast(ast),
 	varTable(varTable),
 	follows(follows),
@@ -12,8 +12,10 @@ PKB::PKB(AST * ast, VarTable * varTable, Follows * follows, Parent * parent, Mod
 	uses(uses),
 	procTable(procTable),
 	calls(calls),
-	storeRootWhile(new rootWhile()),
-	storeRootIf(new rootIf())
+	affects(affects),
+	optimisedCaller(optimisedCaller),
+	storeRootWhile(storeRootWhile),
+	storeRootIf(storeRootIf)
 {
 }
 
@@ -26,6 +28,11 @@ PKB::~PKB(){
 	delete uses;
 	delete calls;
 	delete procTable;
+	delete affects;
+	delete optimisedCaller;
+	delete storeRootWhile;
+	delete storeRootIf;
+
 }
 
 void PKB::setAST(AST * ast){
@@ -60,6 +67,14 @@ void PKB::setProcTable(ProcTable * procTable){
 	this->procTable = procTable;
 }
 
+void PKB::setAffects(Affects * affects){
+	this->affects = affects;
+}
+
+void PKB::setOptimisedCaller(OptimisedCaller * optimisedCaller){
+	this->optimisedCaller = optimisedCaller;
+}
+
 AST* PKB::getAST(){
 	return this->ast;
 }
@@ -90,6 +105,14 @@ Calls * PKB::getCalls(){
 
 ProcTable * PKB::getProcTable(){
 	return this->procTable;
+}
+
+Affects * PKB::getAffects(){
+	return this->affects;
+}
+
+OptimisedCaller * PKB::getOptimisedCaller(){
+	return this->optimisedCaller;
 }
 
 rootWhile * PKB::getRootWhile(){

@@ -2,18 +2,26 @@
 using namespace std;
 
 CFG::CFG(){
+
+}
+
+CFG::CFG(rootWhile * storeRootWhile,	rootIf * storeRootIf){
+	this->storeRootWhile = storeRootWhile;
+	this->storeRootIf = storeRootIf;
 }
 
 CFG::~CFG(){
 }
 
-CFG::CFG(vector<std::pair<int,int>>* CFG, STMT firstStmt, STMT lastStmt) {
+CFG::CFG(vector<std::pair<int,int>>* CFG, STMT firstStmt, STMT lastStmt, rootWhile * storeRootWhile,	rootIf * storeRootIf) {
 	this->myCFG = CFG;
 	
 	//myCFGit = CFG->begin() + firstStmt;
 
 	this->firstStmt = firstStmt;
 	this->lastStmt = lastStmt;
+	this->storeRootWhile = storeRootWhile;
+	this->storeRootIf = storeRootIf;
 
 	for (int i=0; i<CFG->size(); i++) 
 		visited.push_back(false);
@@ -134,7 +142,7 @@ bool CFG::isNext(STMT n1, STMT n2) {
 }
 
 bool CFG::isNextStar(STMT n1, STMT n2) {
-	if(this == NULL)
+	/*if(this == NULL)
 		return false;
 	
 	if (n1 < this->firstStmt || n1 > this->lastStmt || n2 < this->firstStmt || n2 > this->lastStmt) 
@@ -149,6 +157,29 @@ bool CFG::isNextStar(STMT n1, STMT n2) {
 		}
 	}
 	return false;
+	*/
+	if(n1<firstStmt || n1>lastStmt || n2<firstStmt || n2>lastStmt){
+		return false;
+	}
+	if(storeRootWhile->getWhileRootOfStmt(n1) == storeRootWhile->getWhileRootOfStmt(n2)
+		&& storeRootWhile->getWhileRootOfStmt(n1)!=0 ){
+		return true;
+	}
+	if(n1==n2){
+		return false;
+	}
+	if(storeRootIf->getIfRootOfStmt(n1).at(0)!=0 && storeRootIf->getIfRootOfStmt(n2).at(0)!=0){
+		int level;
+		if(storeRootIf->getIfRootOfStmt(n1).size()>storeRootIf->getIfRootOfStmt(n2).size()){
+			level = storeRootIf->getIfRootOfStmt(n2).size() -1;
+		}else{
+			level = storeRootIf->getIfRootOfStmt(n1).size() -1;
+		}
+		if(storeRootIf->getIfRootOfStmt(n1).at(level)!=storeRootIf->getIfRootOfStmt(n2).at(level)){
+			return false;
+		}
+	}
+	return (n2>n1);
 }
 
 

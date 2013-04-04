@@ -85,7 +85,9 @@ private:
 	void evaluateNextStarBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
 	void evaluateAffectsBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
 	void evaluateAffectsStarBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
-
+	void evaluateContainsBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
+	void evaluateContainsStarBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
+	
 	//pattern
 	void evaluatePattern(vector<string> patternTree);
 	//void evaluatePattern(queryTree* _queryTree);

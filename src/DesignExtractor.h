@@ -46,6 +46,8 @@ private:
 	Calls * calls;
 	ProcTable * procTable;
 	OptimisedCaller * optimisedCaller;
+	rootWhile * storeRootWhile;
+	rootIf * storeRootIf;
 
 	vector<STMTLST> Graph;
 	vector<STMTLST> Block;

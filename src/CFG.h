@@ -4,7 +4,8 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
-
+#include "rootWhile.h"
+#include "rootIf.h"
 
 using namespace std;
 typedef int STMT;
@@ -16,10 +17,12 @@ class CFG
 public:
 	//! Default constuctor
 	CFG();
+	//! Constructor
+	CFG(rootWhile * storeRootWhile, rootIf * storeRootIf);
 	//! Destructor
 	~CFG();
 	//! Constructor
-	CFG(vector<std::pair<int,int>>*, STMT firstStmt, STMT lastStmt);
+	CFG(vector<std::pair<int,int>>*, STMT firstStmt, STMT lastStmt, rootWhile * storeRootWhile,	rootIf * storeRootIf);
 	
 	//CFG(vector<STMTLST>, vector<STMTLST>);
 
@@ -71,5 +74,8 @@ private:
 
 	vector<bool> DFS(int); // Depth first search
 	
+	rootWhile * storeRootWhile;
+	rootIf * storeRootIf;
+
 };
 
