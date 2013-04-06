@@ -204,7 +204,7 @@ bool AST::findMatchingPattern(STMT stmtNumber, ORDER order, AST * paternAST) {
 			}
 		}
 		else if (isMatchingRootNode(startOfASTExpression,patternRoot, patternAST) ==  true) {
-			found == true;
+			found = true;
 		}
 
 		if (found == false) 
