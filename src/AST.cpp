@@ -414,9 +414,12 @@ bool AST::isMatchingRootNode(TNode n1, TNode n2, vector<TNode> patternAST) {
 				if (tree.at(n1.getChildren().at(0)).getNodeValue() == patternAST.at(n2.getChildren().at(0)).getNodeValue() 
 						&& tree.at(n1.getChildren().at(0)).getNodeType() == patternAST.at(n2.getChildren().at(0)).getNodeType()
 						&& tree.at(n1.getChildren().at(1)).getNodeValue() == patternAST.at(n2.getChildren().at(1)).getNodeValue()  
-						&& tree.at(n1.getChildren().at(1)).getNodeType() == patternAST.at(n2.getChildren().at(1)).getNodeType() )
+						&& tree.at(n1.getChildren().at(1)).getNodeType() == patternAST.at(n2.getChildren().at(1)).getNodeType() ) {
 					
 						return true;
+				}
+				else
+					return false;
 			}
 		} 
 		else if (n1.getChildren().size() == n2.getChildren().size())
