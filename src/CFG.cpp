@@ -158,25 +158,39 @@ bool CFG::isNextStar(STMT n1, STMT n2) {
 	}
 	return false;
 	*/
+	//if not in same procedure, return false
 	if(n1<firstStmt || n1>lastStmt || n2<firstStmt || n2>lastStmt){
 		return false;
 	}
+	//if both in same while loop, return true
 	if(storeRootWhile->getWhileRootOfStmt(n1) == storeRootWhile->getWhileRootOfStmt(n2)
 		&& storeRootWhile->getWhileRootOfStmt(n1)!=0 ){
 		return true;
 	}
+	//if both same number, return true
 	if(n1==n2){
 		return false;
 	}
+	//find their smallest if nested level
+	int level;
+	if(storeRootIf->getIfRootOfStmt(n1).size()>storeRootIf->getIfRootOfStmt(n2).size()){
+		level = storeRootIf->getIfRootOfStmt(n2).size() -1;
+	}else{
+		level = storeRootIf->getIfRootOfStmt(n1).size() -1;
+	}
+	
+	//if both are in if stmt
 	if(storeRootIf->getIfRootOfStmt(n1).at(0)!=0 && storeRootIf->getIfRootOfStmt(n2).at(0)!=0){
-		int level;
-		if(storeRootIf->getIfRootOfStmt(n1).size()>storeRootIf->getIfRootOfStmt(n2).size()){
-			level = storeRootIf->getIfRootOfStmt(n2).size() -1;
-		}else{
-			level = storeRootIf->getIfRootOfStmt(n1).size() -1;
-		}
-		if(storeRootIf->getIfRootOfStmt(n1).at(level)!=storeRootIf->getIfRootOfStmt(n2).at(level)){
-			return false;
+		//check are they in the same if
+		for(int i=0; i<=level; i++){
+			//if they are in different if 
+			if(storeRootIf->getOnlyIfRootOfStmt(n1).at(i)!=storeRootIf->getOnlyIfRootOfStmt(n2).at(i)){
+				return (n2>n1);
+			}
+			//if they are same if, but different else
+			if(storeRootIf->getIfRootOfStmt(n1).at(i)!=storeRootIf->getIfRootOfStmt(n2).at(i)){
+				return false;
+			}
 		}
 	}
 	return (n2>n1);
