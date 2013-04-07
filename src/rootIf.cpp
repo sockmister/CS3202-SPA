@@ -1,17 +1,27 @@
 #include "rootIf.h"
 
 rootIf::rootIf(){
-	this->rootVector = new vector< vector<int> >();
+	this->rootIfElseVector = new vector< vector<int> >();
+	this->rootOnlyIfVector = new vector< vector<int> >();
 }
 
 rootIf::~rootIf(){
-	delete this->rootVector;
+	delete this->rootIfElseVector;
+	delete this->rootOnlyIfVector;
 }
 
 void rootIf::setIfRoot(vector<int> ifList){
-	this->rootVector->push_back(ifList);
+	this->rootIfElseVector->push_back(ifList);
+}
+
+void rootIf::setOnlyIfRoot(vector<int> onlyIfList){
+	this->rootOnlyIfVector->push_back(onlyIfList);
 }
 
 vector<int> rootIf::getIfRootOfStmt(int stmtNumber){
-	return this->rootVector->at(stmtNumber-1);
+	return this->rootIfElseVector->at(stmtNumber-1);
+}
+
+vector<int> rootIf::getOnlyIfRootOfStmt(int stmtNumber){
+	return this->rootOnlyIfVector->at(stmtNumber-1);
 }
