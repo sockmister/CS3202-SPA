@@ -38,7 +38,7 @@ void TestWrapper::parse(std::string filename) {
 	designExtractor->computeCFG();
 	designExtractor->fillExtra();
 	designExtractor->computeOptimisedCaller();
-
+	designExtractor->initializeAffectsCache();
 }
 
 // method to evaluating a query

@@ -491,9 +491,9 @@ void evaluator::evaluatePattern( vector<string> patternTree){
 		string patternStmt = patternTree.at(0);
 		string patternTypeStmt = patternTree.at(1);
 		string patternValueLeft = patternTree.at(2);
-		string patternValueRight = patternTree.at(5);
+		string patternValueRight = patternTree.at(4);
 		string patternTypeLeft = patternTree.at(3);
-		string patternTypeRight = patternTree.at(4);
+		string patternTypeRight = patternTree.at(5);
 		vector<string>	allStmtEntry;
 		vector<string>	allLeftEntry;
 		vector<string>	allRightEntry;
@@ -519,10 +519,12 @@ void evaluator::evaluatePattern( vector<string> patternTree){
 			allRightEntry = getAllPossibleByType("variable"); 
 		}else if(patternTypeRight=="expr" || patternTypeRight=="_expr_"){
 			allRightEntry.push_back(patternValueRight);
+		}else if(patternTypeRight=="stmtLst"){
+			allRightEntry=getAllPossibleByType(patternValueRight);
 		}
 
 		if(patternTypeStmt=="if"){
-			evaluateIfPatternBranch(patternStmt,patternTypeStmt,patternTypeLeft,patternValueLeft,patternTypeRight,patternValueRight, allStmtEntry, allLeftEntry,allRightEntry);
+			evaluateIfPatternBranch(patternStmt,patternTypeStmt,patternTypeLeft,patternValueLeft,patternTypeRight,patternValueRight, patternTree.at(7), patternTree.at(6), allStmtEntry, allLeftEntry,allRightEntry);
 		}else if(patternTypeStmt=="while"){
 			evaluateWhilePatternBranch(patternStmt,patternTypeStmt,patternTypeLeft,patternValueLeft,patternTypeRight,patternValueRight, allStmtEntry, allLeftEntry,allRightEntry);
 		}else{
@@ -625,7 +627,7 @@ void evaluator::evaluatePatternBranch(string _patternStmt, string _typeStmt, str
 
 
 void evaluator::evaluateIfPatternBranch(string _patternStmt, string _typeStmt, string _typeLeft, string _valueLeft, string _typeRight,
-		string _valueRight, vector<VALUE> _allStmtEntry, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry){
+		string _valueRight, string _typeRight2, string _valueRight2, vector<VALUE> _allStmtEntry, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry){
 	vector<string> correctEntry;
 	for(int i=0; i<_allStmtEntry.size(); i++){
 		string entryStmt = _allStmtEntry.at(i);
@@ -661,17 +663,30 @@ void evaluator::evaluateWhilePatternBranch(string _patternStmt, string _typeStmt
 		TNode whileVarNode = ast->getChild(whileNode, 0);
 		string whileVarValue = whileVarNode.getNodeValue();
 		int allRightSize = _allRightEntry.size(); 
-		if(_typeLeft=="_" && _allLeftEntry.size()>0){
+		if(_typeLeft=="_" && _allLeftEntry.size()>0 && _typeRight=="_" && _allRightEntry.size()>0 ){
 			patternHasTrue=true;
 			break;
 		}
 		else{
 			for(int j=0; j<_allLeftEntry.size(); j++){
 				if(whileVarValue==_allLeftEntry.at(j)){
-					correctEntry.push_back(whileVarValue);
-					table.insert(_patternStmt, entryStmt, _valueLeft, correctEntry);
-					patternHasTrue = true;
-					break;
+					if(_typeRight=="_"){
+						correctEntry.push_back(whileVarValue);
+						table.insert(_patternStmt, entryStmt, _valueLeft, correctEntry);
+						patternHasTrue = true;
+						break;
+					}else{
+						bool matchRight = false;
+						for(int k=0; k<_allRightEntry.size(); k++){
+							if(atoi(_allRightEntry.at(k).c_str()) == (intStmt+1)){
+								//insert to table with triple method
+								patternHasTrue=true;
+								matchRight = true;
+								break;
+							}
+						}
+						if(matchRight) break;
+					}
 				}
 			}
 		}
@@ -1121,7 +1136,8 @@ void evaluator::evaluateNextBranch(string _valueLeft, string _valueRight, vector
 			int intLeft = atoi( entryLeft.c_str() );
 			// get CFG
 			//string procName = procTable->getProcedure(intLeft);
-			cfg =  procTable->getCFG(intLeft);	
+			cfg =  procTable->getCFG(intLeft);
+			if(cfg==NULL) continue;
 			if(cfg->isNext(intLeft, intLeft)){
 				correctEntry.push_back(entryLeft);
 				queryHasTrue = true;
@@ -1179,6 +1195,7 @@ void evaluator::evaluateNextStarBranch(string _valueLeft, string _valueRight, ve
 			// get CFG
 			//string procName = procTable->getProcedure(intLeft);
 			cfg =  procTable->getCFG(intLeft);
+			if(cfg==NULL) continue;
 			for(int j=0; j<_allRightEntry.size(); j++){
 				string entryRight = _allRightEntry.at(j); 
 				int intRight = atoi( entryRight.c_str() );
