@@ -26,11 +26,13 @@ DesignExtractor::DesignExtractor(PKB* pkb):temp(){
 	modifies = pkb->getModifies();
 	uses = pkb->getUses();
 	calls = pkb->getCalls();
+	affects = pkb->getAffects();
 	optimisedCaller = pkb->getOptimisedCaller();
 	storeRootWhile = pkb->getRootWhile();
 	storeRootIf = pkb->getRootIf();
 	flag = false;
 }
+
 void DesignExtractor::buildCFG(TNode currNode, vector<std::pair<int,int>> * graph){
 	int nodeType = currNode.getNodeType();
 	vector<int> children = currNode.getChildren();	//wtf does children return? stmt or index. becareful to use it properly
@@ -307,4 +309,8 @@ void DesignExtractor::fillExtra(){
 }
 void DesignExtractor::computeOptimisedCaller(){
 	optimisedCaller->generateOptimised();
+}
+
+void DesignExtractor::initializeAffectsCache() {
+	affects->initializeCache();
 }
