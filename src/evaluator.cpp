@@ -551,16 +551,11 @@ void evaluator::evaluatePatternBranch(string _patternStmt, string _typeStmt, str
 				vector<string> correctEntry;
 				string entryLeft = _allLeftEntry.at(j); 
 				if(modifies->isModifies(intStmt,entryLeft)){
-					if(_typeRight=="_" || _valueRight.length()==1){
-						for(int k=0; k<allRightSize; k++){
-							string entryRight = _allRightEntry.at(k);
-							if(uses->isUses(intStmt, entryRight) || _typeRight=="_"){
-								correctEntry.push_back(entryLeft);
-								table.insert(_patternStmt, entryStmt, _valueLeft, correctEntry);
-								patternHasTrue = true;
-								break;
-							}
-						}
+					if(_typeRight=="_"){
+						correctEntry.push_back(entryLeft);
+						table.insert(_patternStmt, entryStmt, _valueLeft, correctEntry);
+						patternHasTrue = true;
+						break;
 					}else if(_typeRight=="_expr_"){
 						AST * queryAst = new AST();
 						ASTBuilder * astBuilder = new ASTBuilder(queryAst, _valueRight);
@@ -596,39 +591,27 @@ void evaluator::evaluatePatternBranch(string _patternStmt, string _typeStmt, str
 			if(_typeRight=="_" && _typeLeft=="_" && allLeftSize>0 && allRightSize>0){
 				patternExist = true;
 			}else{
-				for(int j=0; j<allLeftSize; j++){
-					string entryLeft = _allLeftEntry.at(j); 
-						if(modifies->isModifies(intStmt,entryLeft)){
-							if(_typeRight=="_" || _valueRight.length()==1){
-								for(int k=0; k<allRightSize; k++){
-									string entryRight = _allRightEntry.at(k);
-									if(uses->isUses(intStmt, entryRight) || _typeRight=="_"){
-										patternExist = true;
-										break;
-									}
-								}
-							}else if(_typeRight=="_expr_"){
-								AST * queryAst = new AST();
-								ASTBuilder * astBuilder = new ASTBuilder(queryAst, _valueRight);
-								astBuilder->convertToAST();
-								if(ast->findMatchingPattern(intStmt, 1, queryAst)){
-									patternExist = true;
-									break;
-								}
-							}
-							else if(_typeRight=="expr"){
-								AST * queryAst = new AST();
-								ASTBuilder * astBuilder = new ASTBuilder(queryAst, _valueRight);
-								astBuilder->convertToAST();
-								if(ast->findMatchingPattern(intStmt, 0, queryAst)){
-									patternExist = true;
-									break;
-								}
-							}
-
+				if(_valueLeft=="_" || modifies->isModifies(intStmt, _valueLeft)){
+					if(_typeRight=="_"){
+						patternExist = true;
+					}else if(_typeRight=="_expr_"){
+						AST * queryAst = new AST();
+						ASTBuilder * astBuilder = new ASTBuilder(queryAst, _valueRight);
+						astBuilder->convertToAST();
+						if(uses->isUses(intStmt, _valueRight) || ast->findMatchingPattern(intStmt, 1, queryAst)){
+							patternExist = true;
 						}
-						if(patternExist){ break;}
+					}
+					else if(_typeRight=="expr"){
+						AST * queryAst = new AST();
+						ASTBuilder * astBuilder = new ASTBuilder(queryAst, _valueRight);
+						astBuilder->convertToAST();
+						if(uses->isUses(intStmt, _valueRight) || ast->findMatchingPattern(intStmt, 0, queryAst)){
+							patternExist = true;
+						}
+					}
 				}
+								
 			}
 			if(patternExist){
 				correctEntry.push_back(entryStmt);
@@ -636,7 +619,7 @@ void evaluator::evaluatePatternBranch(string _patternStmt, string _typeStmt, str
 				
 			}
 		}
-	table.insert(_patternStmt, correctEntry);
+		table.insert(_patternStmt, correctEntry);
 	}
 }
 
@@ -701,69 +684,69 @@ void evaluator::evaluateSuchThat(string _select, string _selectType, vector<stri
 		//return convertSolution(getAllPossibleByType(_selectType));
 	}else{
 		for(int i=0; i<_queryTree->getSuchThatQuerySize(); i++){*/
-			queryHasTrue = false;
-			vector<VALUE> allLeftEntry;
-			vector<VALUE> allRightEntry;
-			//QUERYBRANCH suchThatQuery = _queryTree->getSuchThatQuery(i);
-			string typeLeft = suchThatQuery.at(2);
-			string typeRight = suchThatQuery.at(4);
-			string valueLeft = suchThatQuery.at(1);
-			string valueRight = suchThatQuery.at(3);
-			string queryType = suchThatQuery.at(0);
-			string tableValueLeft;
-			string tableValueRight;
-			//checks left
-			if(typeLeft=="Integer" || typeLeft=="Ident"){
-				allLeftEntry.push_back(valueLeft);
-				tableValueLeft="_";
-			}else if(typeLeft=="_"){
-				if(queryType=="Follows" || queryType=="Follows*" || 
-					queryType=="Parent" || queryType=="Parent*" ||
-				    queryType=="Uses" || queryType=="Modifies*" ||
-					queryType=="Next" || queryType=="Next*" ||
-					queryType=="Affects" || queryType=="Affects*"){
-					allLeftEntry = getAllPossibleByType("stmt");
-				}else if(queryType=="Calls" || queryType=="Calls*"){
-					allLeftEntry = getAllPossibleByType("procedure");
-				}
-				tableValueLeft="_";
-			}//valueLeft is a declaration
-			else if(table.hasColumns(valueLeft)){
-				allLeftEntry = table.getColumn(valueLeft);
-				tableValueLeft=valueLeft;
-			}else{
-				allLeftEntry = getAllPossibleByType(typeLeft);
-				tableValueLeft=valueLeft;
+		queryHasTrue = false;
+		vector<VALUE> allLeftEntry;
+		vector<VALUE> allRightEntry;
+		//QUERYBRANCH suchThatQuery = _queryTree->getSuchThatQuery(i);
+		string typeLeft = suchThatQuery.at(2);
+		string typeRight = suchThatQuery.at(4);
+		string valueLeft = suchThatQuery.at(1);
+		string valueRight = suchThatQuery.at(3);
+		string queryType = suchThatQuery.at(0);
+		string tableValueLeft;
+		string tableValueRight;
+		//checks left
+		if(typeLeft=="Integer" || typeLeft=="Ident"){
+			allLeftEntry.push_back(valueLeft);
+			tableValueLeft="_";
+		}else if(typeLeft=="_"){
+			if(queryType=="Follows" || queryType=="Follows*" || 
+				queryType=="Parent" || queryType=="Parent*" ||
+				queryType=="Uses" || queryType=="Modifies*" ||
+				queryType=="Next" || queryType=="Next*" ||
+				queryType=="Affects" || queryType=="Affects*"){
+				allLeftEntry = getAllPossibleByType("stmt");
+			}else if(queryType=="Calls" || queryType=="Calls*"){
+				allLeftEntry = getAllPossibleByType("procedure");
 			}
-			//checks right
-			if(typeRight=="Integer"){
-				allRightEntry.push_back(valueRight);
-				tableValueRight="_";
-			}else if(typeRight=="Ident"){
-				allRightEntry.push_back(valueRight);
-				tableValueRight="_";
-			}else if(typeRight=="_"){
-				if(queryType=="Follows" || queryType=="Follows*" || 
-					queryType=="Parent" || queryType=="Parent*" ||
-					queryType=="Next" || queryType=="Next*" ||
-					queryType=="Affects" || queryType=="Affects*"){
-					allRightEntry = getAllPossibleByType("stmt");
-				}else if(queryType=="Uses" || queryType=="Modifies"){
-					allRightEntry = getAllPossibleByType("variable");
-				}else if(queryType=="Calls" || queryType=="Calls*"){
-					allRightEntry = getAllPossibleByType("procedure");
-				}
-				tableValueRight="_";
-			}//valueRight is a declaration
-			else if(table.hasColumns(valueRight)){
-				allRightEntry = table.getColumn(valueRight);
-				tableValueRight=valueRight;
-			}else{
-				allRightEntry = getAllPossibleByType(typeRight);
-				tableValueRight=valueRight;
+			tableValueLeft="_";
+		}//valueLeft is a declaration
+		else if(table.hasColumns(valueLeft)){
+			allLeftEntry = table.getColumn(valueLeft);
+			tableValueLeft=valueLeft;
+		}else{
+			allLeftEntry = getAllPossibleByType(typeLeft);
+			tableValueLeft=valueLeft;
+		}
+		//checks right
+		if(typeRight=="Integer"){
+			allRightEntry.push_back(valueRight);
+			tableValueRight="_";
+		}else if(typeRight=="Ident"){
+			allRightEntry.push_back(valueRight);
+			tableValueRight="_";
+		}else if(typeRight=="_"){
+			if(queryType=="Follows" || queryType=="Follows*" || 
+				queryType=="Parent" || queryType=="Parent*" ||
+				queryType=="Next" || queryType=="Next*" ||
+				queryType=="Affects" || queryType=="Affects*"){
+				allRightEntry = getAllPossibleByType("stmt");
+			}else if(queryType=="Uses" || queryType=="Modifies"){
+				allRightEntry = getAllPossibleByType("variable");
+			}else if(queryType=="Calls" || queryType=="Calls*"){
+				allRightEntry = getAllPossibleByType("procedure");
 			}
-			evaluateBranch(queryType,tableValueLeft, tableValueRight, allLeftEntry, allRightEntry,typeLeft, typeRight);
-			table.shrinkTable();
+			tableValueRight="_";
+		}//valueRight is a declaration
+		else if(table.hasColumns(valueRight)){
+			allRightEntry = table.getColumn(valueRight);
+			tableValueRight=valueRight;
+		}else{
+			allRightEntry = getAllPossibleByType(typeRight);
+			tableValueRight=valueRight;
+		}
+		evaluateBranch(queryType,tableValueLeft, tableValueRight, allLeftEntry, allRightEntry,typeLeft, typeRight);
+		table.shrinkTable();
 			//if(!queryHasTrue) break;
 		//}
 	//}
@@ -805,6 +788,12 @@ void evaluator::evaluateBranch(string _queryType, string _valueLeft, string _val
 	}
 	else if(_queryType=="Affects*"){
 		evaluateAffectsStarBranch(_valueLeft, _valueRight, _allLeftEntry, _allRightEntry);
+	}
+	else if(_queryType=="Contains"){
+		evaluateContainsBranch(_valueLeft, _valueRight, _typeLeft, _typeRight, _allLeftEntry, _allRightEntry);
+	}
+	else if(_queryType=="Contains*"){
+		evaluateContainsStarBranch(_valueLeft, _valueRight, _typeLeft, _typeRight, _allLeftEntry, _allRightEntry);
 	}
 }
 
@@ -1063,105 +1052,237 @@ void evaluator::evaluateModifiesBranch(string _valueLeft, string _valueRight, ve
 }
 
 void evaluator::evaluateCallsBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry){
-	for(int i=0; i<_allLeftEntry.size(); i++){
-		string entryLeft = _allLeftEntry.at(i);
-		vector<VALUE> correctEntry; 
-		for(int j=0; j<_allRightEntry.size(); j++){
-			string entryRight = _allRightEntry.at(j); 
-			if(calls->isCalls(entryLeft, entryRight)){
-				correctEntry.push_back(entryRight);
+	if(_valueLeft==_valueRight && _valueLeft!="_"){
+		for(int i=0; i<_allLeftEntry.size(); i++){
+			string entryLeft = _allLeftEntry.at(i);
+			vector<VALUE> correctEntry; 
+			if(calls->isCalls(entryLeft, entryLeft)){
+				correctEntry.push_back(entryLeft);
 				queryHasTrue = true;
 			}
-		}
-		if(correctEntry.size()>0){
-			table.insert(_valueLeft, entryLeft, _valueRight, correctEntry);
+			if(correctEntry.size()>0){
+				table.insert(_valueLeft, entryLeft, _valueRight, correctEntry);
+			}
+		}		
+	}else{	
+		for(int i=0; i<_allLeftEntry.size(); i++){
+			string entryLeft = _allLeftEntry.at(i);
+			vector<VALUE> correctEntry; 
+			for(int j=0; j<_allRightEntry.size(); j++){
+				string entryRight = _allRightEntry.at(j); 
+				if(calls->isCalls(entryLeft, entryRight)){
+					correctEntry.push_back(entryRight);
+					queryHasTrue = true;
+				}
+			}
+			if(correctEntry.size()>0){
+				table.insert(_valueLeft, entryLeft, _valueRight, correctEntry);
+			}
 		}
 	}
 }
 
 void evaluator::evaluateCallsStarBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry){
-	for(int i=0; i<_allLeftEntry.size(); i++){
-		string entryLeft = _allLeftEntry.at(i);
-		vector<VALUE> correctEntry; 
-		for(int j=0; j<_allRightEntry.size(); j++){
-			string entryRight = _allRightEntry.at(j); 
-			if(calls->isCallsStar(entryLeft, entryRight)){
-				correctEntry.push_back(entryRight);
+	if(_valueLeft==_valueRight && _valueLeft!="_"){
+		for(int i=0; i<_allLeftEntry.size(); i++){
+			string entryLeft = _allLeftEntry.at(i);
+			vector<VALUE> correctEntry; 
+			if(calls->isCallsStar(entryLeft, entryLeft)){
+				correctEntry.push_back(entryLeft);
 				queryHasTrue = true;
 			}
-		}
-		if(correctEntry.size()>0){
-			table.insert(_valueLeft, entryLeft, _valueRight, correctEntry);
+			if(correctEntry.size()>0){
+				table.insert(_valueLeft, entryLeft, _valueRight, correctEntry);
+			}
+		}		
+	}else{
+		for(int i=0; i<_allLeftEntry.size(); i++){
+			string entryLeft = _allLeftEntry.at(i);
+			vector<VALUE> correctEntry; 
+			for(int j=0; j<_allRightEntry.size(); j++){
+				string entryRight = _allRightEntry.at(j); 
+				if(calls->isCallsStar(entryLeft, entryRight)){
+					correctEntry.push_back(entryRight);
+					queryHasTrue = true;
+				}
+			}
+			if(correctEntry.size()>0){
+				table.insert(_valueLeft, entryLeft, _valueRight, correctEntry);
+			}
 		}
 	}
 }
 
 void evaluator::evaluateNextBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry){
-	for(int i=0; i<_allLeftEntry.size(); i++){
-		string entryLeft = _allLeftEntry.at(i);
-		int intLeft = atoi( entryLeft.c_str() );
-		vector<VALUE> correctEntry; 
-		// get CFG
-		string procName = procTable->getProcedure(intLeft);
-		cfg =  procTable->getCFG(procName);	
-		//to cut
-		for(int j=0; j<_allRightEntry.size(); j++){
-			string entryRight = _allRightEntry.at(j); 
-			int intRight = atoi( entryRight.c_str() );
-			if(cfg->isNext(intLeft, intRight)){
-				correctEntry.push_back(entryRight);
+	if(_valueLeft==_valueRight && _valueLeft!="_"){
+		for(int i=0; i<_allLeftEntry.size(); i++){
+			string entryLeft = _allLeftEntry.at(i);
+			vector<VALUE> correctEntry; 
+			int intLeft = atoi( entryLeft.c_str() );
+			// get CFG
+			//string procName = procTable->getProcedure(intLeft);
+			cfg =  procTable->getCFG(intLeft);	
+			if(cfg->isNext(intLeft, intLeft)){
+				correctEntry.push_back(entryLeft);
 				queryHasTrue = true;
 			}
-		}
-		if(correctEntry.size()>0){
-			table.insert(_valueLeft, entryLeft, _valueRight, correctEntry);
+			if(correctEntry.size()>0){
+				table.insert(_valueLeft, entryLeft, _valueRight, correctEntry);
+			}
+		}		
+	}else{
+		for(int i=0; i<_allLeftEntry.size(); i++){
+			string entryLeft = _allLeftEntry.at(i);
+			int intLeft = atoi( entryLeft.c_str() );
+			vector<VALUE> correctEntry; 
+			// get CFG
+			//string procName = procTable->getProcedure(intLeft);
+			cfg =  procTable->getCFG(intLeft);	
+			//to cut
+			for(int j=0; j<_allRightEntry.size(); j++){
+				string entryRight = _allRightEntry.at(j); 
+				int intRight = atoi( entryRight.c_str() );
+				if(cfg->isNext(intLeft, intRight)){
+					correctEntry.push_back(entryRight);
+					queryHasTrue = true;
+				}
+			}
+			if(correctEntry.size()>0){
+				table.insert(_valueLeft, entryLeft, _valueRight, correctEntry);
+			}
 		}
 	}
 }
 
 void evaluator::evaluateNextStarBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry){
-	for(int i=0; i<_allLeftEntry.size(); i++){
-		string entryLeft = _allLeftEntry.at(i);
-		int intLeft = atoi( entryLeft.c_str() );
-		vector<VALUE> correctEntry; 
-		// get CFG
-		string procName = procTable->getProcedure(intLeft);
-		cfg =  procTable->getCFG(procName);
-		for(int j=0; j<_allRightEntry.size(); j++){
-			string entryRight = _allRightEntry.at(j); 
-			int intRight = atoi( entryRight.c_str() );
-			if(cfg->isNextStar(intLeft, intRight)){
-				correctEntry.push_back(entryRight);
+	if(_valueLeft==_valueRight && _valueLeft!="_"){
+		for(int i=0; i<_allLeftEntry.size(); i++){
+			string entryLeft = _allLeftEntry.at(i);
+			vector<VALUE> correctEntry; 
+			int intLeft = atoi( entryLeft.c_str() );
+			// get CFG
+			//string procName = procTable->getProcedure(intLeft);
+			cfg =  procTable->getCFG(intLeft);
+			if(cfg->isNextStar(intLeft, intLeft)){
+				correctEntry.push_back(entryLeft);
 				queryHasTrue = true;
 			}
+			if(correctEntry.size()>0){
+				table.insert(_valueLeft, entryLeft, _valueRight, correctEntry);
+			}
 		}		
-		if(correctEntry.size()>0){
-			table.insert(_valueLeft, entryLeft, _valueRight, correctEntry);
+	}else{
+		for(int i=0; i<_allLeftEntry.size(); i++){
+			string entryLeft = _allLeftEntry.at(i);
+			int intLeft = atoi( entryLeft.c_str() );
+			vector<VALUE> correctEntry; 
+			// get CFG
+			//string procName = procTable->getProcedure(intLeft);
+			cfg =  procTable->getCFG(intLeft);
+			for(int j=0; j<_allRightEntry.size(); j++){
+				string entryRight = _allRightEntry.at(j); 
+				int intRight = atoi( entryRight.c_str() );
+				if(cfg->isNextStar(intLeft, intRight)){
+					correctEntry.push_back(entryRight);
+					queryHasTrue = true;
+				}
+			}		
+			if(correctEntry.size()>0){
+				table.insert(_valueLeft, entryLeft, _valueRight, correctEntry);
+			}
 		}
 	}
 }
 
 void evaluator::evaluateAffectsBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry){
-	for(int i=0; i<_allLeftEntry.size(); i++){
-		string entryLeft = _allLeftEntry.at(i);
-		int intLeft = atoi( entryLeft.c_str() );
-		vector<VALUE> correctEntry; 
-		//to cut
-		for(int j=0; j<_allRightEntry.size(); j++){
-			string entryRight = _allRightEntry.at(j); 
-			int intRight = atoi( entryRight.c_str() );
-			if(affects->isAffects(intLeft, intRight)){
-				correctEntry.push_back(entryRight);
+	if(_valueLeft==_valueRight && _valueLeft!="_"){
+		for(int i=0; i<_allLeftEntry.size(); i++){
+			string entryLeft = _allLeftEntry.at(i);
+			vector<VALUE> correctEntry; 
+			int intLeft = atoi( entryLeft.c_str() );
+			if(affects->isAffects(intLeft, intLeft)){
+				correctEntry.push_back(entryLeft);
 				queryHasTrue = true;
 			}
-		}
-		if(correctEntry.size()>0){
-			table.insert(_valueLeft, entryLeft, _valueRight, correctEntry);
+			if(correctEntry.size()>0){
+				table.insert(_valueLeft, entryLeft, _valueRight, correctEntry);
+			}
+		}		
+	}else{	
+		for(int i=0; i<_allLeftEntry.size(); i++){
+			string entryLeft = _allLeftEntry.at(i);
+			int intLeft = atoi( entryLeft.c_str() );
+			vector<VALUE> correctEntry; 
+			//to cut
+			for(int j=0; j<_allRightEntry.size(); j++){
+				string entryRight = _allRightEntry.at(j); 
+				int intRight = atoi( entryRight.c_str() );
+				if(affects->isAffects(intLeft, intRight)){
+					correctEntry.push_back(entryRight);
+					queryHasTrue = true;
+				}
+			}
+			if(correctEntry.size()>0){
+				table.insert(_valueLeft, entryLeft, _valueRight, correctEntry);
+			}
 		}
 	}
 }
 
 void evaluator::evaluateAffectsStarBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry){
+	if(_valueLeft==_valueRight && _valueLeft!="_"){
+		for(int i=0; i<_allLeftEntry.size(); i++){
+			string entryLeft = _allLeftEntry.at(i);
+			vector<VALUE> correctEntry; 
+			int intLeft = atoi( entryLeft.c_str() );
+			if(affects->isAffectsStar(intLeft, intLeft)){
+				correctEntry.push_back(entryLeft);
+				queryHasTrue = true;
+			}
+			if(correctEntry.size()>0){
+				table.insert(_valueLeft, entryLeft, _valueRight, correctEntry);
+			}
+		}		
+	}else{	
+		for(int i=0; i<_allLeftEntry.size(); i++){
+			string entryLeft = _allLeftEntry.at(i);
+			int intLeft = atoi( entryLeft.c_str() );
+			vector<VALUE> correctEntry; 
+			for(int j=0; j<_allRightEntry.size(); j++){
+				string entryRight = _allRightEntry.at(j); 
+				int intRight = atoi( entryRight.c_str() );
+				if(affects->isAffectsStar(intLeft, intRight)){
+					correctEntry.push_back(entryRight);
+					queryHasTrue = true;
+				}
+			}		
+			if(correctEntry.size()>0){
+				table.insert(_valueLeft, entryLeft, _valueRight, correctEntry);
+			}
+		}
+	}
+}
+
+void evaluator::evaluateContainsBranch(string _valueLeft, string _valueRight, string _typeLeft, string _typeRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry){
+	if(_typeLeft=="if" && _typeRight=="variable"){
+
+	}else if(_typeLeft==" " && _typeRight==" "){
+	}else if(_typeLeft==" " && _typeRight==" "){
+	}else if(_typeLeft==" " && _typeRight==" "){
+	}else if(_typeLeft==" " && _typeRight==" "){
+	}else if(_typeLeft==" " && _typeRight==" "){
+	}else if(_typeLeft==" " && _typeRight==" "){
+	}else if(_typeLeft==" " && _typeRight==" "){
+	}else if(_typeLeft==" " && _typeRight==" "){
+	}else if(_typeLeft==" " && _typeRight==" "){
+	}else if(_typeLeft==" " && _typeRight==" "){
+	}else if(_typeLeft==" " && _typeRight==" "){
+	}
+
+
+}
+
+void evaluator::evaluateContainsStarBranch(string _valueLeft, string _valueRight, string _typeLeft, string _typeRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry){
 	for(int i=0; i<_allLeftEntry.size(); i++){
 		string entryLeft = _allLeftEntry.at(i);
 		int intLeft = atoi( entryLeft.c_str() );
@@ -1204,55 +1325,24 @@ vector<string> convertToStringResults(vector<int> _intResults, string _type){
 vector<string> evaluator::getAllPossibleByType(string _selectType){
 	string nodeType;	
 	if(_selectType == "stmt" || _selectType == "prog_line"){
-		/*vector<int> getAll = ast->getAllStmtNumByType("assignNode");
-		vector<int> getAll1 = ast->getAllStmtNumByType("whileNode");
-		vector<int> getAll2 = ast->getAllStmtNumByType("ifNode");
-		vector<int> getAll3 = ast->getAllStmtNumByType("callNode");
-		getAll.insert(getAll.end(), getAll1.begin(), getAll1.end());
-		getAll.insert(getAll.end(), getAll2.begin(), getAll2.end());
-		getAll.insert(getAll.end(), getAll3.begin(), getAll3.end());
-		return convertToStringResults(getAll, _selectType);*/
 		return optimisedCaller->getAllStmt();
 	}else if(_selectType == "assign"){
-		/*nodeType = "assignNode";
-		vector<int> getAll = ast->getAllStmtNumByType(nodeType);		 
-		return convertToStringResults(getAll, _selectType);*/
 		return optimisedCaller->getAllAssignStmt();
 	}else if(_selectType == "while"){
-		/*vector<int> getAllWhile = ast->getAllStmtNumByType("whileNode");
-		return convertToStringResults(getAllWhile, _selectType);*/
 		return optimisedCaller->getAllWhileStmt();
 	}else if(_selectType == "variable"){
 		nodeType = "varNode";
 		vector<vector<string>> varResult;
 		return varTable->getAllVar();
-		/*for(int i=0; i<getAll.size(); i++){
-			vector<string> temp;
-			temp.push_back(getAll.at(i));
-			temp.push_back("variable");
-			varResult.push_back(temp);
-		}
-		return varResult;*/
 	}else if(_selectType == "constant"){
-		/*vector<string> results = ast->getAllConstant();
-		return results; */
-	//}else if(_selectType == "prog_line"){
-	//	vector<string> results;
-	//	return results; 
 		return optimisedCaller->getAllConstant();
 	}else if(_selectType == "procedure"){
 		vector<string> results;
 		results=procTable->getAllProcNames();
 		return results; 
 	}else if(_selectType == "if"){
-		/*nodeType = "ifNode";
-		vector<int> getAll = ast->getAllStmtNumByType(nodeType);		 
-		return convertToStringResults(getAll, _selectType);*/
 		return optimisedCaller->getAllIfStmt();
 	}else if(_selectType == "call"){
-		/*nodeType = "callNode";
-		vector<int> getAll = ast->getAllStmtNumByType(nodeType);		 
-		return convertToStringResults(getAll, _selectType);*/
 		return optimisedCaller->getAllCallsStmt();
 	}else if(_selectType == "stmtLst"){		 
 		return optimisedCaller->getAllStmtLst();
@@ -1332,32 +1422,6 @@ vector<string> evaluator::getResults(queryTree* _queryTree){
 		return table.getTuple(selectResults);
 	}
 }
-
-/*
-vector<string> evaluator::getAllStmtLst(){
-	vector<string> returnAll;
-	vector<int> getAll;
-	vector<int> getAll1 = ast->getAllStmtNumByType("whileNode");
-	vector<int> getAll2 = ast->getAllStmtNumByType("ifNode");
-	getAll.insert(getAll.end(), getAll1.begin(), getAll1.end());
-	getAll.insert(getAll.end(), getAll2.begin(), getAll2.end());
-	for(int i=0; i<getAll.size(); i++){
-		returnAll.push_back( std::to_string(static_cast<long long>( getAll.at(i)+1)));
-	}
-	vector<string> allProcName =procTable->getAllProcNames();
-	for(int i=0; i<getAll2.size(); i++){
-		TNode stmtNode= ast->getStmtNode(getAll2.at(i));
-		TNode childNode= ast->getChild(ast->getChild(stmtNode, 2), 0);
-		int value= childNode.getStmtNumber();
-
-		//int value = ast->getChild(ast->getStmtNode(getAll2.at(i)) ,2).getStmtNumber();
-		returnAll.push_back( std::to_string(static_cast<long long>(value)) );
-	}
-	for(int i=0; i< allProcName.size(); i++){
-		returnAll.push_back( std::to_string(static_cast<long long>( procTable->getFirstStmt(allProcName.at(i)))));
-	}
-	return returnAll;
-}*/
 
 vector<vector<string>>  evaluator::optimiseQuery(queryTree* _queryTree){
 	vector<vector<string>> tier1;
@@ -1442,7 +1506,7 @@ vector<vector<string>>  evaluator::optimiseQuery(queryTree* _queryTree){
 		string typeLeft = patternTree.at(3);
 		string typeRight = patternTree.at(4);
 		string patternValueRight = patternTree.at(5);
-		bool rightIsSingleExpression = (typeRight=="Var_name" || ((typeRight=="expr" || typeRight=="_expr") && patternValueRight.length()==1));
+		bool rightIsSingleExpression = (typeRight=="Var_name" || typeRight=="expr" || typeRight=="_expr_");
 		if( typeLeft=="Ident" && rightIsSingleExpression ){
 			patternTree.push_back("pattern");
 			tier1.push_back(patternTree);
