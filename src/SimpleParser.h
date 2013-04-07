@@ -44,7 +44,6 @@ private:
 	Calls * calls;
 	rootWhile * storeRootWhile;
 	rootIf * storeRootIf;
-	rootOnlyIf * storeRootOnlyIf;
 
 	//Methods for concrete syntax grammar
 	INDEX program();

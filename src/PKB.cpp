@@ -3,7 +3,7 @@
 PKB::PKB(){
 }
 
-PKB::PKB(AST * ast, VarTable * varTable, Follows * follows, Parent * parent, Modifies * modifies, Uses * uses, ProcTable * procTable, Calls * calls, Affects * affects, OptimisedCaller * optimisedCaller, rootWhile * storeRootWhile, rootIf * storeRootIf, rootOnlyIf * storeRootOnlyIf):
+PKB::PKB(AST * ast, VarTable * varTable, Follows * follows, Parent * parent, Modifies * modifies, Uses * uses, ProcTable * procTable, Calls * calls, Affects * affects, OptimisedCaller * optimisedCaller, rootWhile * storeRootWhile, rootIf * storeRootIf):
 	ast(ast),
 	varTable(varTable),
 	follows(follows),
@@ -15,8 +15,7 @@ PKB::PKB(AST * ast, VarTable * varTable, Follows * follows, Parent * parent, Mod
 	affects(affects),
 	optimisedCaller(optimisedCaller),
 	storeRootWhile(storeRootWhile),
-	storeRootIf(storeRootIf),
-	storeRootOnlyIf(storeRootOnlyIf)
+	storeRootIf(storeRootIf)
 {
 }
 
@@ -122,8 +121,4 @@ rootWhile * PKB::getRootWhile(){
 
 rootIf * PKB::getRootIf(){
 	return this->storeRootIf;
-}
-
-rootOnlyIf * PKB::getRootOnlyIf(){
-	return this->storeRootOnlyIf;
 }

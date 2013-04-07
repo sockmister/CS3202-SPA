@@ -14,7 +14,6 @@
 #include "OptimisedCaller.h"
 #include "rootWhile.h"
 #include "rootIf.h"
-#include "rootOnlyIf.h"
 
 
 class PKB{
@@ -50,7 +49,6 @@ public:
 	OptimisedCaller * getOptimisedCaller();
 	rootWhile * getRootWhile();
 	rootIf * getRootIf();
-	rootOnlyIf * getRootOnlyIf();
 
 private:
 	AST * ast;
@@ -65,7 +63,6 @@ private:
 	OptimisedCaller * optimisedCaller;
 	rootWhile * storeRootWhile;
 	rootIf * storeRootIf;
-	rootOnlyIf * storeRootOnlyIf;
 };
 
 //#endif

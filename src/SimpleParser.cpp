@@ -28,7 +28,6 @@ SimpleParser::SimpleParser(ifstream * filestream, PKB * pkb){
 	rootWhileStmtNum = 0;
 	storeRootWhile = pkb->getRootWhile();
 	storeRootIf = pkb->getRootIf();
-	storeRootOnlyIf = pkb->getRootOnlyIf();
 	thenOrElse = 0;
 	ast = pkb->getAST();
 	modifies = pkb->getModifies();
@@ -52,7 +51,6 @@ SimpleParser::SimpleParser(string inCode, PKB * pkb):
 	rootWhileStmtNum(0),
 	storeRootWhile(pkb->getRootWhile()),
 	storeRootIf(pkb->getRootIf()),
-	storeRootOnlyIf(pkb->getRootOnlyIf()),
 	thenOrElse(0),
 	ast(pkb->getAST()),
 	modifies(pkb->getModifies()),
@@ -279,12 +277,12 @@ INDEX SimpleParser::stmt(){
 			vector<int> zero;
 			zero.push_back(0);
 			storeRootIf->setIfRoot(zero);
-			storeRootOnlyIf->setOnlyIfRoot(zero);
+			storeRootIf->setOnlyIfRoot(zero);
 		}
 		else
 		{
 			storeRootIf->setIfRoot(rootIfElseList);
-			storeRootOnlyIf->setOnlyIfRoot(rootOnlyIfList);
+			storeRootIf->setOnlyIfRoot(rootOnlyIfList);
 		}
 
 		INDEX whileNode = ast->createTNode("whileNode", currStmtNumber, ""); //create while node
@@ -408,12 +406,12 @@ INDEX SimpleParser::stmt(){
 			vector<int> zero;
 			zero.push_back(0);
 			storeRootIf->setIfRoot(zero);
-			storeRootOnlyIf->setOnlyIfRoot(zero);
+			storeRootIf->setOnlyIfRoot(zero);
 		}
 		else
 		{
 			storeRootIf->setIfRoot(rootIfElseList);
-			storeRootOnlyIf->setOnlyIfRoot(rootOnlyIfList);
+			storeRootIf->setOnlyIfRoot(rootOnlyIfList);
 		}
 
 		//Set If stmt number into ifList
@@ -637,12 +635,12 @@ INDEX SimpleParser::stmt(){
 			vector<int> zero;
 			zero.push_back(0);
 			storeRootIf->setIfRoot(zero);
-			storeRootOnlyIf->setOnlyIfRoot(zero);
+			storeRootIf->setOnlyIfRoot(zero);
 		}
 		else
 		{
 			storeRootIf->setIfRoot(rootIfElseList);
-			storeRootOnlyIf->setOnlyIfRoot(rootOnlyIfList);
+			storeRootIf->setOnlyIfRoot(rootOnlyIfList);
 		}
 
 		string callee = nextToken();
@@ -680,12 +678,12 @@ INDEX SimpleParser::stmt(){
 			vector<int> zero;
 			zero.push_back(0);
 			storeRootIf->setIfRoot(zero);
-			storeRootOnlyIf->setOnlyIfRoot(zero);
+			storeRootIf->setOnlyIfRoot(zero);
 		}
 		else
 		{
 			storeRootIf->setIfRoot(rootIfElseList);
-			storeRootOnlyIf->setOnlyIfRoot(rootOnlyIfList);
+			storeRootIf->setOnlyIfRoot(rootOnlyIfList);
 		}
 
 		//by now we have matched varname
