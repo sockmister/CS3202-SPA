@@ -412,7 +412,7 @@ INDEX SimpleParser::stmt(){
 
 		//Set If stmt number into ifList
 		rootIfElseList.push_back(currStmtNumber+1);
-		thenOrElse = 1; //in THEN or ELSE mode
+		++thenOrElse; //in THEN or ELSE mode
 
 		INDEX ifNode = ast->createTNode("ifNode", currStmtNumber, ""); //Create IF node
 		int ifStmtNum = ast->getNode(ifNode).getStmtNumber();
@@ -600,7 +600,7 @@ INDEX SimpleParser::stmt(){
 		if (!rootIfElseList.empty())
 			rootIfElseList.pop_back();
 
-		thenOrElse = 0;
+		--thenOrElse;
 
 		//Link up nodes
 		cout << "Linking if node to \"ELSE\" stmtLst" << endl;

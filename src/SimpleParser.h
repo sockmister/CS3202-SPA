@@ -30,7 +30,7 @@ private:
 	int whileLevel;
 	int rootWhileStmtNum;
 	vector<int> rootIfElseList;
-	int thenOrElse; //outside of IF completely = 0, in THEN or in ELSE = 1.
+	int thenOrElse; //outside of IF completely = 0, in THEN or in ELSE currently then > 0. 
 
 	//PKB Components
 	VarTable * varTable;
