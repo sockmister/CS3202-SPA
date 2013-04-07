@@ -8,6 +8,7 @@
 #include "Modifies.h"
 #include "VarTable.h"
 #include "ProcTable.h"
+//#include "AbstractWrapper.h"
 
 using namespace std;
 typedef int STMT;
@@ -27,20 +28,38 @@ public:
 
 	//! Returns whether if affects*(a1, a2) is true
 	bool isAffectsStar(STMT a1, STMT a2);
+	
+	//! Creates an n by n table where n is the total number of statements. Used in Design Extractor
+	void initializeCache(void);
 
 private:
+	// For Affects*
+	vector<STMTLST> getAffectsStarPath(STMT original_a1, STMT a1, STMT a2, STMTLST path, bool firstPass);
+	bool isAffectsStarRecurseOptimised(STMT a1, STMT a2);
+	bool isAffectsStarRecurse(STMT a1, STMT a2);
+	bool isAffectsStarCompute(STMT a1, STMT a2);
+	int getFromAffectsStarCache(STMT query_a1, STMT query_a2, bool scan);
+	
+	// For Affects	
+	vector<STMTLST> getUnmodifiedPath(STMT a1, STMT a2, VARNAME v, STMTLST path, bool firstPass);
+	bool isNotModifiedInAControlFlowOptimised(STMT a1, STMT a2, VARNAME v);
 	bool isNotModifiedInAControlFlow(STMT a1, STMT a2, VARNAME v);
-	// Returns all traversed paths after and not including a1 up to and including a2
+	bool isAffectsNoScan(STMT a1, STMT a2);
+	bool isAffectsCompute(STMT a1, STMT a2);
+	int getFromAffectsCache(STMT query_a1, STMT query_a2, bool scan);
+
+	// General
 	vector<STMTLST> findAllPaths(STMT a1, STMT a2, STMTLST path, bool firstPass);
 	string getProcedureName(STMT s);
 	string getSameProcedure(STMT a1, STMT a2);
-	bool isAffectsStarRecurse(STMT a1, STMT a2);
 	
-	/* PKB used during computing of Affects */
+	// PKB used during computing of Affects/Affects*
 	AST * ast;
 	Modifies * modifies;
 	Uses * uses;
 	VarTable * varTable;
 	ProcTable * procTable;
 	CFG * cfg;
+	vector<vector<int>> affectsCache;
+	vector<vector<int>> affectsStarCache;
 };

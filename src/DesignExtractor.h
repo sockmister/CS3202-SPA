@@ -36,6 +36,9 @@ public:
 	//! Method to run optimisedCaller
 	void computeOptimisedCaller(void);
 
+	//! Method to initialize cache for Affects and Affects*
+	void DesignExtractor::initializeAffectsCache(void);
+
 private:
 	AST * ast;
 	VarTable * varTable;
@@ -45,6 +48,7 @@ private:
 	Uses * uses;
 	Calls * calls;
 	ProcTable * procTable;
+	Affects * affects;
 	OptimisedCaller * optimisedCaller;
 	rootWhile * storeRootWhile;
 	rootIf * storeRootIf;
