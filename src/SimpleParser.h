@@ -30,6 +30,7 @@ private:
 	int whileLevel;
 	int rootWhileStmtNum;
 	vector<int> rootIfElseList;
+	vector<int> rootOnlyIfList;
 	int thenOrElse; //outside of IF completely = 0, in THEN or in ELSE currently then > 0. 
 
 	//PKB Components
@@ -43,6 +44,7 @@ private:
 	Calls * calls;
 	rootWhile * storeRootWhile;
 	rootIf * storeRootIf;
+	rootOnlyIf * storeRootOnlyIf;
 
 	//Methods for concrete syntax grammar
 	INDEX program();

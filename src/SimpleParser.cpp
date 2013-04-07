@@ -28,6 +28,7 @@ SimpleParser::SimpleParser(ifstream * filestream, PKB * pkb){
 	rootWhileStmtNum = 0;
 	storeRootWhile = pkb->getRootWhile();
 	storeRootIf = pkb->getRootIf();
+	storeRootOnlyIf = pkb->getRootOnlyIf();
 	thenOrElse = 0;
 	ast = pkb->getAST();
 	modifies = pkb->getModifies();
@@ -51,6 +52,7 @@ SimpleParser::SimpleParser(string inCode, PKB * pkb):
 	rootWhileStmtNum(0),
 	storeRootWhile(pkb->getRootWhile()),
 	storeRootIf(pkb->getRootIf()),
+	storeRootOnlyIf(pkb->getRootOnlyIf()),
 	thenOrElse(0),
 	ast(pkb->getAST()),
 	modifies(pkb->getModifies()),
@@ -271,16 +273,18 @@ INDEX SimpleParser::stmt(){
 
 		storeRootWhile->setWhileRoot(rootWhileStmtNum);
 		
-		//set rootIfThenElseList for this stmt
+		//set rootIfThenElseList and rootOnlyIfList for this stmt
 		if (thenOrElse == 0)
 		{
 			vector<int> zero;
 			zero.push_back(0);
 			storeRootIf->setIfRoot(zero);
+			storeRootOnlyIf->setOnlyIfRoot(zero);
 		}
 		else
 		{
 			storeRootIf->setIfRoot(rootIfElseList);
+			storeRootOnlyIf->setOnlyIfRoot(rootOnlyIfList);
 		}
 
 		INDEX whileNode = ast->createTNode("whileNode", currStmtNumber, ""); //create while node
@@ -398,20 +402,23 @@ INDEX SimpleParser::stmt(){
 		else
 			storeRootWhile->setWhileRoot(0);
 		
-		//set rootIfThenElseList for this stmt
+		//set rootIfThenElseList and rootOnlyIfList for this stmt
 		if (thenOrElse == 0)
 		{
 			vector<int> zero;
 			zero.push_back(0);
 			storeRootIf->setIfRoot(zero);
+			storeRootOnlyIf->setOnlyIfRoot(zero);
 		}
 		else
 		{
 			storeRootIf->setIfRoot(rootIfElseList);
+			storeRootOnlyIf->setOnlyIfRoot(rootOnlyIfList);
 		}
 
 		//Set If stmt number into ifList
 		rootIfElseList.push_back(currStmtNumber+1);
+		rootOnlyIfList.push_back(currStmtNumber+1);
 		++thenOrElse; //in THEN or ELSE mode
 
 		INDEX ifNode = ast->createTNode("ifNode", currStmtNumber, ""); //Create IF node
@@ -522,7 +529,7 @@ INDEX SimpleParser::stmt(){
 
 		//NOTE: There is no need to increment currStmtNumber because stmt numbering skips line of "else" by definition
 		
-		//Set If stmt number into ifList
+		//Set Else stmt number into ifList
 		rootIfElseList.push_back(currStmtNumber+1);
 
 		//we create a stmtLst node for "ELSE"
@@ -599,6 +606,8 @@ INDEX SimpleParser::stmt(){
 		//Remove last added if stmt number from list
 		if (!rootIfElseList.empty())
 			rootIfElseList.pop_back();
+		if (!rootOnlyIfList.empty())
+			rootOnlyIfList.pop_back();
 
 		--thenOrElse;
 
@@ -622,16 +631,18 @@ INDEX SimpleParser::stmt(){
 		else
 			storeRootWhile->setWhileRoot(0);
 
-		//set rootIfThenElseList for this stmt
+		//set rootIfThenElseList and rootOnlyIfList for this stmt
 		if (thenOrElse == 0)
 		{
 			vector<int> zero;
 			zero.push_back(0);
 			storeRootIf->setIfRoot(zero);
+			storeRootOnlyIf->setOnlyIfRoot(zero);
 		}
 		else
 		{
 			storeRootIf->setIfRoot(rootIfElseList);
+			storeRootOnlyIf->setOnlyIfRoot(rootOnlyIfList);
 		}
 
 		string callee = nextToken();
@@ -663,16 +674,18 @@ INDEX SimpleParser::stmt(){
 		else
 			storeRootWhile->setWhileRoot(0);
 
-		//set rootIfThenElseList for this stmt
+		//set rootIfThenElseList and rootOnlyIfList for this stmt
 		if (thenOrElse == 0)
 		{
 			vector<int> zero;
 			zero.push_back(0);
 			storeRootIf->setIfRoot(zero);
+			storeRootOnlyIf->setOnlyIfRoot(zero);
 		}
 		else
 		{
 			storeRootIf->setIfRoot(rootIfElseList);
+			storeRootOnlyIf->setOnlyIfRoot(rootOnlyIfList);
 		}
 
 		//by now we have matched varname
