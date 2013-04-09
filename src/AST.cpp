@@ -152,7 +152,7 @@ bool AST::findMatchingPattern(STMT stmtNumber, ORDER order, AST * paternAST) {
 	
 	TNode leftVariable = getChild(assignNode,0);
 	
-	//int start = leftVariable.getRightSibling();
+	// in the AST, the right side of the assignment is the start of the expression 
 	int start = assignNode.getIndex() + 1;
 
 	if (order == 0) {
@@ -193,24 +193,24 @@ bool AST::findMatchingPattern(STMT stmtNumber, ORDER order, AST * paternAST) {
 		bool found = false;
 
 		if ( isMatchingRootNode(startOfASTExpression,patternRoot, patternAST) ==  false ) {
-
+			// if false, keep searching for the matching root of expression
 			while (found == false && (tree[start].getStmtNumber() == stmtNumber) ) {
 				TNode ASTNode = tree[start];
 				if (isMatchingRootNode(ASTNode, patternRoot,patternAST) == true) {
 					found = true;
+					startOfASTExpression = ASTNode;
 					break;
 				}
 				start++;
 			}
 		}
-		else if (isMatchingRootNode(startOfASTExpression,patternRoot, patternAST) ==  true) {
+		// the case where the root of supplied pattern is the root of the AST expression
+		else {
 			found = true;
 		}
 
 		if (found == false) 
 			return false;
-		
-		startOfASTExpression = tree[start];
 
 		ASTnodeStack.push(startOfASTExpression);
 		patternASTnodeStack.push(patternRoot);
