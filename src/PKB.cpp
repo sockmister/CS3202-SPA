@@ -15,7 +15,8 @@ PKB::PKB(AST * ast, VarTable * varTable, Follows * follows, Parent * parent, Mod
 	affects(affects),
 	optimisedCaller(optimisedCaller),
 	storeRootWhile(storeRootWhile),
-	storeRootIf(storeRootIf)
+	storeRootIf(storeRootIf),
+	stmtTable(new StmtTable())
 {
 }
 
@@ -32,6 +33,7 @@ PKB::~PKB(){
 	delete optimisedCaller;
 	delete storeRootWhile;
 	delete storeRootIf;
+	delete stmtTable;
 
 }
 
@@ -129,6 +131,10 @@ rootWhile * PKB::getRootWhile(){
 
 rootIf * PKB::getRootIf(){
 	return this->storeRootIf;
+}
+
+StmtTable * PKB::getStmtTable(){
+	return this->stmtTable;
 }
 
 vector<vector<CFGLink>> * PKB::getGraphBip() {

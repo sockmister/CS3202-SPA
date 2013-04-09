@@ -14,7 +14,7 @@
 #include "OptimisedCaller.h"
 #include "rootWhile.h"
 #include "rootIf.h"
-#include "CFGLink.h"
+#include "StmtTable.h"
 #include "CFGBip.h"
 
 
@@ -68,6 +68,7 @@ private:
 	OptimisedCaller * optimisedCaller;
 	rootWhile * storeRootWhile;
 	rootIf * storeRootIf;
+	StmtTable * stmtTable;
 	
 	// CFGBip data structure
 	vector<vector<CFGLink>> graphBip;
