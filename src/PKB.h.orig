@@ -14,8 +14,12 @@
 #include "OptimisedCaller.h"
 #include "rootWhile.h"
 #include "rootIf.h"
+<<<<<<< HEAD
 #include "StmtTable.h"
+=======
+#include "CFGLink.h"
 #include "CFGBip.h"
+>>>>>>> f219fa73ad88cd03385f046288d0faa55806cc79
 
 
 class PKB{
@@ -51,9 +55,13 @@ public:
 	OptimisedCaller * getOptimisedCaller();
 	rootWhile * getRootWhile();
 	rootIf * getRootIf();
+<<<<<<< HEAD
+	StmtTable * getStmtTable();
+=======
 	vector<vector<CFGLink>> * getGraphBip();
 	CFGBip * getCFGBip();
 
+>>>>>>> f219fa73ad88cd03385f046288d0faa55806cc79
 
 private:
 	AST * ast;
@@ -68,13 +76,16 @@ private:
 	OptimisedCaller * optimisedCaller;
 	rootWhile * storeRootWhile;
 	rootIf * storeRootIf;
+<<<<<<< HEAD
 	StmtTable * stmtTable;
+=======
 	
 	// CFGBip data structure
 	vector<vector<CFGLink>> graphBip;
 	vector<vector<CFGLink>> * graphBipPointer;
 	CFGBip * cfgBip;
 
+>>>>>>> f219fa73ad88cd03385f046288d0faa55806cc79
 };
 
 //#endif

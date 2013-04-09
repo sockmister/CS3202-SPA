@@ -42,10 +42,8 @@ public:
 	//! Method to initialize cache for Affects and Affects*
 	void DesignExtractor::initializeAffectsCache(void);
 
-	// for testing
-	vector<vector<CFGLink>> getCFGBip();
-
 private:
+	PKB * pkb;
 	AST * ast;
 	VarTable * varTable;
 	Follows * follows;
@@ -72,5 +70,4 @@ private:
 	bool hasDummy(PROCNAME, int, vector<pair<int,int>>*);
 
 
-	vector<vector<CFGLink>> cfgBip;
 };

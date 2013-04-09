@@ -23,7 +23,7 @@ public:
 	//! Destructor
 	~CFGBip();
 	//! Constructor
-	CFGBip(vector<vector<CFGLink>> CFGBip, ProcTable * procTable);
+	CFGBip(vector<vector<CFGLink>> * CFGBip, ProcTable * procTable);
 	
 	//CFG(vector<STMTLST>, vector<STMTLST>);
 
@@ -69,7 +69,7 @@ private:
 	vector<bool> visited;
 	bool skip;
 
-	vector<vector<CFGLink>>  myCFGBip;
+	vector<vector<CFGLink>> * myCFGBip;
 	//STMT firstStmt;
 	STMT lastStmt;
 

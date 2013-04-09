@@ -17,7 +17,7 @@
 DesignExtractor::DesignExtractor(){}
 //Constructor
 DesignExtractor::DesignExtractor(PKB* pkb):temp(){
-		
+	this->pkb = pkb;	
 	ast = pkb->getAST();
 	follows = pkb->getFollows();
 	parent = pkb->getParent();
@@ -293,7 +293,9 @@ void DesignExtractor::computeCFGBip(){
 		}
 	}
 
-	this->cfgBip = graphBip;
+	//this->cfgBip = graphBip;
+
+	pkb->setCFGBip(graphBip);
 
 	//printing for debugging
 	//print graphCFG
@@ -439,8 +441,4 @@ void DesignExtractor::computeOptimisedCaller(){
 
 void DesignExtractor::initializeAffectsCache() {
 	affects->initializeCache();
-}
-
-vector<vector<CFGLink>> DesignExtractor::getCFGBip() {
-	return this->cfgBip;
 }
