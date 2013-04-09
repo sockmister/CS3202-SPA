@@ -3,6 +3,7 @@
 
 #include "PKB.h"
 #include "CFG.h"
+#include "CFGLink.h"
 #include <stack>
 
 class DesignExtractor{
@@ -22,6 +23,8 @@ public:
 	//void buildCFG(STMT, STMT);
 	void buildCFG(TNode, vector<std::pair<int,int>>*);
 
+	void computeCFGBip();
+
 	//! Methods to compute design abstractions
 	//! Note that computeCalls() must be called before computeModifiesAndUses()
 	void computeCFG();
@@ -40,6 +43,7 @@ public:
 	void DesignExtractor::initializeAffectsCache(void);
 
 private:
+	PKB * pkb;
 	AST * ast;
 	VarTable * varTable;
 	Follows * follows;
@@ -62,5 +66,8 @@ private:
 	int findFollows(int);
 	int findLoopback(int);
 	void setEndNode(vector<std::pair<int,int>> *);
+	PROCNAME getProcedure(int);
+	bool hasDummy(PROCNAME, int, vector<pair<int,int>>*);
+
 
 };

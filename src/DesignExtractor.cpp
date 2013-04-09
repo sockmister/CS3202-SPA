@@ -17,7 +17,7 @@
 DesignExtractor::DesignExtractor(){}
 //Constructor
 DesignExtractor::DesignExtractor(PKB* pkb):temp(){
-		
+	this->pkb = pkb;	
 	ast = pkb->getAST();
 	follows = pkb->getFollows();
 	parent = pkb->getParent();
@@ -32,10 +32,9 @@ DesignExtractor::DesignExtractor(PKB* pkb):temp(){
 	storeRootIf = pkb->getRootIf();
 	flag = false;
 }
-
 void DesignExtractor::buildCFG(TNode currNode, vector<std::pair<int,int>> * graph){
 	int nodeType = currNode.getNodeType();
-	vector<int> children = currNode.getChildren();	//wtf does children return? stmt or index. becareful to use it properly
+	vector<int> children = currNode.getChildren();	
 	vector<std::pair<int,int>>::iterator it = graph->begin();
 	int currStmtNum = currNode.getStmtNumber();
 	switch(nodeType){
@@ -213,6 +212,133 @@ void DesignExtractor::computeCFG(){
 	
 	//system("PAUSE");
 }
+
+void DesignExtractor::computeCFGBip(){
+	//take exsiting graph and insert into new graph
+	vector<vector<CFGLink>> graphBip;
+	int numOfProc = procTable->getNoOfProc();
+	PROCLIST procList = procTable->getAllProcNames();
+	vector<pair<int,int>> * graphCFG = procTable->getCFG(1)->getCFG();
+	int numOfStmt = procTable->getLastStmt(*(procList.end()-1));
+
+	//translate old graph into new graph
+	for(int i = 0; i < graphCFG->size(); i++){
+		int firstLink = graphCFG->at(i).first;
+		int secondLink = graphCFG->at(i).second;
+		
+		vector<CFGLink> currStmt;
+
+		if(firstLink != 0){
+			currStmt.push_back(CFGLink(firstLink, 0));
+		}
+
+		if(secondLink != 0){
+			currStmt.push_back(CFGLink(secondLink, 0));
+		}
+
+		graphBip.push_back(currStmt);
+	}
+
+	//set dummy nodes
+	vector<CFGLink> aLink;
+	for(int i = 0; i < numOfProc; i++){
+		graphBip.push_back(aLink);
+	}
+
+	//procedure's corresponding dummy node is
+	//lastStmtNum + procIndex + 1
+	for(int i = 0; i < graphCFG->size(); i++){
+		int firstLink = graphCFG->at(i).first;
+		int secondLink = graphCFG->at(i).second;
+
+		if(firstLink == -1 || secondLink == -1){
+			//get procedure's corresponding dummy node
+			PROCINDEX procIndex = procTable->getProcIndex(getProcedure(i));
+
+			//point curr stmt to dummy node instead
+			if(firstLink == -1){
+				graphBip.at(i).at(0).setLinkTo(numOfStmt + procIndex + 1);
+			}
+			else{
+				graphBip.at(i).at(1).setLinkTo(numOfStmt + procIndex + 1);
+			}
+		}
+	}
+
+	//by now, we have a CFG Bip graph that is equivalent of CFG graph, but with links that are (stmt,0), and dummy nodes 
+	//now we go thru 1 pass to link call nodes and dummy nodes
+	for(int i = 1; i <= numOfStmt; i++){
+		//if it's a call node
+		if(ast->getNodeType(i) == "callNode"){
+			//we store the curr next link
+			int currNextLink = graphBip.at(i).at(0).getLinkTo();
+
+			//we connect curr link to the corresponding procedure node
+			TNode currNode = ast->getStmtNode(i);
+			PROCNAME calledProc = currNode.getNodeValue();
+			int firstStmt = procTable->getFirstStmt(calledProc);
+			graphBip.at(i).at(0).setLinkTo(firstStmt);
+			graphBip.at(i).at(0).setEdgeNumber(i);
+
+			//we check if procedure has a dummy, if so we connect using the dummy
+			if(hasDummy(calledProc, numOfStmt, graphCFG)){
+				PROCINDEX procIndex = procTable->getProcIndex(calledProc);
+				graphBip.at(numOfStmt+procIndex+1).push_back(CFGLink(currNextLink, i));
+			}
+			else{
+			//otherwise we use the current procedure's last statement
+				int procLastStmt = procTable->getLastStmt(calledProc);
+				graphBip.at(procLastStmt).push_back(CFGLink(currNextLink, i));
+			}
+		}
+	}
+
+	//this->cfgBip = graphBip;
+
+	pkb->setCFGBip(graphBip);
+
+	//printing for debugging
+	//print graphCFG
+	for(int i = 0; i < graphCFG->size(); i++){
+		cout << i << " -> " << graphCFG->at(i).first << " " << graphCFG->at(i).second << endl;
+	}
+
+	//print graphBip
+	for(int i = 0; i < graphBip.size(); i++){
+		cout << i << " -> |";
+		for(int j = 0; j < graphBip.at(i).size(); j++){
+			cout << graphBip.at(i).at(j).getLinkTo() << "," << graphBip.at(i).at(j).getEdgeNumber() << "|";
+		}
+		cout << endl;
+	}
+}
+
+bool DesignExtractor::hasDummy(PROCNAME proc, int totalStmt, vector<pair<int,int>> * graph){
+	//we check if anywhere in the procedure have we pointed it to dummy
+	PROCINDEX procIndex = procTable->getProcIndex(proc);
+	int procStart = procTable->getFirstStmt(proc);
+	int procEnd = procTable->getLastStmt(proc);
+
+	for(int i = procStart; i <= procEnd; i++){
+		if(graph->at(i).first == -1 || graph->at(i).second == -1)
+			return true;
+	}
+
+	return false;
+}
+
+PROCNAME DesignExtractor::getProcedure(int stmtNum){
+	PROCLIST procList = procTable->getAllProcNames();
+	for(int i = 0; i < procList.size(); i++){
+		int start = procTable->getFirstStmt(procList.at(i));
+		int end = procTable->getLastStmt(procList.at(i));
+
+		if(start <= stmtNum && stmtNum <= end){
+			return procList.at(i);
+		}
+	}
+}
+
 string DesignExtractor::computeCalls(){
 	string error = "";
 	if(flag == false){
@@ -307,9 +433,11 @@ void DesignExtractor::fillExtra(){
 		}
 	}
 }
+
 void DesignExtractor::computeOptimisedCaller(){
 	optimisedCaller->generateOptimised();
 }
+
 
 void DesignExtractor::initializeAffectsCache() {
 	affects->initializeCache();
