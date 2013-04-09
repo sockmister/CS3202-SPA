@@ -135,6 +135,8 @@ rootIf * PKB::getRootIf(){
 
 StmtTable * PKB::getStmtTable(){
 	return this->stmtTable;
+}
+
 vector<vector<CFGLink>> * PKB::getGraphBip() {
 	return this->graphBipPointer;
 }
