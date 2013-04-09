@@ -75,6 +75,14 @@ void PKB::setOptimisedCaller(OptimisedCaller * optimisedCaller){
 	this->optimisedCaller = optimisedCaller;
 }
 
+void PKB::setCFGBip(vector<vector<CFGLink>> graphBipin) {
+	this->graphBip =  graphBipin;
+	this->graphBipPointer = &this->graphBip;
+	CFGBip * newCfgBip = new CFGBip(this->graphBipPointer, this->procTable);
+	this->cfgBip = newCfgBip;
+}
+
+
 AST* PKB::getAST(){
 	return this->ast;
 }
@@ -121,4 +129,12 @@ rootWhile * PKB::getRootWhile(){
 
 rootIf * PKB::getRootIf(){
 	return this->storeRootIf;
+}
+
+vector<vector<CFGLink>> * PKB::getGraphBip() {
+	return this->graphBipPointer;
+}
+
+CFGBip * PKB::getCFGBip() {
+	return this->cfgBip;
 }

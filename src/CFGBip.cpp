@@ -7,7 +7,7 @@ CFGBip::CFGBip(){
 CFGBip::~CFGBip(){
 }
 
-CFGBip::CFGBip(vector<vector<CFGLink>> CFGBip, ProcTable * procTable) {
+CFGBip::CFGBip(vector<vector<CFGLink>> * CFGBip, ProcTable * procTable) {
 	this->myCFGBip = CFGBip;
 	
 	//myCFGit = CFG->begin() + firstStmt;
@@ -16,8 +16,8 @@ CFGBip::CFGBip(vector<vector<CFGLink>> CFGBip, ProcTable * procTable) {
 	int noOfProc = procTable->getNoOfProc();
 	this->lastStmt = procTable->getLastStmt(procTable->getProcName(noOfProc-1));
 	this->procTable = procTable;
-
-	for (int i=0; i<CFGBip.size(); i++) 
+	
+	for (int i=0; i<CFGBip->size(); i++) 
 		visited.push_back(false);
 	
 }
@@ -132,7 +132,7 @@ bool CFGBip::isNextBip(STMT n1, STMT n2) {
 		return false;
 
 	else {
-			vector<CFGLink> nextBip = this->myCFGBip.at(n1);
+			vector<CFGLink> nextBip = this->myCFGBip->at(n1);
 			
 			for (int i=0;i<nextBip.size();i++) {
 				int nextLink = nextBip[i].getLinkTo();
@@ -144,7 +144,7 @@ bool CFGBip::isNextBip(STMT n1, STMT n2) {
 					}
 				}
 				// the next node is a dummy node
-				else if ( nextLink > this->lastStmt && nextLink < this->myCFGBip.size() ) {
+				else if ( nextLink > this->lastStmt && nextLink < this->myCFGBip->size() ) {
 					/*
 					vector<CFGLink> dummy = this->myCFGBip->at(nextLink);
 
@@ -203,7 +203,7 @@ vector<bool> CFGBip::DFS(STMT programLine) {
 	else if (skip == false)	
 		visited[programLine] = true;
 
-	vector<CFGLink> nextBip = this->myCFGBip.at(programLine);
+	vector<CFGLink> nextBip = this->myCFGBip->at(programLine);
 	for (int i=0;i<nextBip.size();i++) {
 		int nextLink = nextBip[i].getLinkTo();
 		int edgeNumber = nextBip[i].getEdgeNumber();
