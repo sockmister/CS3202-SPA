@@ -54,6 +54,7 @@ private:
 	Uses * uses;
 	Calls * calls;
 	ProcTable * procTable;
+	Affects * affects;
 	OptimisedCaller * optimisedCaller;
 	rootWhile * storeRootWhile;
 	rootIf * storeRootIf;

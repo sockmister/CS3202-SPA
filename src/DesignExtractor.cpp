@@ -26,6 +26,7 @@ DesignExtractor::DesignExtractor(PKB* pkb):temp(){
 	modifies = pkb->getModifies();
 	uses = pkb->getUses();
 	calls = pkb->getCalls();
+	affects = pkb->getAffects();
 	optimisedCaller = pkb->getOptimisedCaller();
 	storeRootWhile = pkb->getRootWhile();
 	storeRootIf = pkb->getRootIf();
