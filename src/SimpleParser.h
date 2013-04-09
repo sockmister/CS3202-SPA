@@ -13,6 +13,7 @@
 #include "PKB.h"
 #include "rootWhile.h"
 #include "rootIf.h"
+#include "StmtTable.h"
 
 using namespace boost;
 
@@ -44,6 +45,7 @@ private:
 	Calls * calls;
 	rootWhile * storeRootWhile;
 	rootIf * storeRootIf;
+	StmtTable * stmtTable;
 
 	//Methods for concrete syntax grammar
 	INDEX program();

@@ -28,6 +28,7 @@ SimpleParser::SimpleParser(ifstream * filestream, PKB * pkb){
 	rootWhileStmtNum = 0;
 	storeRootWhile = pkb->getRootWhile();
 	storeRootIf = pkb->getRootIf();
+	stmtTable = pkb->getStmtTable();
 	thenOrElse = 0;
 	ast = pkb->getAST();
 	modifies = pkb->getModifies();
@@ -51,6 +52,7 @@ SimpleParser::SimpleParser(string inCode, PKB * pkb):
 	rootWhileStmtNum(0),
 	storeRootWhile(pkb->getRootWhile()),
 	storeRootIf(pkb->getRootIf()),
+	stmtTable(pkb->getStmtTable()),
 	thenOrElse(0),
 	ast(pkb->getAST()),
 	modifies(pkb->getModifies()),
@@ -285,6 +287,9 @@ INDEX SimpleParser::stmt(){
 			storeRootIf->setOnlyIfRoot(rootOnlyIfList);
 		}
 
+		//Set While stmt for stmtTable
+		this->stmtTable->setCurrStmt(4, proc, "");
+
 		INDEX whileNode = ast->createTNode("whileNode", currStmtNumber, ""); //create while node
 		int whileStmtNum = ast->getNode(whileNode).getStmtNumber();
 
@@ -418,6 +423,9 @@ INDEX SimpleParser::stmt(){
 		rootIfElseList.push_back(currStmtNumber+1);
 		rootOnlyIfList.push_back(currStmtNumber+1);
 		++thenOrElse; //in THEN or ELSE mode
+
+		//Set If stmt for stmtTable
+		this->stmtTable->setCurrStmt(10, proc, "");
 
 		INDEX ifNode = ast->createTNode("ifNode", currStmtNumber, ""); //Create IF node
 		int ifStmtNum = ast->getNode(ifNode).getStmtNumber();
@@ -644,6 +652,9 @@ INDEX SimpleParser::stmt(){
 		}
 
 		string callee = nextToken();
+		
+		//Set Call stmt for stmtTable
+		this->stmtTable->setCurrStmt(11, proc, callee);
 
 		if (match(PROC_NAME) == false) //check procTable???
 			return -1;
@@ -685,6 +696,9 @@ INDEX SimpleParser::stmt(){
 			storeRootIf->setIfRoot(rootIfElseList);
 			storeRootIf->setOnlyIfRoot(rootOnlyIfList);
 		}
+				
+		//Set Assignment stmt for stmtTable
+		this->stmtTable->setCurrStmt(3, proc, "");
 
 		//by now we have matched varname
 		INDEX leftNode = ast->createTNode("varNode", currStmtNumber, next);
