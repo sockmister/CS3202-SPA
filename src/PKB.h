@@ -51,8 +51,10 @@ public:
 	OptimisedCaller * getOptimisedCaller();
 	rootWhile * getRootWhile();
 	rootIf * getRootIf();
+	StmtTable * getStmtTable();
 	vector<vector<CFGLink>> * getGraphBip();
 	CFGBip * getCFGBip();
+	
 
 
 private:
