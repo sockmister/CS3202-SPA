@@ -34,6 +34,8 @@ PKB::~PKB(){
 	delete storeRootWhile;
 	delete storeRootIf;
 	delete stmtTable;
+	delete graphBipPointer;
+	delete cfgBip;
 
 }
 
@@ -80,7 +82,7 @@ void PKB::setOptimisedCaller(OptimisedCaller * optimisedCaller){
 void PKB::setCFGBip(vector<vector<CFGLink>> graphBipin) {
 	this->graphBip =  graphBipin;
 	this->graphBipPointer = &this->graphBip;
-	CFGBip * newCfgBip = new CFGBip(this->graphBipPointer, this->procTable);
+	CFGBip * newCfgBip = new CFGBip(this->graphBipPointer, this->stmtTable ,this->procTable);
 	this->cfgBip = newCfgBip;
 }
 

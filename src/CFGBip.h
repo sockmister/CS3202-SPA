@@ -1,5 +1,5 @@
 #pragma once
-//#include "PKB.h"
+
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -7,6 +7,7 @@
 #include "rootWhile.h"
 #include "rootIf.h"
 #include "CFGLink.h"
+#include "StmtTable.h"
 #include "ProcTable.h"
 #include <deque>
 
@@ -23,7 +24,7 @@ public:
 	//! Destructor
 	~CFGBip();
 	//! Constructor
-	CFGBip(vector<vector<CFGLink>> * CFGBip, ProcTable * procTable);
+	CFGBip(vector<vector<CFGLink>> * CFGBip, StmtTable * stmtTable, ProcTable * procTable);
 	
 	//CFG(vector<STMTLST>, vector<STMTLST>);
 
@@ -69,11 +70,12 @@ private:
 	vector<bool> visited;
 	bool skip;
 
+	ProcTable * procTable;
 	vector<vector<CFGLink>> * myCFGBip;
-	//STMT firstStmt;
+	StmtTable * stmtTable;
 	STMT lastStmt;
 
-	ProcTable * procTable;
+	
 
 	vector<bool> DFS(int); // Depth first search
 	STMT procedureFirstStmt;
