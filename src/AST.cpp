@@ -377,11 +377,11 @@ TNode AST::getStmtNode(STMT stmtNumber) {
 	return blank;
 }
 
-TNode AST::getControlStmt(STMT stmtNumber) {
+TNode AST::getContainerNode(STMT stmtNumber) {
 	vector<TNode>::iterator it;
 
 	for (it = tree.begin() ; it!=tree.end() ; it++) {
-		if (it->getStmtNumber() == stmtNumber &&  it->getNodeType() == 4 )
+		if (it->getStmtNumber() == stmtNumber &&  (it->getNodeType() == 4 || it->getNodeType() == 10) )
 			return *it;
 	}
 

@@ -166,7 +166,7 @@ public:
 	vector<int> getAllByType(NODE_TYPE nodeType);
 
 	TNode getAssignmentNode(STMT stmtNumber);
-	TNode getControlStmt(STMT stmtNumber);
+	TNode getContainerNode(STMT stmtNumber);
 	TNode getStmtNode(STMT stmtNumber);
 
 	// Method to get the whole AST data structure
