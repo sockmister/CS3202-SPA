@@ -16,6 +16,7 @@ The table will be returned to the main evaluator for merging, by calling the mer
 #include <map>
 #include <unordered_map>
 #include <unordered_set>
+#include <algorithm>
 
 #define NO_DS -1
 #define MATCH_FIRST 0
@@ -24,6 +25,9 @@ The table will be returned to the main evaluator for merging, by calling the mer
 #define CART_PRO 3
 #define SINGLE_COL 4
 #define APPEND 5
+#define MATCH_ALL 6
+#define MATCH_SOME 7
+#define MATCH_NONE 8
 
 using namespace std;
 
@@ -40,21 +44,34 @@ public:
 
 	bool hasColumns(COLNAME);
 	vector<VALUE> getColumn(COLNAME);
+	vector<vector<VALUE>> getColumnPair(COLNAME, COLNAME);
+	vector<vector<VALUE>> getColumnTriple(COLNAME, COLNAME, COLNAME);
+	vector<vector<VALUE>> getColumnQuad(COLNAME, COLNAME, COLNAME, COLNAME);
+
 	void insert(COLNAME, VALUE, COLNAME, vector<VALUE>);
 	void insert(COLNAME, vector<VALUE>);
+	void insert(COLNAME, VALUE, COLNAME, VALUE, COLNAME, VALUE);
+	void insert(COLNAME, VALUE, COLNAME, VALUE, COLNAME, VALUE, COLNAME, VALUE);
+
 	void shrinkTable();
 	vector<string> getTuple(vector<COLNAME>);
 	void print();
 
 private:
-	
+	bool checkForConstant(vector<COLNAME>, vector<VALUE>);
+	void insertGeneral(vector<COLNAME>, vector<VALUE>);
+	void assignCaseNumber(vector<COLNAME>);
 	void mergeMatchFirst();
 	void mergeMatchSecond();
 	void mergeDualCol();
 	void mergeCartPro();
 	void mergeSingleCol();
+	void mergeMatchAll();
+	void mergeMatchSome();
+	void mergeMatchNone();
 	void append(COLNAME, VALUE, COLNAME, vector<VALUE>);
 	void append(COLNAME, vector<VALUE>);
+	void appendAll(vector<VALUE>);
 	void cartProduct(vector<vector<VALUE>>*, vector<VALUE>*, int, vector<string>*);
 
 	vector<vector<VALUE>> table;
@@ -77,4 +94,9 @@ private:
 
 	//single column insert
 	unordered_set<VALUE> single_col_DS;
+
+	//MATCH_SOME
+	vector<COLNAME> toMatch;
+	vector<COLNAME> toInsert;
+	unordered_multimap<VALUE, vector<VALUE>> match_some_DS;
 };

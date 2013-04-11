@@ -31,21 +31,94 @@ vector<VALUE> Table::getColumn(COLNAME col){
 	//get index
 	int index = (colIndex.find(col))->second;
 
+	set<VALUE> s;
+
 	//get 1 by 1
 	for(vector<vector<VALUE>>::iterator it = table.begin(); it != table.end(); ++it){
 		vector<VALUE>::iterator tuple_it = it->begin();
-		column.push_back(*(tuple_it+index));
+		//column.push_back(*(tuple_it+index));
+		s.insert(*(tuple_it+index));
 	}
 	//return
 
 	//sort and remove duplicates
-	set<VALUE> s;
-	unsigned size = column.size();
-	for(unsigned i = 0; i < size; ++i) s.insert(column[i]);
+	//set<VALUE> s;
+	//unsigned size = column.size();
+	//for(unsigned i = 0; i < size; ++i) s.insert(column[i]);
 	column.assign(s.begin(), s.end());
 
 	return column;
 }
+
+vector<vector<VALUE>> Table::getColumnPair(COLNAME col1, COLNAME col2){
+	int indexOf1 = (colIndex.find(col1))->second;
+	int indexOf2 = (colIndex.find(col2))->second;
+
+	vector<vector<VALUE>> returnTuple;
+	set<vector<VALUE>> s;
+	for(vector<vector<VALUE>>::iterator it = table.begin(); it != table.end(); ++it){
+		vector<VALUE>::iterator tuple_it = it->begin();
+
+		vector<VALUE> tuple;
+		tuple.push_back(*(tuple_it+indexOf1));
+		tuple.push_back(*(tuple_it+indexOf2));
+
+		s.insert(tuple);
+	}
+
+	returnTuple.assign(s.begin(), s.end());
+
+	return returnTuple;
+}
+
+vector<vector<string>> Table::getColumnTriple(COLNAME col1, COLNAME col2, COLNAME col3){
+	int indexOf1 = (colIndex.find(col1))->second;
+	int indexOf2 = (colIndex.find(col2))->second;
+	int indexOf3 = (colIndex.find(col3))->second;
+
+	vector<vector<VALUE>> returnTuple;
+	set<vector<VALUE>> s;
+	for(vector<vector<VALUE>>::iterator it = table.begin(); it != table.end(); ++it){
+		vector<VALUE>::iterator tuple_it = it->begin();
+
+		vector<VALUE> tuple;
+		tuple.push_back(*(tuple_it+indexOf1));
+		tuple.push_back(*(tuple_it+indexOf2));
+		tuple.push_back(*(tuple_it+indexOf3));
+
+		s.insert(tuple);
+	}
+
+	returnTuple.assign(s.begin(), s.end());
+
+	return returnTuple;
+}
+
+vector<vector<string>> Table::getColumnQuad(COLNAME col1, COLNAME col2, COLNAME col3, COLNAME col4){
+	int indexOf1 = (colIndex.find(col1))->second;
+	int indexOf2 = (colIndex.find(col2))->second;
+	int indexOf3 = (colIndex.find(col3))->second;
+	int indexOf4 = (colIndex.find(col4))->second;
+
+	vector<vector<VALUE>> returnTuple;
+	set<vector<VALUE>> s;
+	for(vector<vector<VALUE>>::iterator it = table.begin(); it != table.end(); ++it){
+		vector<VALUE>::iterator tuple_it = it->begin();
+
+		vector<VALUE> tuple;
+		tuple.push_back(*(tuple_it+indexOf1));
+		tuple.push_back(*(tuple_it+indexOf2));
+		tuple.push_back(*(tuple_it+indexOf3));
+		tuple.push_back(*(tuple_it+indexOf4));
+
+		s.insert(tuple);
+	}
+
+	returnTuple.assign(s.begin(), s.end());
+
+	return returnTuple;
+}
+
 
 void Table::insert(COLNAME firstCol, VALUE first, COLNAME secondCol, vector<VALUE> secondValues){
 	//special case of "-" insert
@@ -142,6 +215,69 @@ void Table::insert(COLNAME col, vector<VALUE> values){
 	}
 }
 
+void Table::insert(COLNAME col1, VALUE val1, COLNAME col2, VALUE val2, COLNAME col3, VALUE val3){
+	vector<COLNAME> cols;
+	cols.push_back(col1);
+	cols.push_back(col2);
+	cols.push_back(col3);
+	vector<VALUE> values;
+	values.push_back(val1);
+	values.push_back(val2);
+	values.push_back(val3);
+	if(checkForConstant(cols, values))
+		return;
+
+	if(caseNo == APPEND){
+		colIndex.insert(std::pair<COLNAME, int>(col1, colIndex.size()));
+		colIndex.insert(std::pair<COLNAME, int>(col2, colIndex.size()));
+		colIndex.insert(std::pair<COLNAME, int>(col3, colIndex.size()));
+		appendAll(values);
+		return;
+	}
+
+	//check and give state	
+	if(caseNo == NO_DS)
+		assignCaseNumber(cols);
+
+	insertGeneral(cols, values);
+}
+
+void Table::insert(COLNAME col1, VALUE val1, COLNAME col2, VALUE val2, COLNAME col3, VALUE val3, COLNAME col4, VALUE val4){
+	if(caseNo == APPEND){
+		colIndex.insert(std::pair<COLNAME, int>(col1, colIndex.size()));
+		colIndex.insert(std::pair<COLNAME, int>(col2, colIndex.size()));
+		colIndex.insert(std::pair<COLNAME, int>(col3, colIndex.size()));
+		colIndex.insert(std::pair<COLNAME, int>(col4, colIndex.size()));
+		
+		vector<VALUE> allValue;
+		allValue.push_back(val1);
+		allValue.push_back(val2);
+		allValue.push_back(val3);
+		allValue.push_back(val4);
+		appendAll(allValue);
+		return;
+	}
+
+	//check and give state
+	vector<COLNAME> cols;
+	cols.push_back(col1);
+	cols.push_back(col2);
+	cols.push_back(col3);
+	cols.push_back(col4);
+	vector<VALUE> values;
+	values.push_back(val1);
+	values.push_back(val2);
+	values.push_back(val3);
+	values.push_back(val4);
+	if(checkForConstant(cols, values))
+		return;
+
+	if(caseNo == NO_DS)
+		assignCaseNumber(cols);
+	
+	insertGeneral(cols, values);
+}
+
 void Table::shrinkTable(){
 	//actual merging
 	switch(caseNo){
@@ -168,6 +304,24 @@ void Table::shrinkTable(){
 	case APPEND:
 		//this check if append has been used before by the clause. If no, we should still keep append for next clause.
 		if(table.size() == 0) return;
+		break;
+	case MATCH_ALL:
+		mergeMatchAll();
+		dual_col_DS.clear();
+		toMatch.clear();
+		toInsert.clear();
+		break;
+	case MATCH_SOME:
+		mergeMatchSome();
+		match_second_DS.clear();
+		toMatch.clear();
+		toInsert.clear();
+		break;
+	case MATCH_NONE:
+		mergeMatchNone();
+		cart_pro_DS.clear();
+		toMatch.clear();
+		toInsert.clear();
 		break;
 	}
 
@@ -227,24 +381,84 @@ vector<string> Table::getTuple(vector<COLNAME> columns){
 	results.assign(s.begin(), s.end());
 
 	return results;
-	/*
-	vector<vector<VALUE>> * sets = new vector<vector<VALUE>>();
-	for(int i = 0; i < columns.size(); ++i){
-		vector<VALUE> col = getColumn(columns.at(i));
-		sets->push_back(col);
-	}
-
-	vector<VALUE> * curr = new vector<VALUE>(sets->size());
-	vector<string> * results = new vector<string>();
-	cartProduct(sets, curr, 0, results);
-	
-	delete sets;
-
-	return *results;
-	*/
 }
 
-//helper for cartesian product
+//helper
+//precondition: cols size 4
+bool Table::checkForConstant(vector<COLNAME> cols, vector<VALUE> values){
+	int size = cols.size();
+	if(size > 4)
+		return true;
+	vector<COLNAME> newCols;
+	vector<VALUE> newValues;
+	for(int i = 0; i < size; ++i){
+		if(!(cols.at(i) == "-")){
+			newCols.push_back(cols.at(i));
+			newValues.push_back(values.at(i));
+		}
+	}
+	int newSize = newCols.size();
+	if(newSize == size)
+		return false;
+
+	switch (newSize){
+	case 0:
+		return true;
+	case 1:
+	{
+		vector<VALUE> toInsert;
+		toInsert.push_back(newValues.at(0));
+		insert(newCols.at(0), toInsert);
+		return true;
+	}
+	case 2:
+	{
+		vector<VALUE> toInsert;
+		toInsert.push_back(newValues.at(1));
+		insert(newCols.at(0), newValues.at(0), newCols.at(1), toInsert);
+		return true;
+	}
+	case 3:
+		insert(newCols.at(0), newValues.at(0), newCols.at(1), newValues.at(1), newCols.at(2), newValues.at(2));
+		return true;
+	}
+}
+
+void Table::insertGeneral(vector<COLNAME> cols, vector<VALUE> values){
+	switch(caseNo){
+		case MATCH_NONE:
+		{
+			cart_pro_DS.push_back(values);
+			break;
+		}
+		case MATCH_SOME:
+		{
+			//check which one matches
+			string toInsert = "";
+			vector<VALUE> mapped;
+			for(int i = 0; i < values.size(); ++i){
+				if(std::find(toMatch.begin(), toMatch.end(), cols.at(i)) != toMatch.end()){
+					toInsert = toInsert + values.at(i);
+				}
+				else{
+					mapped.push_back(values.at(i));
+				}
+			}
+			match_some_DS.insert(pair<VALUE, vector<VALUE>>(toInsert, mapped));
+			break;
+		}
+		case MATCH_ALL:
+		{
+			string toInsert = "";
+			for(int i = 0; i < values.size(); ++i){
+				toInsert = toInsert + values.at(i);
+			}
+			dual_col_DS.insert(toInsert);
+			break;
+		}
+	}
+}
+
 void Table::cartProduct(vector<vector<VALUE>>* sets, vector<VALUE>* curr, int k, vector<string> * results){
 	if(k == sets->size()){
 		string tuple = "";
@@ -265,6 +479,43 @@ void Table::cartProduct(vector<vector<VALUE>>* sets, vector<VALUE>* curr, int k,
 }
 
 //helper methods
+void Table::assignCaseNumber(vector<COLNAME> cols){
+	int size = cols.size();
+
+	if(caseNo == NO_DS){
+		//assign case number
+		bool matchAll = true;
+		bool matchSome = false;
+		for(int i = 0; i < size; ++i){
+			matchAll = matchAll && hasColumns(cols.at(i));
+			matchSome = matchSome || hasColumns(cols.at(i));
+		}
+		if(matchAll){
+			caseNo = MATCH_ALL;
+			for(int i = 0; i < size; ++i){
+				toMatch.push_back(cols.at(i));
+			}
+		} else if (matchSome){
+			caseNo = MATCH_SOME;
+			for(int i = 0; i < size; ++i){
+				if(hasColumns(cols.at(i)))
+					toMatch.push_back(cols.at(i));
+				else{
+					toInsert.push_back(cols.at(i));
+					colIndex.insert(std::pair<COLNAME, int>(cols.at(i), colIndex.size()));
+				}
+			}
+
+			
+		} else {
+			caseNo = MATCH_NONE;
+			for(int i = 0; i < size; ++i){
+				colIndex.insert(std::pair<COLNAME, int>(cols.at(i), colIndex.size()));
+			}
+		}	
+	}
+}
+
 void Table::mergeMatchFirst(){
 	int matchIndex = colIndex.find(currFirst)->second;
 	vector<vector<VALUE>> newTuples;
@@ -375,6 +626,74 @@ void Table::mergeSingleCol(){
 	table = newTuples;
 }
 
+void Table::mergeMatchAll(){
+	//go thru each tuple in existing table
+	vector<int> matchIndexes;
+	for(int i = 0; i < toMatch.size(); ++i){
+		matchIndexes.push_back(colIndex.find(toMatch.at(i))->second);
+	}
+	vector<vector<VALUE>> newTuples;
+
+	for(vector<vector<VALUE>>::iterator tuple = table.begin(); tuple != table.end(); ++tuple){
+		string finalToMatch = "";
+		for(int i = 0;  i < matchIndexes.size(); ++i){
+			finalToMatch = finalToMatch + *( tuple->begin() + matchIndexes.at(i));
+		}
+
+		if(dual_col_DS.count(finalToMatch) > 0){    //there is  match
+			vector<VALUE> newTuple(*tuple);
+			newTuples.push_back(newTuple);
+		}
+	}
+
+	table = newTuples;
+}
+
+void Table::mergeMatchSome(){
+	vector<int> matchIndexes;
+	for(int i = 0; i < toMatch.size(); ++i){
+		matchIndexes.push_back(colIndex.find(toMatch.at(i))->second);
+	}
+	vector<vector<VALUE>> newTuples;
+	//for each current tuple
+	for(vector<vector<VALUE>>::iterator tuple = table.begin(); tuple != table.end(); ++tuple){
+		string finalToMatch = "";
+		for(int i = 0;  i < matchIndexes.size(); ++i){
+			finalToMatch = finalToMatch + *( tuple->begin() + matchIndexes.at(i));
+		}
+		pair<unordered_multimap<VALUE, vector<VALUE>>::iterator, 
+			unordered_multimap<VALUE, vector<VALUE>>::iterator> range = match_some_DS.equal_range(finalToMatch);
+
+		for(unordered_multimap<VALUE, vector<VALUE>>::iterator map_it = range.first; map_it != range.second; ++map_it){
+			//each map_it points to a vector
+			vector<VALUE> newTuple(*tuple);
+			for(vector<VALUE>::iterator it = map_it->second.begin(); it != map_it->second.end(); ++it){
+				newTuple.push_back(*it);
+			}
+			newTuples.push_back(newTuple);
+		}
+	}
+
+	table = newTuples;
+}
+
+void Table::mergeMatchNone(){
+	vector<vector<VALUE>> newTuples;
+	
+	for(vector<vector<VALUE>>::iterator tuple = table.begin(); tuple != table.end(); ++tuple){
+		for(vector<vector<VALUE>>::iterator curr_it = cart_pro_DS.begin(); curr_it != cart_pro_DS.end(); ++curr_it){
+			vector<VALUE> newTuple(*tuple);
+			vector<VALUE> pair = *curr_it;
+			for(int i = 0; i < pair.size(); ++i){
+				newTuple.push_back(pair[i]);
+			}
+			newTuples.push_back(newTuple);
+		}
+	}
+
+	table = newTuples;
+}
+
 void Table::append(COLNAME firstCol, VALUE first, COLNAME secondCol, vector<VALUE> secondValues){
 	for(vector<VALUE>::iterator it = secondValues.begin(); it != secondValues.end(); ++it){
 		vector<VALUE> tuple;
@@ -390,4 +709,8 @@ void Table::append(COLNAME col, vector<VALUE> values){
 		tuple.push_back(*it);
 		table.push_back(tuple);
 	}
+}
+
+void Table::appendAll(vector<VALUE> values){
+	table.push_back(values);
 }
