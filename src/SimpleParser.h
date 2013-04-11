@@ -13,6 +13,7 @@
 #include "PKB.h"
 #include "rootWhile.h"
 #include "rootIf.h"
+#include "StmtTable.h"
 
 using namespace boost;
 
@@ -32,6 +33,8 @@ private:
 	vector<int> rootIfElseList;
 	vector<int> rootOnlyIfList;
 	int thenOrElse; //outside of IF completely = 0, in THEN or in ELSE currently then > 0. 
+	vector<string> * outputVector;
+	vector<string> * operatorStack;
 
 	//PKB Components
 	VarTable * varTable;
@@ -44,6 +47,7 @@ private:
 	Calls * calls;
 	rootWhile * storeRootWhile;
 	rootIf * storeRootIf;
+	StmtTable * stmtTable;
 
 	//Methods for concrete syntax grammar
 	INDEX program();
@@ -57,9 +61,10 @@ private:
 	bool integer();
 	bool checkOperator(int);
 	void error(token);
-	int expr();
-	int factor();
-	int term();
+	bool toPostFix();
+	bool factor();
+	bool term();
+	INDEX getRootOfExpr();
 
 	//Method to get token
 	token nextToken();

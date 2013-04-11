@@ -16,6 +16,8 @@ private:
 	tokenizer<char_separator<char>> * tokens;
 	tokenizer<char_separator<char>>::iterator tok_iter;
 	int currStmtNumber; //dummy variable for AST::createTNode()
+	vector<string> * outputVector;
+	vector<string> * operatorStack;
 	
 	//AST Component
 	AST *ast;
@@ -26,9 +28,10 @@ private:
 	bool integer();
 	bool checkOperator(int);
 	void error(token);
-	int expr();
-	int factor();
-	int term();
+	bool toPostFix();
+	bool factor();
+	bool term();
+	INDEX getRootOfExpr();
 
 	//Method to get token
 	token nextToken();
@@ -44,8 +47,6 @@ public:
 	ASTBuilder(AST *, string);
 	~ASTBuilder();
 
-	//void setupASTBuilder(AST *, string);
 	bool convertToAST();
-	//INDEX getRoot();
 };
 #endif

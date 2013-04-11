@@ -28,7 +28,10 @@ SimpleParser::SimpleParser(ifstream * filestream, PKB * pkb){
 	rootWhileStmtNum = 0;
 	storeRootWhile = pkb->getRootWhile();
 	storeRootIf = pkb->getRootIf();
+	stmtTable = pkb->getStmtTable();
 	thenOrElse = 0;
+	outputVector = new vector<string>();
+	operatorStack = new vector<string>();
 	ast = pkb->getAST();
 	modifies = pkb->getModifies();
 	follows = pkb->getFollows();
@@ -51,7 +54,10 @@ SimpleParser::SimpleParser(string inCode, PKB * pkb):
 	rootWhileStmtNum(0),
 	storeRootWhile(pkb->getRootWhile()),
 	storeRootIf(pkb->getRootIf()),
+	stmtTable(pkb->getStmtTable()),
 	thenOrElse(0),
+	outputVector(new vector<string>()),
+	operatorStack(new vector<string>()),
 	ast(pkb->getAST()),
 	modifies(pkb->getModifies()),
 	follows(pkb->getFollows()),
@@ -270,7 +276,7 @@ INDEX SimpleParser::stmt(){
 			rootWhileStmtNum = currStmtNumber;
 
 		storeRootWhile->setWhileRoot(rootWhileStmtNum);
-		
+
 		//set rootIfThenElseList and rootOnlyIfList for this stmt
 		if (thenOrElse == 0)
 		{
@@ -284,6 +290,9 @@ INDEX SimpleParser::stmt(){
 			storeRootIf->setIfRoot(rootIfElseList);
 			storeRootIf->setOnlyIfRoot(rootOnlyIfList);
 		}
+
+		//Set While stmt for stmtTable
+		this->stmtTable->setCurrStmt(4, proc, "");
 
 		INDEX whileNode = ast->createTNode("whileNode", currStmtNumber, ""); //create while node
 		int whileStmtNum = ast->getNode(whileNode).getStmtNumber();
@@ -399,7 +408,7 @@ INDEX SimpleParser::stmt(){
 			storeRootWhile->setWhileRoot(rootWhileStmtNum);
 		else
 			storeRootWhile->setWhileRoot(0);
-		
+
 		//set rootIfThenElseList and rootOnlyIfList for this stmt
 		if (thenOrElse == 0)
 		{
@@ -418,6 +427,9 @@ INDEX SimpleParser::stmt(){
 		rootIfElseList.push_back(currStmtNumber+1);
 		rootOnlyIfList.push_back(currStmtNumber+1);
 		++thenOrElse; //in THEN or ELSE mode
+
+		//Set If stmt for stmtTable
+		this->stmtTable->setCurrStmt(10, proc, "");
 
 		INDEX ifNode = ast->createTNode("ifNode", currStmtNumber, ""); //Create IF node
 		int ifStmtNum = ast->getNode(ifNode).getStmtNumber();
@@ -526,7 +538,7 @@ INDEX SimpleParser::stmt(){
 			return -1;
 
 		//NOTE: There is no need to increment currStmtNumber because stmt numbering skips line of "else" by definition
-		
+
 		//Set Else stmt number into ifList
 		rootIfElseList.push_back(currStmtNumber+1);
 
@@ -645,6 +657,9 @@ INDEX SimpleParser::stmt(){
 
 		string callee = nextToken();
 
+		//Set Call stmt for stmtTable
+		this->stmtTable->setCurrStmt(11, proc, callee);
+
 		if (match(PROC_NAME) == false) //check procTable???
 			return -1;
 
@@ -686,6 +701,9 @@ INDEX SimpleParser::stmt(){
 			storeRootIf->setOnlyIfRoot(rootOnlyIfList);
 		}
 
+		//Set Assignment stmt for stmtTable
+		this->stmtTable->setCurrStmt(3, proc, "");
+
 		//by now we have matched varname
 		INDEX leftNode = ast->createTNode("varNode", currStmtNumber, next);
 
@@ -697,11 +715,18 @@ INDEX SimpleParser::stmt(){
 			return -1;
 
 		//by now we have matched assign
-		INDEX assignNode = ast->createTNode("assignNode", currStmtNumber, "");
+		INDEX assignNode = ast->createTNode("assignNode", currStmtNumber, "=");
 
-		INDEX rightNode = expr();
-		if (rightNode == -1) //if error occured in parsing RHS expression of assignment statement
+		//Parse RHS expression and convert to POSTFIX in outputVector
+		bool toPostFixResult = toPostFix();
+		if (!toPostFixResult) //if error occured in parsing RHS expression of assignment statement
 			return -1;
+
+		//build AST tree for RHS expression
+		INDEX rightNode = getRootOfExpr();
+
+		//Clear outputVector
+		outputVector->clear();
 
 		if(match(";") == false)
 			return -1;
@@ -788,126 +813,193 @@ int SimpleParser::getTotalStmtNumber(){
 	return currStmtNumber;
 }
 
-int SimpleParser::expr() //CONSTANT or VAR_NAME or OPEN_BRACKET or CLOSE_BRACKET expected as current token upon call to expr()
+bool SimpleParser::toPostFix() //CONSTANT or VAR_NAME or OPEN_BRACKET or CLOSE_BRACKET expected as current token upon call to expr()
 {
-	INDEX node, leftChild, rightChild;
-	leftChild = factor();
+	bool leftOp, rightOp;
+	string Operator;
+	leftOp = factor();
 
-	if (leftChild < 0)
-		return -1;
+	if (!leftOp)
+		return false;
 
-	if (nextToken() != ";")
+	if (nextToken() != ";") //Parse only if end-of-statement is not reached 
 	{
-		if (nextToken() == "+")
+		if (nextToken() == "+" || nextToken() == "-")
 		{
+			Operator = nextToken();
 			consumeToken();
-			node = ast->createTNode("plusNode", currStmtNumber, "");
-			ast->linkNode(ast->getNode(leftChild), ast->getNode(node), "children");
-			rightChild = expr();
-			if (rightChild < 0)
-				return -1;
-			else
+		
+			if ( !operatorStack->empty() )
 			{
-				ast->linkNode(ast->getNode(rightChild), ast->getNode(node), "children");
-				return node;
+				if ( operatorStack->back() != "(" )
+				{
+					outputVector->push_back( operatorStack->back() );
+					operatorStack->pop_back();
+				}
 			}
-		}
-		else if (nextToken() == "-")
-		{
-			consumeToken();
-			node = ast->createTNode("minusNode", currStmtNumber, "");
-			ast->linkNode(ast->getNode(leftChild), ast->getNode(node), "children");
-			rightChild = expr();
-			if (rightChild < 0)
-				return -1;
-			else
-			{
-				ast->linkNode(ast->getNode(rightChild), ast->getNode(node), "children");
-				return node;
-			}
+
+			operatorStack->push_back(Operator);
+
+			rightOp = toPostFix();
+			return rightOp;
 		}
 	}
 
-	return leftChild;
+	if (nextToken() == ";")
+	{
+		while ( !operatorStack->empty() )
+		{
+			Operator = operatorStack->back();
+			operatorStack->pop_back();
+			outputVector->push_back(Operator);
+		}
+	}
+
+	return leftOp;
 }
 
-int SimpleParser::factor()
+bool SimpleParser::factor()
 {
-	INDEX node, leftChild, rightChild;
-	leftChild = term();
+	bool leftOp, rightOp;
+	string Operator;
+	leftOp = term();
 
-	if (leftChild < 0)
-		return -1;
+	if (!leftOp)
+		return false;
 
 	if (nextToken() != ";") //Parse only if end-of-statement is not reached 
 	{
 		if (nextToken() == "*")
 		{
+			Operator = nextToken();
 			consumeToken();
-			node = ast->createTNode("timesNode", currStmtNumber, "");
-			ast->linkNode(ast->getNode(leftChild), ast->getNode(node), "children");
-			rightChild = factor();
-			if (rightChild < 0)
-				return -1;
-			else
+
+			if ( !operatorStack->empty() )
 			{
-				ast->linkNode(ast->getNode(rightChild), ast->getNode(node), "children");
-				return node;
+				if ( operatorStack->back() == "*")
+					outputVector->push_back(Operator);
+				else //for all other operators at top of stack, * has higher precedence
+					operatorStack->push_back(Operator);
 			}
+			else //stack is empty
+			{
+				operatorStack->push_back(Operator);
+			}
+
+			rightOp = factor();
+			return rightOp;
 		}
 	}
 
-	return leftChild;
+	return leftOp;
 }
 
-int SimpleParser::term()
+bool SimpleParser::term()
 {
-	INDEX node;
+	bool node;
+	string Operator;
 
 	if ( isdigit(nextToken().at(0)) ) //CONSTANT expected
 	{
 		string nextConst = nextToken();
 		if (match(CONSTANT) == false)
-			return -1;
+			return false;
 		else //We would have matched constant
 		{
-			node = ast->createTNode("constantNode", currStmtNumber, nextConst);
+			node = true;
+			outputVector->push_back(nextConst);
 			return node;
 		}
 	}
 	else 
-	{ //Variable-name or open bracket "(" or close bracket ")" is expected
+	{	//Variable-name or open bracket "(" or close bracket ")" is expected
 		string next = nextToken();
 
 		if (isalpha(next.at(0))) //VAR_NAME expected
 		{
 			if (match(VAR_NAME) == false)
-				return -1;
+				return false;
 		}
 		else if (next != "(" && next != ")") //Only OPEN_BRACKET OR CLOSE_BRACKET expected
-			return -1;
+			return false;
 
 		//Here, we have matched VAR_NAME or OPEN_BRACKET or CLOSE_BRACKET
 		if (next == "(")
 		{
 			consumeToken();
-			node = expr();
+			operatorStack->push_back(next);
+			node = toPostFix();
 			consumeToken(); //Consume CLOSE_BRACKET token
+			
+			//CLOSE_BRACKET token detected, push all operators in stack ( until "(" ) to output
+			while ( operatorStack->back() != "(" )
+			{
+				Operator = operatorStack->back();
+				operatorStack->pop_back();
+				outputVector->push_back(Operator);
+			}
+
+			operatorStack->pop_back(); //pop OPEN_BRACKET from stack
 		}
+
 		else //next contains VAR_NAME
 		{
-			//varTable->insertVar(next);
-			node = ast->createTNode("varNode", currStmtNumber, next);
-			STMT varStmtNum = ast->getNode(node).getStmtNumber();
-			uses->setUses(varStmtNum, next);
+			node = true;
+			outputVector->push_back(next);
+			uses->setUses(currStmtNumber, next);
 			procTable->insertUses(proc, next);
 		}
 
 		return node;
-
 	}
 }
 
+INDEX SimpleParser::getRootOfExpr()
+{
+	vector<INDEX> buildStack;
+	INDEX leftChild, rightChild, root;
+	string Operator;
+	
+	for (int i=0; i<outputVector->size(); ++i)
+	{
+		if ( isdigit(outputVector->at(i).at(0)) ) //if token is a CONSTANT
+		{
+			buildStack.push_back( ast->createTNode("constantNode", currStmtNumber, outputVector->at(i)) );
+		}
+		else if ( isalpha(outputVector->at(i).at(0)) ) //if token is a VARIABLE
+		{
+			buildStack.push_back( ast->createTNode("varNode", currStmtNumber, outputVector->at(i)) );
+		}
+		else //token is an OPERATOR
+		{
+			Operator = outputVector->at(i);
+			rightChild = buildStack.back();
+			buildStack.pop_back();
+			leftChild = buildStack.back();
+			buildStack.pop_back();
+
+			if (Operator == "+")
+			{
+				root = ast->createTNode("plusNode", currStmtNumber, "+");
+			}
+			else if (Operator == "-")
+			{
+				root = ast->createTNode("minusNode", currStmtNumber, "-");
+			}
+			else if (Operator == "*")
+			{
+				root = ast->createTNode("timesNode", currStmtNumber, "*");
+			}
+
+			ast->linkNode(ast->getNode(leftChild), ast->getNode(root), "children");
+			ast->linkNode(ast->getNode(rightChild), ast->getNode(root), "children");
+
+			buildStack.push_back(root);
+		}
+	}
+
+	return buildStack.back();
+}
 
 /*
 * PKB Methods

@@ -15,7 +15,8 @@ PKB::PKB(AST * ast, VarTable * varTable, Follows * follows, Parent * parent, Mod
 	affects(affects),
 	optimisedCaller(optimisedCaller),
 	storeRootWhile(storeRootWhile),
-	storeRootIf(storeRootIf)
+	storeRootIf(storeRootIf),
+	stmtTable(new StmtTable())
 {
 }
 
@@ -32,6 +33,9 @@ PKB::~PKB(){
 	delete optimisedCaller;
 	delete storeRootWhile;
 	delete storeRootIf;
+	delete stmtTable;
+	delete graphBipPointer;
+	delete cfgBip;
 
 }
 
@@ -78,7 +82,7 @@ void PKB::setOptimisedCaller(OptimisedCaller * optimisedCaller){
 void PKB::setCFGBip(vector<vector<CFGLink>> graphBipin) {
 	this->graphBip =  graphBipin;
 	this->graphBipPointer = &this->graphBip;
-	CFGBip * newCfgBip = new CFGBip(this->graphBipPointer, this->procTable);
+	CFGBip * newCfgBip = new CFGBip(this->graphBipPointer, this->stmtTable ,this->procTable);
 	this->cfgBip = newCfgBip;
 }
 
@@ -129,6 +133,10 @@ rootWhile * PKB::getRootWhile(){
 
 rootIf * PKB::getRootIf(){
 	return this->storeRootIf;
+}
+
+StmtTable * PKB::getStmtTable(){
+	return this->stmtTable;
 }
 
 vector<vector<CFGLink>> * PKB::getGraphBip() {
