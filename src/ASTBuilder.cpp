@@ -10,7 +10,7 @@
 #define CLOSE_BRACKET 7
 
 ASTBuilder::ASTBuilder():
-	sep(" \n\t", "+-*;()", boost::drop_empty_tokens),
+	sep(" \n\t;", "+-*()", boost::drop_empty_tokens),
 	tokens(new tokenizer<char_separator<char>>(code,sep)),
 	tok_iter(tokens->begin()),
 	currStmtNumber(0),
@@ -20,7 +20,7 @@ ASTBuilder::ASTBuilder():
 
 ASTBuilder::ASTBuilder(AST * astPointer, std::string expression):
 	code(expression),
-	sep(" \n\t", "+-*;()", boost::drop_empty_tokens),
+	sep(" \n\t;", "+-*()", boost::drop_empty_tokens),
 	tokens(new tokenizer<char_separator<char>>(code,sep)),
 	tok_iter(tokens->begin()),
 	currStmtNumber(0),
@@ -35,15 +35,14 @@ ASTBuilder::~ASTBuilder(){
 }
 
 bool ASTBuilder::convertToAST(){
+	bool result = toPostFix();
 
-	this->toPostFix();
-	rootNode = getRootOfExpr();
-	outputVector->clear();
-
-	if (rootNode < 0)
+	if (!result)
 		return false;
 	else
 	{
+		rootNode = getRootOfExpr();
+		outputVector->clear();
 		ast->setRootNode(rootNode);
 		return true;
 	}
