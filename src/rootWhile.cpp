@@ -17,5 +17,8 @@ void rootWhile::setWhileRoot(int stmtNumberRootWhile)
 
 int rootWhile::getWhileRootOfStmt(int stmtNumber)
 {
-	return this->rootVector->at(stmtNumber-1);
+	if ( stmtNumber > this->rootVector->size() )
+		return 0;
+	else 
+		return this->rootVector->at(stmtNumber-1);
 }
