@@ -113,7 +113,7 @@
 						indx = toBeVisited.front();
 						visited[indx] = true;
 
-						for (vector<bool>::size_type i = 0; i< CallsDB[indx].size(); i++) {
+						for (vector<bool>::size_type i = 0; (indx<CallsDB.size() && i< CallsDB[indx].size()); i++) {
 							if(CallsDB[indx][i] == true && visited[i] == false){
 								toBeVisited.push(i);
 								myCalleesStar.push_back(i);
