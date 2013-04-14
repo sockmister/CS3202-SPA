@@ -18,6 +18,13 @@ void StmtTable::setCurrStmt(int nodeType, PROCNAME caller, PROCNAME callee)
 	this->stmtTable->push_back(currStmt);
 }
 
+// For Design Extractor's use only.
+void StmtTable::setCurrStmt(int nodeType, PROCNAME caller, PROCNAME callee, string RHSexpr)
+{
+	Stmt currStmt = Stmt(nodeType, caller, callee, RHSexpr);
+	this->stmtTable->push_back(currStmt);
+}
+
 // Get the total number of stmt
 int StmtTable::getSize() {
 	return this->stmtTable->size();
@@ -40,4 +47,9 @@ PROCNAME StmtTable::getCaller (int stmtNum)
 PROCNAME StmtTable::getCallee (int stmtNum)
 {
 	return this->stmtTable->at(stmtNum).getCallee();
+}
+
+string StmtTable::getAssignStmtRHSExpr (int stmtNum)
+{
+	return this->stmtTable->at(stmtNum).getAssignStmtRHSExpr();
 }

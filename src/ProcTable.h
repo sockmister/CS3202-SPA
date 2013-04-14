@@ -24,6 +24,8 @@ typedef vector<STMT> STMTLST;
 typedef vector<CFG*> CFGLIST;
 typedef vector<INDEXLIST> MODIFIES;
 typedef vector<INDEXLIST> USES;
+typedef vector< vector<string> > PROCCONSTLIST;
+typedef vector< vector<string> > PROCVARLIST;
 
 
 class ProcTable{
@@ -78,6 +80,22 @@ class ProcTable{
   */
   INDEX insertUses(PROCNAME procName, VARNAME varName);
 
+  //! insert the constant list that appears in procNmae
+  /*!
+	\param procNAME procedure name
+	\param procConstList constant list
+	\return -1 if the procedure index is not valid, otherwise return 0
+  */
+  INDEX insertProcConst(PROCNAME procName, vector<string> procConstList);
+
+ //! insert the variable list that appears in procNmae
+  /*!
+	\param procNAME procedure name
+	\param procVarList variab list
+	\return -1 if the procedure index is not valid, otherwise return 0
+  */
+  INDEX insertProcVar(PROCNAME procName, vector<string> procVarList);
+
   //! get the pointer to vector extra (used by Design Extractor)
   PROCINDEXLIST* getExtra();
 
@@ -129,6 +147,12 @@ class ProcTable{
   //! Get the variables(as index in varTable) that procName Uses
   INDEXLIST getUses(PROCNAME procName);
 
+  //! Get all the constants that appear in procName
+  vector<string> getProcConstList(PROCNAME procName);
+
+  //! Get all the variables that appear in procName
+  vector<string> getProcVarList(PROCNAME procName);
+
   //! Check if a procedure index is valid
   bool isProcIndex(INDEX indx);
 
@@ -146,4 +170,7 @@ class ProcTable{
 
   VarTable* varTable;
   int noOfProc;						// number of procedures currently stored in this ProcTable
+
+  PROCCONSTLIST ProcConstList;		// list of all constants that appear in 
+  PROCVARLIST ProcVarList;
 };

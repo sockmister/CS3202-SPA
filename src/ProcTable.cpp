@@ -5,7 +5,7 @@
 
 
   // Default constructor
-  ProcTable::ProcTable(VarTable* theVarTable):ProcList(),FirstStmt(),LastStmt(),noOfProc(0),ModifiesList(),UsesList(),extra(){
+ProcTable::ProcTable(VarTable* theVarTable):ProcList(),FirstStmt(),LastStmt(),noOfProc(0),ModifiesList(),UsesList(),extra(),ProcConstList(),ProcVarList(){
 	  varTable = theVarTable;
 	  noOfProc = 0;
   }
@@ -28,6 +28,8 @@
 		  ModifiesList.push_back(INDEXLIST());
 		  UsesList.push_back(INDEXLIST());
 		  noOfProc = ProcList.size();
+		  ProcConstList.push_back(vector<string>());
+		  ProcVarList.push_back(vector<string>());
 		  return noOfProc - 1;
 	
   }
@@ -121,6 +123,38 @@
 	  if (procIndex != -1 && varIndex != -1 && it == UsesList[procIndex].end()) {
 		  UsesList[procIndex].push_back(varIndex);
 	  }
+
+	  return 0;
+  }
+
+  // method to insert vector of constants that appear in procedure
+  // return -1 if the procedure index is not valid, otherwise return 0
+  
+  INDEX ProcTable::insertProcConst(PROCNAME procName, vector<string> procConstList){
+
+	  int index = getProcIndex(procName);
+	  if(index == -1)
+	  {
+		  return -1;
+	  }
+
+	  ProcConstList[index] = procConstList;
+
+	  return 0;
+  }
+
+  // method to insert vector of variables that appear in procedure
+  // return -1 if the procedure index is not valid, otherwise return 0
+  
+  INDEX ProcTable::insertProcVar(PROCNAME procName, vector<string> procVarList){
+
+	  int index = getProcIndex(procName);
+	  if(index == -1)
+	  {
+		  return -1;
+	  }
+
+	  ProcVarList[index] = procVarList;
 
 	  return 0;
   }
@@ -246,6 +280,30 @@
 	  }
 
 	return UsesList.at(procIndex);
+  }
+
+  //method to get the constants that appear in procName
+  vector<string> ProcTable::getProcConstList(PROCNAME procName){
+	  
+	  int index = getProcIndex(procName);
+	  if(index == -1){
+		  
+		   return vector<string>();
+	  }
+
+	  return ProcConstList[index];
+  }
+
+  //method to get the constants that appear in procName
+  vector<string> ProcTable::getProcVarList(PROCNAME procName){
+	  
+	  int index = getProcIndex(procName);
+	  if(index == -1){
+		  
+		   return vector<string>();
+	  }
+
+	  return ProcVarList[index];
   }
 
   //method to check if a procedure index is valid
