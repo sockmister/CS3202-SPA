@@ -297,6 +297,7 @@ bool AST::isContainsStar(TNode tn1, TNode tn2) {
 vector<int> AST::getAllByType(NODE_TYPE nodeType, string nodeValue) {
 	vector<int> indexInTree;
 	vector<TNode>::iterator it;
+	int stmtNumber = -1;
 
 	int nodeTypeInteger = convertNodeTypeStringToInteger(nodeType);
 	
@@ -314,7 +315,7 @@ vector<int> AST::getAllByType(NODE_TYPE nodeType, string nodeValue) {
 	case 4:
 	case 10:
 	case 11:
-		int stmtNumber = atoi(nodeValue.c_str());
+		stmtNumber = atoi(nodeValue.c_str());
 		
 		for (it = tree.begin() ; it!=tree.end() ; it++) {
 			if (it->getNodeType() == nodeTypeInteger && it->getStmtNumber() == stmtNumber)
