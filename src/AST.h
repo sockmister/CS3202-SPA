@@ -161,9 +161,14 @@ public:
 	/************************************
 	*       Methods for future use 
 	************************************/
-
-	// Method to get an array of index for the given node type in the whole AST
-	vector<int> getAllByType(NODE_TYPE nodeType);
+	
+	//! Method to get an array of index for the given node type and node value in the whole AST
+	/*!
+		\parm NODE_TYPE AST node type
+		\parm string node value
+		\return an array of index of the node type and node value specified
+	*/
+	vector<int> getAllByType(NODE_TYPE nodeType, string nodeValue);
 
 	TNode getAssignmentNode(STMT stmtNumber);
 	TNode getContainerNode(STMT stmtNumber);
