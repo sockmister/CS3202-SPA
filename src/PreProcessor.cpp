@@ -378,6 +378,86 @@ PreProcessor::PreProcessor() {
 	allowedRelations.push_back(tempRow);
 	tempRow.clear();
 
+	tempRow.push_back("NextBip");
+	tempRow.push_back("2");
+	tempRow.push_back("stmt");
+	tempRow.push_back("assign");
+	tempRow.push_back("if");
+	tempRow.push_back("while");
+	tempRow.push_back("call");
+	tempRow.push_back("prog_line");
+	tempRow.push_back("_");
+	tempRow.push_back("Integer");
+	tempRow.push_back(";");
+	tempRow.push_back("stmt");
+	tempRow.push_back("assign");
+	tempRow.push_back("if");
+	tempRow.push_back("while");
+	tempRow.push_back("call");
+	tempRow.push_back("prog_line");
+	tempRow.push_back("_");
+	tempRow.push_back("Integer");
+	tempRow.push_back(";");
+	allowedRelations.push_back(tempRow);
+	tempRow.clear();
+
+	tempRow.push_back("NextBip*");
+	tempRow.push_back("2");
+	tempRow.push_back("stmt");
+	tempRow.push_back("assign");
+	tempRow.push_back("if");
+	tempRow.push_back("while");
+	tempRow.push_back("call");
+	tempRow.push_back("prog_line");
+	tempRow.push_back("_");
+	tempRow.push_back("Integer");
+	tempRow.push_back(";");
+	tempRow.push_back("stmt");
+	tempRow.push_back("assign");
+	tempRow.push_back("if");
+	tempRow.push_back("while");
+	tempRow.push_back("call");
+	tempRow.push_back("prog_line");
+	tempRow.push_back("_");
+	tempRow.push_back("Integer");
+	tempRow.push_back(";");
+	allowedRelations.push_back(tempRow);
+	tempRow.clear();
+
+	tempRow.push_back("AffectsBip");
+	tempRow.push_back("2");
+	tempRow.push_back("stmt");
+	tempRow.push_back("prog_line");
+	tempRow.push_back("assign");
+	tempRow.push_back("Integer");
+	tempRow.push_back("_");
+	tempRow.push_back(";");
+	tempRow.push_back("stmt");
+	tempRow.push_back("prog_line");
+	tempRow.push_back("assign");
+	tempRow.push_back("Integer");
+	tempRow.push_back("_");
+	tempRow.push_back(";");
+	allowedRelations.push_back(tempRow);
+	tempRow.clear();
+
+	tempRow.push_back("AffectsBip*");
+	tempRow.push_back("2");
+	tempRow.push_back("stmt");
+	tempRow.push_back("assign");
+	tempRow.push_back("prog_line");	
+	tempRow.push_back("Integer");
+	tempRow.push_back("_");
+	tempRow.push_back(";");
+	tempRow.push_back("stmt");
+	tempRow.push_back("assign");
+	tempRow.push_back("prog_line");	
+	tempRow.push_back("Integer");
+	tempRow.push_back("_");
+	tempRow.push_back(";");
+	allowedRelations.push_back(tempRow);
+	tempRow.clear();
+
 	// Allowed pairings of Design Entities and attNames
 	tempRow.push_back("procedure");
 	tempRow.push_back("procName");
@@ -1032,7 +1112,7 @@ bool PreProcessor::isValidPattern(string pattern, string pattArg1, string pattAr
 
 	if(pattArg2Type == "Ident")
 	cout << "\n" << pattArg2 << "\n";
-	qt->insertPattern(pattern, patternType, pattArg1, pattArg1Type, pattArg2Type, pattArg2);
+	qt->insertPattern(pattern, patternType, pattArg1, pattArg1Type, pattArg2, pattArg2Type);
 	return true;
 }
 
@@ -1340,102 +1420,6 @@ int PreProcessor::getSynonymIndex(std::string entVar) {
 }
 
 // Method to validate a relation and it's arguments in the query
-//bool PreProcessor::isValidRelation(std::string relation, std::string arg1, std::string arg2) {
-//	bool arg1Success = false;
-//	int arg1Index, arg2Index, j, arg1Value, arg2Value;
-//	std::string arg1Type, arg2Type;
-//
-//	for(int i=0; i<allowedRelations.size(); i++) {
-//		//validate the relation itself
-//		if(allowedRelations[i][0] == relation) {
-//			//check if the first argument is a integer
-//			if(arg1 == "0")
-//				arg1Type = "Integer";
-//			else {
-//				arg1Value = atoi(arg1.c_str());
-//				if(arg1Value!=0)
-//					arg1Type = "Integer";
-//			}
-//			if(arg1Type != "Integer") {
-//				//check if the first argument a '_'
-//				if(arg1 == "_")
-//						arg1Type = "_";
-//				//check if first argument is a synonym
-//				else {
-//					arg1Index = getSynonymIndex(arg1);
-//					if(arg1Index != -1)
-//						arg1Type = declaredSynonyms[arg1Index][0];
-//					else {
-//						// Check if it's an Ident
-//						string inputIdent;
-//						for(int i=1; i<arg1.length()-1; i++)
-//							inputIdent += arg1[i];
-//						if(isValidIdent(inputIdent)) {
-//							arg1Type = "Ident";
-//							arg1 = inputIdent;
-//						}
-//					}
-//				}
-//			}
-//			for(j=2; allowedRelations[i][j] != ";"; j++)
-//				//validate if the type of the first argument corresponds with the allowed type in relation table
-//				if(arg1Type == allowedRelations[i][j])
-//					arg1Success = true;
-//			//no need to validate the second argument if the first one is false
-//			if(arg1Success) {
-//				//check if the second argument is a '_'
-//				if(arg2 == "_")
-//					arg2Type = "_";				
-//				//check if the second argument is a synonym				
-//				else if(getSynonymIndex(arg2) != -1) {
-//					arg2Index = getSynonymIndex(arg2);
-//					arg2Type = declaredSynonyms[arg2Index][0];
-//				}				
-//				else {
-//					//check if the second argument is an integer
-//					if(relation != "Modifies" && relation != "Uses") {
-//						if(arg2 == "0")
-//							arg2Type = "Integer";
-//						else {
-//							arg2Value = atoi(arg2.c_str());
-//							if(arg2Value!=0)
-//								arg2Type = "Integer";
-//						}
-//					}				
-//					//check if the second argument is an Ident
-//					else {
-//						string inputIdent;
-//						for(int i=1; i<arg2.length()-1; i++)
-//							inputIdent += arg2[i];
-//						if(isValidIdent(inputIdent)) {
-//							arg2Type = "Ident";
-//							arg2 = inputIdent;
-//						}
-//					}
-//				}
-//				//skip past the ";"
-//				j++;
-//				for(j; allowedRelations[i][j] != ";"; j++) {
-//					//validate the second argument
-//					if(arg2Type == allowedRelations[i][j]) {
-//						if(relation!="Next") {
-//							if(arg1 == "prog_line")
-//								arg1 = "stmt";
-//							if(arg2 == "prog_line")
-//								arg2 = "stmt";
-//						}
-//						qt->insertSuchThat(relation, arg1, arg1Type, arg2, arg2Type);
-//						return true;
-//					}
-//				}
-//			}
-//		}
-//	}
-//	cout << "\tError: " << relation << "(" << arg1 << ", " << arg2 << ") is not a valid relation\n";
-//	return false;
-//}
-
-// Method to validate a relation and it's arguments in the query
 bool PreProcessor::isValidRelation(std::string relation, std::string arg1, std::string arg2) {
 	bool arg1Success = false;
 	int arg1Index, arg2Index, j, arg1Value, arg2Value;
@@ -1507,11 +1491,11 @@ bool PreProcessor::isValidRelation(std::string relation, std::string arg1, std::
 				for(j; allowedRelations[i][j] != ";"; j++) {
 					//validate the second argument
 					if(arg2Type == allowedRelations[i][j]) {
-						if(relation!="Next") {
-							if(arg1 == "prog_line")
-								arg1 = "stmt";
-							if(arg2 == "prog_line")
-								arg2 = "stmt";
+						if(relation != "Next" && relation!= "Next*" && relation!= "NextBip" && relation!= "NextBip*") {
+							if(arg1Type == "prog_line")
+								arg1Type = "stmt";
+							if(arg2Type == "prog_line")
+								arg2Type = "stmt";
 						}
 						qt->insertSuchThat(relation, arg1, arg1Type, arg2, arg2Type);
 						return true;
