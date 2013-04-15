@@ -40,7 +40,7 @@ public:
 	void computeOptimisedCaller(void);
 
 	//! Method to initialize cache for Affects and Affects*
-	void DesignExtractor::initializeAffectsCache(void);
+	void initializeAffectsCache(void);
 
 private:
 	PKB * pkb;

@@ -8,6 +8,7 @@
 #include "Modifies.h"
 #include "VarTable.h"
 #include "ProcTable.h"
+#include "StmtTable.h"
 //#include "AbstractWrapper.h"
 
 using namespace std;
@@ -18,7 +19,7 @@ class Affects
 {
 public:
 	//! Default constructor
-	Affects(AST * ast, Modifies  * mod, Uses  * use, VarTable * var, ProcTable * proc);
+	Affects(AST * ast, Modifies  * mod, Uses  * use, VarTable * var, ProcTable * proc, rootWhile * rootwhile);
 	
 	//! Destructor
 	~Affects(void);
@@ -31,9 +32,18 @@ public:
 	
 	//! Creates an n by n table where n is the total number of statements. Used in Design Extractor
 	void initializeCache(void);
+	void initializeStmtTable(StmtTable * st);
+
+	void testFindAllPaths(STMT a1, STMT a2);
 
 private:
 	// For Affects*
+	STMTLST getStmtLstAffectingStmt(STMT s, STMTLST range);
+	VARLIST getVariablesUsedinStmt(STMT s);
+	STMTLST getRange(STMT a1, STMT a2);
+	bool isAffectsStarRecurseRedesigned(STMT a1, STMT a2);
+	vector<STMTLST> getAffectsStarRedesignedPath(STMT a1, STMT a2, STMTLST range, STMTLST path);
+
 	vector<STMTLST> getAffectsStarPath(STMT original_a1, STMT a1, STMT a2, STMTLST path, bool firstPass);
 	bool isAffectsStarRecurseOptimised(STMT a1, STMT a2);
 	bool isAffectsStarRecurse(STMT a1, STMT a2);
@@ -59,7 +69,10 @@ private:
 	Uses * uses;
 	VarTable * varTable;
 	ProcTable * procTable;
+	rootWhile * rootwhile;
+	StmtTable * stmttable;
 	CFG * cfg;
 	vector<vector<int>> affectsCache;
 	vector<vector<int>> affectsStarCache;
+	int totalNoOfStatements;
 };

@@ -1,21 +1,22 @@
 #include "Affects.h"
 
-Affects::Affects(AST * as, Modifies * mod, Uses * use, VarTable * var, ProcTable * proc)
+Affects::Affects(AST * as, Modifies * mod, Uses * use, VarTable * var, ProcTable * proc, rootWhile * rootW)
 {
 	ast = as;
 	modifies = mod;
 	uses = use;
 	varTable = var;
 	procTable = proc;
+	rootwhile = rootW;
 }
 
 Affects::~Affects(void)
 {
 }
 
-void Affects::initializeCache(void) {
-	/* Inefficient way to get total number of statements								<-------- Can optimise */
-	STMT totalNoOfStatements = 0;																	
+void Affects::initializeCache(void) {	
+	/* Inefficient way to get total number of statements */
+	/*STMT totalNoOfStatements = 0;																	
 	PROCLIST allProcNames = procTable->getAllProcNames();
 	for(size_t i = 0; i < allProcNames.size(); ++i) {
 		PROCNAME procName = allProcNames.at(i);
@@ -23,7 +24,9 @@ void Affects::initializeCache(void) {
 		STMT lastSTMT = procTable->getLastStmt(procName);
 		if(totalNoOfStatements < lastSTMT)
 			totalNoOfStatements = lastSTMT;
-	}
+	}*/
+	//int totalNoOfStatements = stmttable->getSize();
+
 	// Affects Cache
 	for(size_t i = 0; i < totalNoOfStatements; ++i) {
 		vector<int> tempVector;
@@ -42,31 +45,53 @@ void Affects::initializeCache(void) {
 	}
 }
 
-/* Temp solution to getting procedure name of a stmt.
-Change once faster access in PKB is working												<-------- Can optimise*/
-PROCNAME Affects::getProcedureName(STMT s) {
+void Affects::initializeStmtTable(StmtTable * st) {
+	stmttable = st;
+	// Set total number of stmts
 	PROCLIST allProcNames = procTable->getAllProcNames();
+	for(size_t i = 0; i < allProcNames.size(); ++i) {
+		PROCNAME procName = allProcNames.at(i);
+		STMT firstSTMT = procTable->getFirstStmt(procName);
+		STMT lastSTMT = procTable->getLastStmt(procName);
+		if(totalNoOfStatements < lastSTMT)
+			totalNoOfStatements = lastSTMT;
+	}
+}
+
+PROCNAME Affects::getProcedureName(STMT s) {
+	//int totalNoOfStatements = stmttable->getSize();
+	if(0 < s < totalNoOfStatements) {
+		return stmttable->getCaller(s);
+	} 
+	else {
+		return "-1";	
+	}
+	/* Unoptimised version */
+	/*PROCLIST allProcNames = procTable->getAllProcNames();
 	for(size_t i = 0; i < allProcNames.size(); ++i) {
 		PROCNAME procName = allProcNames.at(i);
 		STMT firstSTMT = procTable->getFirstStmt(procName);
 		STMT lastSTMT = procTable->getLastStmt(procName);
 		if( firstSTMT < s < lastSTMT )
 			return procName;
-	}
+	}*/
 }
 
-/* Temp solution to checking if 2 statments belong to same procedure
-Change once faster access in PKB is working 											<-------- Can optimise*/
-PROCNAME Affects::getSameProcedure(STMT a1, STMT a2) {				
-	PROCLIST allProcNames = procTable->getAllProcNames();
-	for(size_t i = 0; i < allProcNames.size(); ++i) {
-		PROCNAME procName = allProcNames.at(i);
-		STMT firstSTMT = procTable->getFirstStmt(procName);
-		STMT lastSTMT = procTable->getLastStmt(procName);
-		if( (firstSTMT <= a1  && a1 <= lastSTMT && firstSTMT <= a2 && a2 <= lastSTMT) )
-			return procName;
+PROCNAME Affects::getSameProcedure(STMT a1, STMT a2) {
+	PROCNAME a1ProcName = getProcedureName(a1);
+	PROCNAME a2ProcName = getProcedureName(a2);
+	// Either of them are out of bound
+	if(a1ProcName == "-1" || a2ProcName == "-1") {
+		return "-1";
 	}
-	return "-1";
+	// They are the same
+	else if(a1ProcName == a2ProcName) {
+		return a1ProcName;
+	}
+	// They are not the same
+	else {
+		return "-1";
+	}
 }
 
 /* New method for use once faster access in PKB is working */
@@ -89,6 +114,8 @@ bool contains(STMT s1, STMTLST path) {
 	return false;
 }
 
+/* Used in unoptimised Affects Star */
+// Does not re-enter a while loop
 // Returns all traversed paths after and not including a1 up to and including a2
 vector<STMTLST> Affects::findAllPaths(STMT a1, STMT a2, STMTLST path, bool firstPass) {
 	if(!firstPass) {
@@ -112,7 +139,34 @@ vector<STMTLST> Affects::findAllPaths(STMT a1, STMT a2, STMTLST path, bool first
 	return allPaths;
 }
 
-/* Correct but not optimised solution */
+// Re-enters a while loop but exits when hits a non-while stmt twice
+// Returns all traversed paths after and not including a1 up to and including a2
+//vector<STMTLST> Affects::findAllPaths(STMT a1, STMT a2, STMTLST path, bool firstPass) {
+//	if(!firstPass) {
+//		path.push_back(a1);
+//		if(a1 == a2) {
+//			vector<STMTLST> allPaths;
+//			allPaths.push_back(path);
+//			return allPaths;
+//		}
+//	}
+//	vector<STMTLST> allPaths;
+//	STMTLST nextStatements = cfg->nextStatement(1, a1);
+//	for(size_t i = 0; i < nextStatements.size(); ++i) {
+//		// It haven't reached the end && It is not a while statement that is repeated
+//		if(nextStatements[i] != -1 && !(ast->getNodeType(nextStatements[i]) != "whileNode" && contains(nextStatements[i], path))) {
+//		//if(nextStatements[i] != -1 && !(contains(nextStatements[i], path) && nextStatements[i] == a2)) {
+//			vector<STMTLST> childPaths = findAllPaths(nextStatements[i], a2, path, false);
+//			for(size_t i = 0; i < childPaths.size(); ++i) {
+//				allPaths.push_back(childPaths[i]);
+//			}
+//		}
+//	}
+//	return allPaths;
+//}
+
+/* Used in unoptimised Affects */
+/* Correct but not optimised solution, not used */
 bool Affects::isNotModifiedInAControlFlow(STMT a1, STMT a2, VARNAME v) {
 	STMTLST path;
 	vector<STMTLST> allPaths = findAllPaths(a1, a2, path, true);
@@ -126,14 +180,14 @@ bool Affects::isNotModifiedInAControlFlow(STMT a1, STMT a2, VARNAME v) {
 			if(currStatement == a1 || currStatement == a2)
 				continue;
 			// if it is an assign statement
-			else if(ast->getNodeType(currStatement) == "assignNode") {
+			else if(stmttable->getNodeType(currStatement) == 3) {
 				if(modifies->isModifies(currStatement, v)) {
 					notModified = false;
 					break;
 				}
 			}
 			// else if is a call statement
-			else if(ast->getNodeType(currStatement) == "callNode") {
+			else if(stmttable->getNodeType(currStatement) == 11) {
 				if(modifies->isModifies(currStatement, v)) {
 					notModified = false;
 					break;
@@ -146,6 +200,7 @@ bool Affects::isNotModifiedInAControlFlow(STMT a1, STMT a2, VARNAME v) {
 	return false;
 }
 
+/* Used in optimised Affects */
 /* Above 2 methods combined and optimised */
 vector<STMTLST> Affects::getUnmodifiedPath(STMT a1, STMT a2, VARNAME v, STMTLST path, bool firstPass) {
 	if(!firstPass) {
@@ -159,14 +214,14 @@ vector<STMTLST> Affects::getUnmodifiedPath(STMT a1, STMT a2, VARNAME v, STMTLST 
 				// The path is > 1 STMT	-> go inside for loop, dun check last index (a2)
 			for(size_t i = 0; i < path.size()-1; ++i) {
 				STMT currStatement = path[i];
-				string currStatementType = ast->getNodeType(currStatement);
-				if(currStatementType == "assignNode") {
+				int currStatementType =	stmttable->getNodeType(currStatement);
+				if(currStatementType == 3) {    // Assign stmt
 					if(modifies->isModifies(currStatement, v)) {
 						isModified = true;
 						break;
 					}
 				}
-				else if(currStatementType == "callNode") {
+				else if(currStatementType == 11) { // Call stmt
 					if(modifies->isModifies(currStatement, v)) {
 						isModified = true;
 						break;
@@ -195,6 +250,7 @@ vector<STMTLST> Affects::getUnmodifiedPath(STMT a1, STMT a2, VARNAME v, STMTLST 
 	return allPaths;
 }
 
+/* Used in optimised Affects */
 bool Affects::isNotModifiedInAControlFlowOptimised(STMT a1, STMT a2, VARNAME v) {
 	STMTLST path;
 	if(getUnmodifiedPath(a1, a2, v, path, true).empty())
@@ -205,7 +261,7 @@ bool Affects::isNotModifiedInAControlFlowOptimised(STMT a1, STMT a2, VARNAME v) 
 
 bool Affects::isAffectsCompute(STMT a1, STMT a2) {
 	// Are a1 and a2 both assignment statements?
-	if(ast->getNodeType(a1) != "assignNode" || ast->getNodeType(a2) != "assignNode")
+	if(stmttable->getNodeType(a1) != 3 || stmttable->getNodeType(a2) != 3)
 		return false;
 
 	// a1 modifies value of a variable v?
@@ -225,7 +281,7 @@ bool Affects::isAffectsCompute(STMT a1, STMT a2) {
 
 	// Control flow from a1 to a2?
 	cfg = procTable->getCFG(a1);
-	/*if(!cfg->isNextStar(a1, a2))		// Not working with new isNext* in new CFG.cpp
+	/*if(!cfg->isNextStar(a1, a2))		//					<-------- Use if O(1)
 		return false;*/
 
 	/*if(isNotModifiedInAControlFlow(a1, a2, v))			<-------- Unoptimised version
@@ -236,7 +292,8 @@ bool Affects::isAffectsCompute(STMT a1, STMT a2) {
 	return false;
 }
 
-// Is it Affects(a1, aX) & Affects*(aX, a2) ?				<-------- Unoptimised version
+/* Used in unoptimised Affects Star */
+// Is it Affects(a1, aX) & Affects*(aX, a2) ?				<-------- Unoptimised version, unused
 bool Affects::isAffectsStarRecurse(STMT a1, STMT a2) {
 	/*if(AbstractWrapper::GlobalStop) {    // Uncomment to exit if take too long
 		return false;
@@ -258,6 +315,7 @@ bool Affects::isAffectsStarRecurse(STMT a1, STMT a2) {
 	return false;
 }
 
+/* Used in optimised Affects Star */
 vector<STMTLST> Affects::getAffectsStarPath(STMT original_a1, STMT a1, STMT a2, STMTLST path, bool firstPass) {
 	/*if(AbstractWrapper::GlobalStop) {    // Uncomment to exit if take too long
 		return false;
@@ -295,6 +353,7 @@ vector<STMTLST> Affects::getAffectsStarPath(STMT original_a1, STMT a1, STMT a2, 
 	return allPaths;
 }
 
+/* Used in optimised Affects Star */
 bool Affects::isAffectsStarRecurseOptimised(STMT a1, STMT a2) {
 	STMTLST newPath;
 	if(getAffectsStarPath(a1, a1, a2, newPath, true).empty())
@@ -303,9 +362,104 @@ bool Affects::isAffectsStarRecurseOptimised(STMT a1, STMT a2) {
 		return true;
 }
 
+/* Used in redesigned Affects Star */
+VARLIST Affects::getVariablesUsedinStmt(STMT s) {
+	INDEXLIST varIndexList = uses->getVariable(s);
+	VARLIST varNameList;
+	for(size_t i = 0; i < varIndexList.size(); ++i) {
+		varNameList.push_back(varTable->getVarName(varIndexList.at(i)));    // <-------- Can optimise
+	}
+	return varNameList;
+}
+
+/* Used in redesigned Affects Star */
+STMTLST Affects::getStmtLstAffectingStmt(STMT s, STMTLST range) {
+	VARNAME v;
+	VARLIST variablesUsedInS = getVariablesUsedinStmt(s);
+	STMTLST modifiesAssignList;
+	for(size_t j = 0; j < variablesUsedInS.size(); ++j) {
+		v = variablesUsedInS[j];
+		STMTLST modifiesList = modifies->getStatements(v);
+		for(size_t i = 0; i < modifiesList.size(); ++i) {
+			STMT currStmt = modifiesList.at(i);
+			if(currStmt >= range[0]) {
+				if(stmttable->getNodeType(currStmt) == 3 && !contains(currStmt, modifiesAssignList)) {
+					if(isAffectsNoScan(currStmt, s)) {
+						modifiesAssignList.push_back(currStmt);
+						/*if(isAffects(a1, currStmt))		<-------- Can optimise (If this is true then affectsStar is true already)
+							return true;*/					
+					}
+				}
+			}
+			if(currStmt > range[1] )
+				break;
+		}
+	}
+	return modifiesAssignList;
+}
+
+/* Used in redesigned Affects Star */
+vector<STMTLST> Affects::getAffectsStarRedesignedPath(STMT a1, STMT a2, STMTLST range, STMTLST path) {
+	/*if(AbstractWrapper::GlobalStop) {    // Uncomment to exit if take too long
+		return false;
+	}*/
+	path.push_back(a2);
+	if(a1 == a2) {
+		vector<STMTLST> allPaths;
+		allPaths.push_back(path);
+		return allPaths;
+	}
+	vector<STMTLST> allPaths;
+	STMTLST nextStatements = getStmtLstAffectingStmt(a2, range);
+	for(size_t i = 0; i < nextStatements.size(); ++i) {
+		if(nextStatements[i] != -1 && !contains(nextStatements[i], path)) {
+			vector<STMTLST> childPaths = getAffectsStarRedesignedPath(a1, nextStatements[i], range, path);
+			for(size_t i = 0; i < childPaths.size(); ++i) {
+				allPaths.push_back(childPaths[i]);
+			}
+		}
+	}
+	return allPaths;
+}
+
+/* Used in redesigned version */
+bool Affects::isAffectsStarRecurseRedesigned(STMT a1, STMT a2) {
+	STMTLST newPath;
+	STMTLST range = getRange(a1, a2);
+	if(getAffectsStarRedesignedPath(a1, a2, range, newPath).empty())
+		return false;
+	else
+		return true;
+}
+
+/* Used in redesigned Affects Star */
+STMTLST Affects::getRange(STMT a1, STMT a2) {
+	STMTLST range;
+	STMT start = rootwhile->getWhileRootOfStmt(a1);
+	if(start == 0) {
+		start = a1;
+	}
+	range.push_back(start);
+
+	STMT rootWhileA2 = rootwhile->getWhileRootOfStmt(a2);
+	STMT end = rootWhileA2;
+	if(end == 0) {
+		end = a2;
+	}
+	else { 
+		while(rootwhile->getWhileRootOfStmt(end) == rootWhileA2) {
+			++end;
+		}
+		--end;
+	}
+	range.push_back(end);
+	return range;
+}
+
+
 bool Affects::isAffectsStarCompute(STMT a1, STMT a2) {
 	// Are a1 and a2 both assignment statements?
-	if(ast->getNodeType(a1) != "assignNode" || ast->getNodeType(a2) != "assignNode")   //is getNodeType...O(1)?             <-------- Can optimise
+	if(stmttable->getNodeType(a1) != 3 || stmttable->getNodeType(a2) != 3)
 		return false;
 
 	// a1 and a2 in the same procedure?
@@ -319,13 +473,16 @@ bool Affects::isAffectsStarCompute(STMT a1, STMT a2) {
 		return false;*/
 
 	// Is it Affects(a1, aX) & Affects*(aX, a2)
-	/*if(isAffectsStarRecurse(a1, a2)) {			<-------- Unoptimised version
-		return true;
-	}*/
-	STMTLST path;
-	if(isAffectsStarRecurseOptimised(a1, a2)) {
+	//if(isAffectsStarRecurse(a1, a2)) {		//		<-------- Unoptimised version
+	//	return true;
+	//}
+	//if(isAffectsStarRecurseOptimised(a1, a2)) { //		<-------- Optimised version
+	//	return true;
+	//}
+	if(isAffectsStarRecurseRedesigned(a1, a2)) { //   <-------- Redesigned version
 		return true;
 	}
+
 	return false;
 }
 
@@ -429,4 +586,14 @@ bool Affects::isAffects(STMT a1, STMT a2) {
 		return true;
 	else    // answer == 0
 		return false;
+}
+
+void Affects::testFindAllPaths(STMT a1, STMT a2) {
+	STMTLST path;
+	vector<STMTLST> allPaths;
+	cfg = procTable->getCFG(a1);
+	//if(cfg->isNextStar(a1, a2)) {
+		allPaths = findAllPaths(a1, a2, path, true);
+		cout << "\n";
+	//}
 }

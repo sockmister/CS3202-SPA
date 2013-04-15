@@ -440,5 +440,6 @@ void DesignExtractor::computeOptimisedCaller(){
 
 
 void DesignExtractor::initializeAffectsCache() {
+	affects->initializeStmtTable(pkb->getStmtTable());
 	affects->initializeCache();
 }
