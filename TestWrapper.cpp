@@ -20,7 +20,8 @@ TestWrapper::TestWrapper() {
 	Uses * uses = new Uses(varTable);
 	Modifies * mod = new Modifies(varTable);
 	OptimisedCaller * optimisedCaller = new OptimisedCaller(ast, procTable);
-	pkb = new PKB(ast, varTable, new Follows(), new Parent(), mod, uses, procTable, new Calls(procTable), new Affects(ast, mod, uses, varTable, procTable), optimisedCaller, new rootWhile(), new rootIf());
+	rootWhile * rootwhile = new rootWhile();
+	pkb = new PKB(ast, varTable, new Follows(), new Parent(), mod, uses, procTable, new Calls(procTable), new Affects(ast, mod, uses, varTable, procTable, rootwhile), optimisedCaller, rootwhile, new rootIf());
 }
 
 // method for parsing the SIMPLE source
