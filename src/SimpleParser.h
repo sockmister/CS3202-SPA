@@ -4,6 +4,7 @@
 #include <string>
 #include <fstream>
 #include <boost/tokenizer.hpp>
+#include <algorithm>
 #include "AST.h"
 #include "VarTable.h"
 #include "Follows.h"
@@ -35,6 +36,9 @@ private:
 	int thenOrElse; //outside of IF completely = 0, in THEN or in ELSE currently then > 0. 
 	vector<string> * outputVector;
 	vector<string> * operatorStack;
+	string RHSExpr;
+	vector<string> procConst;
+	vector<string> procVar;
 
 	//PKB Components
 	VarTable * varTable;

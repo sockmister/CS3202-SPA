@@ -24,7 +24,7 @@ INDEX AST::createTNode(NODE_TYPE NodeType, STMT stmtNumber, CONSTANT nodeValue) 
 	TNode newNode (nodeType, stmtNumber);
 	newNode.setIndex(tree.size());
 
-	if (nodeType == 5 || nodeType == 7 || nodeType == 11)
+	if (nodeType == 5 || nodeType == 7 || nodeType == 11 || nodeType == 1)
 		newNode.setNodeValue(nodeValue);
 
 	tree.push_back(newNode);
@@ -185,6 +185,7 @@ bool AST::findMatchingPattern(STMT stmtNumber, ORDER order, AST * paternAST) {
 
 
 	if (order == 1) {
+		// start of AST expression is the second child of the assign node
 		TNode startOfASTExpression = getChild(assignNode,1);
 		TNode patternRoot = patternAST.at((paternAST->getRoot()));
 		stack<TNode> ASTnodeStack;
@@ -211,6 +212,7 @@ bool AST::findMatchingPattern(STMT stmtNumber, ORDER order, AST * paternAST) {
 
 		if (found == false) 
 			return false;
+
 
 		ASTnodeStack.push(startOfASTExpression);
 		patternASTnodeStack.push(patternRoot);
@@ -246,53 +248,7 @@ bool AST::findMatchingPattern(STMT stmtNumber, ORDER order, AST * paternAST) {
 		
 		return true;
 
-	
 	}
-
-	/*
-	if (order == 1) {
-		TNode patternRoot = patternAST[0];
-		
-		bool found = false;
-		while (found == false && (tree[start].getStmtNumber() == stmtNumber) ) {
-			TNode ASTNode = tree[start];
-			if (isSameNode(ASTNode, patternRoot) == true) {
-				found = true;
-				break;
-			}
-			start++;
-		}
-
-		if (found == false) 
-			return false;
-
-		for (int i=0;i<patternAST.size();i++) {
-			if (start<tree.size()) {
-				int patternNodeType = patternAST[i].getNodeType();
-				int ASTNodeType = tree[start].getNodeType();	
-			
-				if (patternNodeType != ASTNodeType) {
-					match = false;
-					break;
-				}
-				else if (patternNodeType == ASTNodeType) {
-					if ( patternNodeType == 5 || patternNodeType == 7) {
-						if (patternAST[i].getNodeValue() != tree[start].getNodeValue()) {
-							match = false;
-							break;
-						}
-					}
-				}
-				start++;
-			}
-		}
-
-		if (match == false)
-			return false;
-		else 
-			return true;
-	}
-	*/
 
 	return false;
 
@@ -338,15 +294,43 @@ bool AST::isContainsStar(TNode tn1, TNode tn2) {
 *       Methods for future use 
 ************************************/
 
-vector<int> AST::getAllByType(NODE_TYPE nodeType) {
+vector<int> AST::getAllByType(NODE_TYPE nodeType, string nodeValue) {
 	vector<int> indexInTree;
 	vector<TNode>::iterator it;
+	int stmtNumber = -1;
 
 	int nodeTypeInteger = convertNodeTypeStringToInteger(nodeType);
+	
+	switch(nodeTypeInteger) {
+	case 1:
+	case 5:
+	case 7: 
+		for (it = tree.begin() ; it!=tree.end() ; it++) {
+			if (it->getNodeType() == nodeTypeInteger && it->getNodeValue() == nodeValue)
+				indexInTree.push_back(indexOf(*it));
+		}
+		break;
+	case 2:
+	case 3:
+	case 4:
+	case 10:
+	case 11:
+		stmtNumber = atoi(nodeValue.c_str());
+		
+		for (it = tree.begin() ; it!=tree.end() ; it++) {
+			if (it->getNodeType() == nodeTypeInteger && it->getStmtNumber() == stmtNumber)
+				indexInTree.push_back(indexOf(*it));
+		}	
+		break;
+	case 6:
+	case 8:
+	case 9:
+		for (it = tree.begin() ; it!=tree.end() ; it++) {
+			if (it->getNodeType() == nodeTypeInteger)
+				indexInTree.push_back(indexOf(*it));
+		}	
+		break;
 
-	for (it = tree.begin() ; it!=tree.end() ; it++) {
-		if (it->getNodeType() == nodeTypeInteger)
-			indexInTree.push_back(indexOf(*it));
 	}
 
 	return indexInTree;

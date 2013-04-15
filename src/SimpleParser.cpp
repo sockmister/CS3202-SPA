@@ -32,6 +32,8 @@ SimpleParser::SimpleParser(ifstream * filestream, PKB * pkb){
 	thenOrElse = 0;
 	outputVector = new vector<string>();
 	operatorStack = new vector<string>();
+	procConst = vector<string>();
+	procVar = vector<string>();
 	ast = pkb->getAST();
 	modifies = pkb->getModifies();
 	follows = pkb->getFollows();
@@ -58,6 +60,8 @@ SimpleParser::SimpleParser(string inCode, PKB * pkb):
 	thenOrElse(0),
 	outputVector(new vector<string>()),
 	operatorStack(new vector<string>()),
+	procConst(vector<string>()),
+	procVar(vector<string>()),
 	ast(pkb->getAST()),
 	modifies(pkb->getModifies()),
 	follows(pkb->getFollows()),
@@ -230,8 +234,16 @@ INDEX SimpleParser::procedure(){
 	if (match("}") == false)
 		return -1;
 
+	//insert procConst and procVar
+	procTable->insertProcConst(proc, procConst);
+	procTable->insertProcVar(proc, procVar);
+
+	//clear procConst and procVar
+	procConst.clear();
+	procVar.clear();
+
 	//we create proc node and link to stmtLst node and return
-	INDEX procNode = ast->createTNode("procedureNode", -1, "");	//shouldn't be stmtNumber for proc
+	INDEX procNode = ast->createTNode("procedureNode", -1, proc);	//shouldn't be stmtNumber for proc
 	ast->linkNode(ast->getNode(procNode), ast->getNode(stmtLstNode), "parent");
 	return procNode;
 }
@@ -681,6 +693,10 @@ INDEX SimpleParser::stmt(){
 		if (match(VAR_NAME) == false) 
 			return -1;
 
+		//Insert into procVar
+		if ( std::find(procVar.begin(), procVar.end(), next) == procVar.end() )
+			procVar.push_back(next);
+
 		//Set root while for this stmt, if any
 		if (whileLevel != 0)
 			storeRootWhile->setWhileRoot(rootWhileStmtNum);
@@ -700,9 +716,6 @@ INDEX SimpleParser::stmt(){
 			storeRootIf->setIfRoot(rootIfElseList);
 			storeRootIf->setOnlyIfRoot(rootOnlyIfList);
 		}
-
-		//Set Assignment stmt for stmtTable
-		this->stmtTable->setCurrStmt(3, proc, "");
 
 		//by now we have matched varname
 		INDEX leftNode = ast->createTNode("varNode", currStmtNumber, next);
@@ -730,6 +743,10 @@ INDEX SimpleParser::stmt(){
 
 		if(match(";") == false)
 			return -1;
+
+		//Set Assignment stmt for stmtTable
+		this->stmtTable->setCurrStmt(3, proc, "", RHSExpr);
+		RHSExpr.clear();
 
 		//link the nodes up
 		ast->linkNode(ast->getNode(leftNode), ast->getNode(assignNode), "children");
@@ -827,8 +844,9 @@ bool SimpleParser::toPostFix() //CONSTANT or VAR_NAME or OPEN_BRACKET or CLOSE_B
 		if (nextToken() == "+" || nextToken() == "-")
 		{
 			Operator = nextToken();
+			RHSExpr += Operator;
 			consumeToken();
-		
+
 			if ( !operatorStack->empty() )
 			{
 				if ( operatorStack->back() != "(" )
@@ -872,6 +890,7 @@ bool SimpleParser::factor()
 		if (nextToken() == "*")
 		{
 			Operator = nextToken();
+			RHSExpr += Operator;
 			consumeToken();
 
 			if ( !operatorStack->empty() )
@@ -908,6 +927,12 @@ bool SimpleParser::term()
 		{
 			node = true;
 			outputVector->push_back(nextConst);
+			RHSExpr += nextConst;
+
+			//Insert into procConst
+			if ( std::find(procConst.begin(), procConst.end(), nextConst) == procConst.end() )
+				procConst.push_back(nextConst);
+
 			return node;
 		}
 	}
@@ -928,9 +953,11 @@ bool SimpleParser::term()
 		{
 			consumeToken();
 			operatorStack->push_back(next);
+			RHSExpr += next;
 			node = toPostFix();
 			consumeToken(); //Consume CLOSE_BRACKET token
-			
+			RHSExpr += ")";
+
 			//CLOSE_BRACKET token detected, push all operators in stack ( until "(" ) to output
 			while ( operatorStack->back() != "(" )
 			{
@@ -946,6 +973,12 @@ bool SimpleParser::term()
 		{
 			node = true;
 			outputVector->push_back(next);
+			RHSExpr += next;
+
+			//Insert into procVar
+			if ( std::find(procVar.begin(), procVar.end(), next) == procVar.end() )
+				procVar.push_back(next);
+
 			uses->setUses(currStmtNumber, next);
 			procTable->insertUses(proc, next);
 		}
@@ -959,7 +992,7 @@ INDEX SimpleParser::getRootOfExpr()
 	vector<INDEX> buildStack;
 	INDEX leftChild, rightChild, root;
 	string Operator;
-	
+
 	for (int i=0; i<outputVector->size(); ++i)
 	{
 		if ( isdigit(outputVector->at(i).at(0)) ) //if token is a CONSTANT

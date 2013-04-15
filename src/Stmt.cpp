@@ -11,6 +11,14 @@ Stmt::Stmt(int nodeType, PROCNAME caller, PROCNAME callee)
 	this->setCallee(callee);
 }
 
+Stmt::Stmt(int nodeType, PROCNAME caller, PROCNAME callee, string RHSexpr)
+{
+	this->setNodeType(nodeType);
+	this->setCaller(caller);
+	this->setCallee(callee);
+	this->setAssignStmtRHSExpr(RHSexpr);
+}
+
 Stmt::~Stmt()
 {
 }
@@ -30,6 +38,11 @@ void Stmt::setCallee(PROCNAME callee)
 	this->callee = callee;
 }
 
+void Stmt::setAssignStmtRHSExpr(string RHSExpr)
+{
+	this->assignStmtRHSExpr = RHSExpr;
+}
+
 int Stmt::getNodeType()
 {
 	return this->nodeType;
@@ -37,10 +50,15 @@ int Stmt::getNodeType()
 
 PROCNAME Stmt::getCaller()
 {
-	return this->caller = caller;
+	return this->caller;
 }
 
 PROCNAME Stmt::getCallee()
 {
-	return this->callee = callee;
+	return this->callee;
+}
+
+string Stmt::getAssignStmtRHSExpr()
+{
+	return this->assignStmtRHSExpr;
 }

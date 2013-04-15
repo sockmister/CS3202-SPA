@@ -16,6 +16,7 @@ public:
 
 	//! For Design Extractor's use only.
 	void setCurrStmt (int nodeType, PROCNAME caller, PROCNAME callee);
+	void setCurrStmt (int nodeType, PROCNAME caller, PROCNAME callee, string RHSExpr);
 	//! Get the total number of stmt
 	int getSize();
 
@@ -25,5 +26,7 @@ public:
 	PROCNAME getCaller (int stmtNum);
 	//! If statement is Call, get callee (procedure it calls).
 	PROCNAME getCallee (int stmtNum);
+	//! If statement is Assign, get RHS expression.
+	string getAssignStmtRHSExpr (int stmtNum);
 };
 #endif
