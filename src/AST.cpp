@@ -177,6 +177,10 @@ bool AST::findMatchingPattern(STMT stmtNumber, ORDER order, AST * paternAST) {
 			}
 		}
 
+		// There is still some more expression after the patternAST, then it is false
+		if ( match == true && start < tree.size() && tree[start].getStmtNumber() == stmtNumber )
+			match = false;
+
 		if (match == false)
 			return false;
 		else 
@@ -289,10 +293,6 @@ bool AST::isContainsStar(TNode tn1, TNode tn2) {
 	return false;
 }
 
-
-/************************************
-*       Methods for future use 
-************************************/
 
 vector<int> AST::getAllByType(NODE_TYPE nodeType, string nodeValue) {
 	vector<int> indexInTree;
