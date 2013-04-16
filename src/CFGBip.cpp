@@ -5,6 +5,10 @@ CFGBip::CFGBip(){
 }
 
 CFGBip::~CFGBip(){
+	visited.clear();
+	delete this->myCFGBip;
+	delete this->procTable;
+	delete this->stmtTable;
 }
 
 CFGBip::CFGBip(vector<vector<CFGLink>> * CFGBip, StmtTable * stmtTable, ProcTable * procTable) {
@@ -12,10 +16,7 @@ CFGBip::CFGBip(vector<vector<CFGLink>> * CFGBip, StmtTable * stmtTable, ProcTabl
 	this->stmtTable = stmtTable;
 	this->lastStmt = stmtTable->getSize()-1;
 	this->procTable = procTable;
-	//int noOfProc = procTable->getNoOfProc();
-	//this->lastStmt = procTable->getLastStmt(procTable->getProcName(noOfProc-1));
 	
-
 	for (int i=0; i<CFGBip->size(); i++) 
 		visited.push_back(false);
 	
@@ -40,15 +41,14 @@ bool CFGBip::isNextBip(STMT n1, STMT n2) {
 				}
 				// the next node is a dummy node
 				else if ( nextLink > this->lastStmt && nextLink < this->myCFGBip->size() ) {
-					/*
+					
 					vector<CFGLink> dummy = this->myCFGBip->at(nextLink);
 
 					for (int j=0;j<dummy.size();j++) {
 						if (dummy[j].getLinkTo() == n2)
 							return true;
 					}
-					*/
-
+					
 					return false;
 				}
 			}
@@ -109,8 +109,9 @@ vector<bool> CFGBip::DFS(STMT programLine) {
 			it = find(callStack.begin(), callStack.end(), edgeNumber);
 			
 			// edgeNumber not found in callStack
-			if (it == callStack.end())	
-				continue;
+			// comment out to include cases where the start node does not know its caller
+			//if (it == callStack.end())	
+				//continue;
 			
 			if (it != callStack.end())
 				callStack.pop_back();
