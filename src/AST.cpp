@@ -177,6 +177,10 @@ bool AST::findMatchingPattern(STMT stmtNumber, ORDER order, AST * paternAST) {
 			}
 		}
 
+		// There is still some more expression after the patternAST, then it is false
+		if ( match == true && start < tree.size() && tree[start].getStmtNumber() == stmtNumber )
+			match = false;
+
 		if (match == false)
 			return false;
 		else 
