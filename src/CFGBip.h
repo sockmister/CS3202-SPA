@@ -11,6 +11,7 @@
 
 using namespace std;
 typedef int STMT;
+typedef vector<STMT> STMTLST;
 
 /*!  \class CFGBip.
 	 \brief Contains the CFGBip graph and methods for computing nextBip and nextBip*
@@ -26,6 +27,13 @@ public:
 	~CFGBip();
 	//! Constructor
 	CFGBip(vector<vector<CFGLink>> * CFGBip, StmtTable * stmtTable, ProcTable * procTable);
+
+   //! finds all possible control flow path from n
+   /*!
+	 \parm STMT program line number 
+	 \return an array of program line that has a control flow path from n
+   */
+	STMTLST nextBipStatements(STMT n);
 
    //! Check if n2 appears directly after n1
    /*!
@@ -53,6 +61,7 @@ private:
 	STMT lastStmt;
 	STMT procedureFirstStmt;
 	STMT procedureLastStmt;
+	STMT n1;
 
 	vector<bool> DFS(int); // Depth first search
 	deque<STMT> callStack;
