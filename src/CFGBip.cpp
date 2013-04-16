@@ -71,6 +71,7 @@ bool CFGBip::isNextBipStar(STMT n1, STMT n2) {
 		this->procedureLastStmt = procTable->getLastStmt(procName);
 
 		skip = true;
+		fill(visited.begin(),visited.end(), false);
 		callStack.clear();
 		vector<bool> answer = DFS(n1); // run DFS for reachability
 		
@@ -97,12 +98,14 @@ vector<bool> CFGBip::DFS(STMT programLine) {
 	vector<CFGLink> nextBip = this->myCFGBip->at(programLine);
 	for (int i=0;i<nextBip.size();i++) {
 		int nextLink = nextBip[i].getLinkTo();
+		/*
 		int edgeNumber = nextBip[i].getEdgeNumber();
 		
 		// insert edgeNumber into callStack (excludes dummy nodes)
 		if (edgeNumber > 0 && programLine <= this->lastStmt)
 			callStack.push_back(edgeNumber);
 
+		
 		// BranchOut case for dummy node
 		if (programLine > this->lastStmt) {
 			deque<STMT>::iterator it;
@@ -116,6 +119,7 @@ vector<bool> CFGBip::DFS(STMT programLine) {
 			if (it != callStack.end())
 				callStack.pop_back();
 		}
+		*/
 
 		if ( nextLink==0 || programLine == this->procedureLastStmt)
 			break;

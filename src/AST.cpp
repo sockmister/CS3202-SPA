@@ -294,10 +294,6 @@ bool AST::isContainsStar(TNode tn1, TNode tn2) {
 }
 
 
-/************************************
-*       Methods for future use 
-************************************/
-
 vector<int> AST::getAllByType(NODE_TYPE nodeType, string nodeValue) {
 	vector<int> indexInTree;
 	vector<TNode>::iterator it;
