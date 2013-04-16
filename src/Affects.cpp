@@ -399,21 +399,23 @@ STMTLST Affects::getStmtLstAffectingStmt(STMT s, STMTLST range) {
 }
 
 /* Used in redesigned Affects Star */
-vector<STMTLST> Affects::getAffectsStarRedesignedPath(STMT a1, STMT a2, STMTLST range, STMTLST path) {
+vector<STMTLST> Affects::getAffectsStarRedesignedPath(STMT a1, STMT a2, STMTLST range, STMTLST path, bool firstPass) {
 	/*if(AbstractWrapper::GlobalStop) {    // Uncomment to exit if take too long
 		return false;
 	}*/
-	path.push_back(a2);
-	if(a1 == a2) {
-		vector<STMTLST> allPaths;
-		allPaths.push_back(path);
-		return allPaths;
+	if(!firstPass) {
+		path.push_back(a2);
+		if(a1 == a2) {
+			vector<STMTLST> allPaths;
+			allPaths.push_back(path);
+			return allPaths;
+		}
 	}
 	vector<STMTLST> allPaths;
 	STMTLST nextStatements = getStmtLstAffectingStmt(a2, range);
 	for(size_t i = 0; i < nextStatements.size(); ++i) {
 		if(nextStatements[i] != -1 && !contains(nextStatements[i], path)) {
-			vector<STMTLST> childPaths = getAffectsStarRedesignedPath(a1, nextStatements[i], range, path);
+			vector<STMTLST> childPaths = getAffectsStarRedesignedPath(a1, nextStatements[i], range, path, false);
 			for(size_t i = 0; i < childPaths.size(); ++i) {
 				allPaths.push_back(childPaths[i]);
 			}
@@ -426,7 +428,7 @@ vector<STMTLST> Affects::getAffectsStarRedesignedPath(STMT a1, STMT a2, STMTLST 
 bool Affects::isAffectsStarRecurseRedesigned(STMT a1, STMT a2) {
 	STMTLST newPath;
 	STMTLST range = getRange(a1, a2);
-	if(getAffectsStarRedesignedPath(a1, a2, range, newPath).empty())
+	if(getAffectsStarRedesignedPath(a1, a2, range, newPath, true).empty())
 		return false;
 	else
 		return true;

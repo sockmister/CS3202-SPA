@@ -30,10 +30,17 @@ public:
 	//! Returns whether if affects*(a1, a2) is true
 	bool isAffectsStar(STMT a1, STMT a2);
 	
+	//! Returns whether affectsBip(a1, a2) is true
+	bool isAffectsBip(STMT a1, STMT a2);
+
+	//! Returns whether if affectsBip*(a1, a2) is true
+	bool isAffectsBipStar(STMT a1, STMT a2);
+
 	//! Creates an n by n table where n is the total number of statements. Used in Design Extractor
 	void initializeCache(void);
 	void initializeStmtTable(StmtTable * st);
 
+	// Seperate for testing
 	void testFindAllPaths(STMT a1, STMT a2);
 
 private:
@@ -42,7 +49,7 @@ private:
 	VARLIST getVariablesUsedinStmt(STMT s);
 	STMTLST getRange(STMT a1, STMT a2);
 	bool isAffectsStarRecurseRedesigned(STMT a1, STMT a2);
-	vector<STMTLST> getAffectsStarRedesignedPath(STMT a1, STMT a2, STMTLST range, STMTLST path);
+	vector<STMTLST> getAffectsStarRedesignedPath(STMT a1, STMT a2, STMTLST range, STMTLST path, bool firstPass);
 
 	vector<STMTLST> getAffectsStarPath(STMT original_a1, STMT a1, STMT a2, STMTLST path, bool firstPass);
 	bool isAffectsStarRecurseOptimised(STMT a1, STMT a2);
