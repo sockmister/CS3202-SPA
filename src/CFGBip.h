@@ -31,9 +31,10 @@ public:
    //! finds all possible control flow path from n
    /*!
 	 \parm STMT program line number 
+	 \parm STMT program line number 
 	 \return an array of program line that has a control flow path from n
    */
-	STMTLST nextBipStatements(STMT n);
+	STMTLST nextBipStatements(STMT n, STMT branchFrom);
 
    //! Check if n2 appears directly after n1
    /*!
@@ -53,17 +54,17 @@ public:
 
 private:
 	vector<bool> visited;
-	bool skip;
+	bool skip, branch, call, first, exit;
 
 	ProcTable * procTable;
 	vector<vector<CFGLink>> * myCFGBip;
 	StmtTable * stmtTable;
-	STMT lastStmt;
-	STMT procedureFirstStmt;
-	STMT procedureLastStmt;
+	STMT lastStmt, procedureFirstStmt, procedureLastStmt;
 	STMT n1;
-
-	vector<bool> DFS(int); // Depth first search
+	STMT branchFrom;
+	
+	vector<bool> DFS(int,int); // Depth first search
+	vector<bool> AffectsBipDFS(int,int); // Depth first search for AffectsBip*
 	deque<STMT> callStack;
 
 };
