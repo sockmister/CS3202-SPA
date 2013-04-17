@@ -37,6 +37,9 @@ STMTLST CFGBip::nextBipStatements(STMT n, STMT branchFrom) {
 		this->procedureLastStmt = procTable->getLastStmt(procName);
 
 		skip = true;
+		branch = false;
+		call = true;
+		first = false;
 		exit = false;
 		fill(visited.begin(),visited.end(), false);
 		callStack.clear();
@@ -157,7 +160,6 @@ vector<bool> CFGBip::DFS(STMT programLine, int edgeNumber) {
 		branch = false;
 	}
 
-	
 	vector<CFGLink> nextBip = this->myCFGBip->at(programLine);
 	
 	// ending node
@@ -175,8 +177,10 @@ vector<bool> CFGBip::DFS(STMT programLine, int edgeNumber) {
 			break;
 
 		// insert edgeNumber into callStack (excludes dummy nodes)
-		if (edgeNumber > 0 && programLine <=this->lastStmt && call == true) {
+		if (edgeNumber > 0 && programLine <=this->lastStmt ) {
 			callStack.push_back(edgeNumber);
+			if ( call == false)
+				call = true;
 		}
 
 		
@@ -193,19 +197,11 @@ vector<bool> CFGBip::DFS(STMT programLine, int edgeNumber) {
 				}
 				else {
 				// edgeNumber not found in callStack, do not branch in
-					if (it == callStack.end()) {
+					if (it == callStack.end()) 
 						continue;
-						/*
-						// not called from original procedure
-						if (this->stmtTable->getCaller(edgeNumber) == this->stmtTable->getCaller(this->n1))
-							continue;	
-						*/
-					}
-					
 				}
-				
 			}
-			// if call stack is empty, cases where the callers are unknown
+			// if call stack is empty, cases where the callers are unknown, branch into all possible paths
 		}
 
 		if ( nextLink==0)
