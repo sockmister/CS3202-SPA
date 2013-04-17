@@ -31,10 +31,10 @@ public:
 	bool isAffectsStar(STMT a1, STMT a2);
 	
 	//! Returns whether affectsBip(a1, a2) is true
-	bool isAffectsBip(STMT a1, STMT a2);
+	//bool isAffectsBip(STMT a1, STMT a2);
 
-	//! Returns whether if affectsBip*(a1, a2) is true
-	bool isAffectsBipStar(STMT a1, STMT a2);
+	////! Returns whether if affectsBip*(a1, a2) is true
+	//bool isAffectsBipStar(STMT a1, STMT a2);
 
 	//! Creates an n by n table where n is the total number of statements. Used in Design Extractor
 	void initializeCache(void);

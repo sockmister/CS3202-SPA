@@ -436,6 +436,11 @@ bool Affects::isAffectsStarRecurseRedesigned(STMT a1, STMT a2) {
 
 /* Used in redesigned Affects Star */
 STMTLST Affects::getRange(STMT a1, STMT a2) {
+	if(a1 > a2) {
+		int temp = a2;
+		a2 = a1;
+		a1 = a2;
+	}
 	STMTLST range;
 	STMT start = rootwhile->getWhileRootOfStmt(a1);
 	if(start == 0) {
@@ -493,8 +498,8 @@ int Affects::getFromAffectsStarCache(STMT query_a1, STMT query_a2, bool scan) {
 	int cacheAnswer;
 	INDEX a1 = query_a1 - 1; 
 	INDEX a2 = query_a2 - 1;
-	if(a1 < 0 || a2 < 0 || a1 > affectsStarCache.size() || a2 > affectsStarCache.size())
-		return false;
+	if(a1 < 0 || a2 < 0 || a1 >= affectsStarCache.size() || a2 >= affectsStarCache.size())
+		return -1;
 	cacheAnswer = affectsStarCache[a1][a2];
 	
 	/* Answer not in cache */
@@ -530,10 +535,10 @@ int Affects::getFromAffectsStarCache(STMT query_a1, STMT query_a2, bool scan) {
 int Affects::getFromAffectsCache(STMT query_a1, STMT query_a2, bool scan) {
 	bool algoAnswer;
 	int cacheAnswer;
-	INDEX a1 = query_a1 - 1; 
+	INDEX a1 = query_a1 - 1;
 	INDEX a2 = query_a2 - 1;
-	if(a1 < 0 || a2 < 0 || a1 > affectsCache.size() || a2 > affectsCache.size())
-		return false;
+	if(a1 < 0 || a2 < 0 || a1 >= affectsCache.size() || a2 >= affectsCache.size())
+		return -1;
 	cacheAnswer = affectsCache[a1][a2];
 	
 	/* Answer not in cache */
@@ -573,6 +578,16 @@ bool Affects::isAffectsNoScan(STMT a1, STMT a2) {
 	else    // answer == 0
 		return false;
 }
+
+//// Returns whether if affectsBip(a1, a2) is true
+//bool isAffectsBip(STMT a1, STMT a2) {
+//	return false;
+//}
+//
+//// Returns whether if affectsBip*(a1, a2) is true
+//bool isAffectsBipStar(STMT a1, STMT a2) {
+//	return false;
+//}
 
 bool Affects::isAffectsStar(STMT a1, STMT a2) {
 	int answer = getFromAffectsStarCache(a1, a2, false);
