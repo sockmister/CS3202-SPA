@@ -65,6 +65,7 @@ private:
 	
 	vector<bool> DFS(int,int); // Depth first search
 	vector<bool> AffectsBipDFS(int,int); // Depth first search for AffectsBip*
+	vector<bool> isnextBipDFS(int,int); // Depth first search for nextBip dummy nodes
 	deque<STMT> callStack;
 
 };

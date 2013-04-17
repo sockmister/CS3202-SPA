@@ -37,9 +37,6 @@ STMTLST CFGBip::nextBipStatements(STMT n, STMT branchFrom) {
 		this->procedureLastStmt = procTable->getLastStmt(procName);
 
 		skip = true;
-		branch = false;
-		call = true;
-		first = false;
 		exit = false;
 		fill(visited.begin(),visited.end(), false);
 		callStack.clear();
@@ -81,21 +78,19 @@ bool CFGBip::isNextBip(STMT n1, STMT n2) {
 				// the next node is a dummy node
 				else if ( nextLink > this->lastStmt && nextLink < this->myCFGBip->size() ) {
 					
-					vector<CFGLink> dummy = this->myCFGBip->at(nextLink);
-
-					for (int j=0;j<dummy.size();j++) {
-						if (dummy[j].getLinkTo() == n2)
-							return true;
-						
-						if (dummy[j].getLinkTo() > this->lastStmt) {
-							vector<CFGLink> dummy2 = this->myCFGBip->at(dummy[j].getLinkTo());
-							for (int k=0;k<dummy2.size();k++) {
-									if (dummy2[k].getLinkTo() == n2)
-										return true;
-							}
+						skip = true;
+						branch = false;
+						call = true;
+						first = false;
+						exit = false;
+						fill(visited.begin(),visited.end(), false);
+						callStack.clear();
+						vector<bool> answer = isnextBipDFS(n1,0); // run DFS for reachability
+		
+						for (int i=0;i<answer.size();i++) {
+							if ( i==n2 && answer[i] ==  true )
+								return true;
 						}
-
-					}
 					
 					return false;
 				}
@@ -303,6 +298,55 @@ vector<bool> CFGBip::AffectsBipDFS(STMT programLine, int edgeNumber) {
 		// visit nodes that are not yet visited
 		if (nextLink!=0 && visited[nextLink] == false)
 			AffectsBipDFS(nextLink,edgeNumber);
+	}
+
+	return visited;
+
+}
+
+
+// DFS for nextBip DFS for dummy nodes
+vector<bool> CFGBip::isnextBipDFS(STMT programLine, int edgeNumber) {
+	if (skip) {
+		visited[programLine] = false;
+		skip = false;
+	}
+	else if (skip == false)	{
+		// dummy node can be visited more than once
+		if ( programLine <= this->lastStmt) 
+			visited[programLine] = true;
+	}
+
+	vector<CFGLink> nextBip = this->myCFGBip->at(programLine);
+
+	// ending node
+	if (nextBip.size() == 0) {
+		exit = true;
+		return visited;
+	}
+
+	for (int i=0;i<nextBip.size();i++) {
+
+		int nextLink = nextBip[i].getLinkTo();
+		edgeNumber = nextBip[i].getEdgeNumber();
+		
+		if (exit && programLine >this->lastStmt) 
+			break;
+
+		// BranchOut case for dummy node
+		if (programLine > this->lastStmt) {	
+			if ( nextLink <= this->lastStmt) {
+				visited[nextLink] = true;
+				continue;
+			}
+		}
+
+		if ( nextLink==0)
+			break;
+		
+		// visit nodes that are not yet visited
+		if (nextLink!=0 && visited[nextLink] == false && nextLink > this->lastStmt)
+			isnextBipDFS(nextLink,edgeNumber);
 	}
 
 	return visited;
