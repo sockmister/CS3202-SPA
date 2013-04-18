@@ -58,10 +58,10 @@ STMTLST CFGBip::nextBipStatements(STMT n, STMT branchFrom) {
 						callStack.clear();
 						vector<bool> answer;
 							
-						if ( branchFrom >0)
-							answer= AffectsBipDFS(n1,0); // run DFS for reachability
+						if ( branchFrom > 0)
+							answer= AffectsBipDFS(nextLink,0); // run DFS for reachability
 						else if ( branchFrom ==0 )
-							answer = isnextBipDFS(n,0);
+							answer = isnextBipDFS(nextLink,0);
 
 						for (int i=0;i<answer.size();i++) {
 							if ( answer[i] ==  true )
@@ -270,7 +270,7 @@ vector<bool> CFGBip::AffectsBipDFS(STMT programLine, int edgeNumber) {
 			break;
 		
 		// visit nodes that are not yet visited
-		if (nextLink!=0 && visited[nextLink] == false)
+		if (nextLink!=0 && visited[nextLink] == false && edgeNumber == this->branchFrom)
 			AffectsBipDFS(nextLink,edgeNumber);
 	}
 

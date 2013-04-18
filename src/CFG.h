@@ -12,6 +12,10 @@ typedef int STMT;
 typedef int ORDER;
 typedef vector<STMT> STMTLST;
 
+/*!  \class CFG.
+	 \brief CFG is used to contain the Control Flow Graph, and provide Next and Next* methods for traversal.
+*/
+
 class CFG
 {
 public:
@@ -63,6 +67,8 @@ public:
 	
 	// For testing
 	vector<std::pair<int,int>> * getCFG();
+
+	rootIf* getStoreRootIf();
 
 private:
 	vector<bool> visited;

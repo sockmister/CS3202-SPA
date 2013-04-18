@@ -17,6 +17,7 @@
 #include "TNode.h"
 #include "ASTBuilder.h"
 #include "Affects.h"
+#include "CFGBip.h"
 
 using namespace std;
 typedef vector<string> QUERYBRANCH;
@@ -40,6 +41,8 @@ public:
 	CFG* cfg;
 	Affects* affects;
 	OptimisedCaller* optimisedCaller;
+	CFGBip * cfgBip;
+	StmtTable * stmtTable;
 
 	Table table;
 	//ASTBuilder astBuilder;
@@ -60,6 +63,8 @@ public:
 	void insertCFG(CFG* _cfg);
 	void insertAffects(Affects* affects);
 	void insertOptimisedCaller(OptimisedCaller* OptimisedCaller);
+	void insertCFGBip(CFGBip * cfgBip);
+	void insertStmtTable(StmtTable * stmtTable);
 
 	vector<string> evaluateQuery(queryTree* _queryTree);
 
@@ -72,29 +77,37 @@ private:
 	//suchthat
 	void evaluateSuchThat(string _select, string _selectType, vector<string> suchThatQuery);
 	//void evaluateSuchThat(string _select, string _selectType, queryTree* _queryTree);
-	void evaluateBranch(string _queryType, string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry, string _typeLeft, string _typeRight);
-	void evaluateFollowsBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
-	void evaluateFollowsStarBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
-	void evaluateParentBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
-	void evaluateParentStarBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
-	void evaluateUsesBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry, string _typeLeft, string _typeRight);
-	void evaluateModifiesBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry, string _typeLeft, string _typeRight);
-	void evaluateCallsBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
-	void evaluateCallsStarBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
-	void evaluateNextBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
-	void evaluateNextStarBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
-	void evaluateAffectsBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
-	void evaluateAffectsStarBranch(string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
-	void evaluateContainsBranch(string _valueLeft, string _valueRight, string _typeLeft, string _typeRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
-	void evaluateContainsStarBranch(string _valueLeft, string _valueRight, string _typeLeft, string _typeRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
-	
+	void evaluateBranch(string _queryType, string _valueLeft, string _valueRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry, string _typeLeft, string _typeRight, vector<vector<string>> columnPair, bool tupleActivated);
+	void evaluateFollowsBranch(string _valueLeft, string _valueRight, string _typeLeft, string _typeRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry, vector<vector<string>> columnPair, bool tupleActivated);
+	void evaluateFollowsStarBranch(string _valueLeft, string _valueRight, string _typeLeft, string _typeRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry, vector<vector<string>> columnPair, bool tupleActivated);
+	void evaluateParentBranch(string _valueLeft, string _valueRight, string _typeLeft, string _typeRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry, vector<vector<string>> columnPair, bool tupleActivated);
+	void evaluateParentStarBranch(string _valueLeft, string _valueRight, string _typeLeft, string _typeRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry, vector<vector<string>> columnPair, bool tupleActivated);
+	void evaluateUsesBranch(string _valueLeft, string _valueRight, string _typeLeft, string _typeRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry, vector<vector<string>> columnPair, bool tupleActivated);
+	void evaluateModifiesBranch(string _valueLeft, string _valueRight, string _typeLeft, string _typeRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry, vector<vector<string>> columnPair, bool tupleActivated);
+	void evaluateCallsBranch(string _valueLeft, string _valueRight, string _typeLeft, string _typeRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry, vector<vector<string>> columnPair, bool tupleActivated);
+	void evaluateCallsStarBranch(string _valueLeft, string _valueRight, string _typeLeft, string _typeRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry, vector<vector<string>> columnPair, bool tupleActivated);
+	void evaluateNextBranch(string _valueLeft, string _valueRight, string _typeLeft, string _typeRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry, vector<vector<string>> columnPair, bool tupleActivated);
+	void evaluateNextStarBranch(string _valueLeft, string _valueRight, string _typeLeft, string _typeRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry, vector<vector<string>> columnPair, bool tupleActivated);
+	void evaluateAffectsBranch(string _valueLeft, string _valueRight, string _typeLeft, string _typeRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry, vector<vector<string>> columnPair, bool tupleActivated);
+	void evaluateAffectsStarBranch(string _valueLeft, string _valueRight, string _typeLeft, string _typeRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry, vector<vector<string>> columnPair, bool tupleActivated);
+	void evaluatePreContainsBranch(string _valueLeft, string _valueRight, string _typeLeft, string _typeRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry, vector<vector<string>> columnPair, bool tupleActivated);
+	void evaluatePreContainsStarBranch(string _valueLeft, string _valueRight, string _typeLeft, string _typeRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry, vector<vector<string>> columnPair, bool tupleActivated);
+	void evaluateContainsBranch(string _valueLeft, string _valueRight, string _typeLeft, string _typeRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry, vector<vector<string>> columnPair, bool tupleActivated);
+	void evaluateContainsStarBranch(string _valueLeft, string _valueRight, string _typeLeft, string _typeRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry, vector<vector<string>> columnPair, bool tupleActivated);
+	void evaluateNextBipBranch(string _valueLeft, string _valueRight, string _typeLeft, string _typeRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry, vector<vector<string>> columnPair, bool tupleActivated);
+	void evaluateNextBipStarBranch(string _valueLeft, string _valueRight, string _typeLeft, string _typeRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry, vector<vector<string>> columnPair, bool tupleActivated);
+	void evaluateAffectsBipBranch(string _valueLeft, string _valueRight, string _typeLeft, string _typeRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry, vector<vector<string>> columnPair, bool tupleActivated);
+	void evaluateAffectsBipStarBranch(string _valueLeft, string _valueRight, string _typeLeft, string _typeRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry, vector<vector<string>> columnPair, bool tupleActivated);
+	void evaluateSiblingBranch(string _valueLeft, string _valueRight, string _typeLeft, string _typeRight, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry, vector<vector<string>> columnPair, bool tupleActivated);
+
 	//pattern
 	void evaluatePattern(vector<string> patternTree);
 	//void evaluatePattern(queryTree* _queryTree);
 	void evaluatePatternBranch(string _patternStmt, string _typeStmt, string _typeLeft, string _valueLeft, string _typeRight, 
 		string _valueRight, vector<VALUE> _allStmtEntry, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
-	void evaluateIfPatternBranch(string _patternStmt, string _typeStmt, string _typeLeft, string _valueLeft, string _typeRight,
-		string _valueRight, string _typeRight2, string _valueRight2, vector<VALUE> _allStmtEntry, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
+	void evaluateIfPatternBranch(string _patternStmt, string _typeStmt, string _typeLeft, string _valueLeft, string _typeRight, 
+		string _valueRight, string _typeRight2, string _valueRight2, vector<VALUE> _allStmtEntry, 
+		vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry, vector<VALUE> _allRight2Entry);
 	void evaluateWhilePatternBranch(string _patternStmt, string _typeStmt, string _typeLeft, string _valueLeft, string _typeRight, 
 		string _valueRight, vector<VALUE> _allStmtEntry, vector<VALUE> _allLeftEntry, vector<VALUE> _allRightEntry);
 
@@ -107,8 +120,21 @@ private:
 	vector<vector<string>> convertSolution(vector<string> _solution);
 	string getProcName(string _typr, string _valueOrName);
 	vector<string> getResults(queryTree* _queryTree);
+	bool isElseStmtLst(int intStmt, int stmtLstNum);
+	bool isChildVariable(int intStmt, string controlVariable);
+	bool isChildVariableStar(int intStmt, string variable);
+	bool isChildConstant(int intStmt, string controlVariable);
+	bool isChildConstantStar(int intStmt, string variable);
+	bool isChildMathStar(int intStmt, string variable);
+	bool isInStmtList(int, int);
+	bool varInProcList(int, string);
+	bool varInProcListStar(int, string);
+	bool isSiblingByIndexes(vector<int> nodeIndexLeft, vector<int> nodeIndexRight);
+	vector<int> toNode(string, string);
 	//vector<string> getAllStmtLst();
 	vector<vector<string>> optimiseQuery(queryTree* _queryTree);
+	vector<vector<string>> optimiseQuery2(queryTree* _queryTree);
+	vector<vector<string>> optimiseQueryPartial(vector<vector<string>>);
 	////////cs3202////////
 
 

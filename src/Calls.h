@@ -44,6 +44,8 @@ class Calls {
   */
   bool setCalls(PROCINDEX caller, PROCINDEX callee);
 
+  bool setCalls(PROCINDEX caller, PROCINDEX callee, bool calls);
+
   //! pass temp to Design Extractor
   vector<pair<pair<PROCNAME, PROCNAME>, STMT>> getTemp();
 

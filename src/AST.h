@@ -158,7 +158,10 @@ public:
 	*/
 	bool isContainsStar(TNode tn1, TNode tn2);
 
-
+	/************************************
+	*       Methods for future use 
+	************************************/
+	
 	//! Method to get an array of index for the given node type and node value in the whole AST
 	/*!
 		\parm NODE_TYPE AST node type
@@ -167,25 +170,8 @@ public:
 	*/
 	vector<int> getAllByType(NODE_TYPE nodeType, string nodeValue);
 
-	//! Method to get the assignment node in the AST for the given statement number
-	/*!
-		\parm STMT statement number
-		\return the assignment TNode in the AST
-	*/
 	TNode getAssignmentNode(STMT stmtNumber);
-
-	//! Method to get the Container node(while & if) in the AST for the given statement number
-	/*!
-		\parm STMT statement number
-		\return the Container TNode(while & if) in the AST
-	*/
 	TNode getContainerNode(STMT stmtNumber);
-
-	//! Method to get the node (of type stmt) in the AST for the given statement number
-	/*!
-		\parm STMT statement number
-		\return the TNode(of type stmt) in the AST
-	*/
 	TNode getStmtNode(STMT stmtNumber);
 
 	// Method to get the whole AST data structure

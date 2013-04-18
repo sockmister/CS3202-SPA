@@ -11,6 +11,10 @@
 #include "StmtTable.h"
 //#include "AbstractWrapper.h"
 
+/*!  \class Affects.
+	 \brief Affects is used to compute Affects relation condition.
+*/
+
 using namespace std;
 typedef int STMT;
 typedef vector<STMT> STMTLST;
