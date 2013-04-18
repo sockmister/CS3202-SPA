@@ -24,9 +24,9 @@ CFGBip::CFGBip(vector<vector<CFGLink>> * CFGBip, StmtTable * stmtTable, ProcTabl
 
 
 STMTLST CFGBip::nextBipStatements(STMT n, STMT branchFrom) {
-	STMTLST nextBip;
+	STMTLST nextBipStatement;
 	if (n < 0 || n > this->lastStmt ) 
-		return nextBip;
+		return nextBipStatement;
 
 	else {
 		this->n1 = n;
@@ -36,28 +36,44 @@ STMTLST CFGBip::nextBipStatements(STMT n, STMT branchFrom) {
 		this->procedureFirstStmt = procTable->getFirstStmt(procName);
 		this->procedureLastStmt = procTable->getLastStmt(procName);
 
-		skip = true;
-		branch = false;
-		call = true;
-		first = false;
-		exit = false;
-		fill(visited.begin(),visited.end(), false);
-		callStack.clear();
 
-		vector<bool> answer;
-		if (branchFrom > 0 )
-			answer = AffectsBipDFS(n,0); // run AffectsBipDFS for reachability
-		else if (branchFrom == 0)
-			answer = DFS(n,0); // run DFS for reachability
-		
-		for (int i=0;i<answer.size();i++) {
-			if ( answer[i] ==  true )
-				nextBip.push_back(i);
-		}
+		vector<CFGLink> nextBip = this->myCFGBip->at(n);
+			
+			for (int i=0;i<nextBip.size();i++) {
+				int nextLink = nextBip[i].getLinkTo();
+				
+				// next node is not dummy node
+				if ( nextLink <= this->lastStmt) {
+					nextBipStatement.push_back(nextLink);
+				}
+				// the next node is a dummy node
+				else if ( nextLink > this->lastStmt && nextLink < this->myCFGBip->size() ) {
+					
+						skip = true;
+						branch = false;
+						call = true;
+						first = false;
+						exit = false;
+						fill(visited.begin(),visited.end(), false);
+						callStack.clear();
+						vector<bool> answer;
+							
+						if ( branchFrom >0)
+							answer= AffectsBipDFS(n1,0); // run DFS for reachability
+						else if ( branchFrom ==0 )
+							answer = isnextBipDFS(n,0);
 
+						for (int i=0;i<answer.size();i++) {
+							if ( answer[i] ==  true )
+								if (find(nextBipStatement.begin(), nextBipStatement.end(), i) == nextBipStatement.end())
+									nextBipStatement.push_back(i);
+						}
+					
+					return nextBipStatement;
+				}
+			}
 	}
-
-	return nextBip;
+	return nextBipStatement;
 }
 
 
@@ -226,25 +242,12 @@ vector<bool> CFGBip::AffectsBipDFS(STMT programLine, int edgeNumber) {
 		// dummy node can be visited more than once
 		if ( programLine <= this->lastStmt) 
 			visited[programLine] = true;
-		
-		if (programLine > this->lastStmt && first == false) { 
-			first = true;	
-			if (callStack.empty()) 
-				call = false;
-		}
 	}
-
-	// remove edge from stack after branching in
-	if (branch == true) {
-		callStack.pop_back();
-		branch = false;
-	}
-
 	
 	vector<CFGLink> nextBip = this->myCFGBip->at(programLine);
 	
 	// ending node
-	if (nextBip.size() == 0 && call == true) {
+	if (nextBip.size() == 0) {
 		exit = true;
 		return visited;
 	}
@@ -257,35 +260,10 @@ vector<bool> CFGBip::AffectsBipDFS(STMT programLine, int edgeNumber) {
 		if (exit && programLine >this->lastStmt) 
 			break;
 
-		// insert edgeNumber into callStack (excludes dummy nodes)
-		if (edgeNumber > 0 && programLine <=this->lastStmt && call == true) {
-			callStack.push_back(edgeNumber);
-		}
-
-		
 		// BranchOut case for dummy node
 		if (programLine > this->lastStmt) {	
-
-			if (!callStack.empty()) {
-				deque<STMT>::iterator it;
-				it = find(callStack.begin(), callStack.end(), edgeNumber);
-				
-				// if edgeNumber is found
-				if (it != callStack.end()) {
-					branch = true;
-				}
-				else {
-				// edgeNumber not found in callStack, do not branch in
-					if (it == callStack.end()) 
-						continue;				
-				}
-				
-			}
-			// if call stack is empty, branch out to the given caller
-			else {
 				if (edgeNumber  != this->branchFrom )
 					continue;
-			}
 		}
 
 		if ( nextLink==0)
