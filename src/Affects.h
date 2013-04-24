@@ -30,7 +30,7 @@ public:
 	//! Returns whether if affects*(a1, a2) is true
 	bool isAffectsStar(STMT a1, STMT a2);
 	
-	STMTLST getAffects(int order, STMT a);
+	vector<string> getAffectsStar(int order, STMT a);
 
 	//! Returns whether affectsBip(a1, a2) is true
 	//bool isAffectsBip(STMT a1, STMT a2);
@@ -47,15 +47,15 @@ public:
 
 private:
 	// For getAffects
-	STMTLST getAffectsStarCompute(int order, STMT a2);
+	vector<string> getAffectsStarCompute(int order, STMT a2);
 	vector<STMTLST> getAffectsStarRedesignedPathBackwards(STMT a2, STMTLST range, STMTLST path, bool firstPass);
 	vector<STMTLST> getAffectsStarRedesignedPathForwards(STMT a1, STMTLST range, STMTLST path, bool firstPass);
-	STMTLST getAffectsStarRecurseRedesignedBackwards(STMT a2);
-	STMTLST getAffectsStarRecurseRedesignedForwards(STMT a1);
+	vector<string> getAffectsStarRecurseRedesignedBackwards(STMT a2);
+	vector<string> getAffectsStarRecurseRedesignedForwards(STMT a1);
 	STMTLST getRangeFromProcStart(STMT a2);
 	STMTLST getRangeTillProcEnd(STMT a1);
 	STMTLST getStmtLstAffectedByStmt(STMT s, STMTLST range);
-	STMTLST getFromGetAffectsStarCache(int order, STMT query_a);
+	vector<string> getFromGetAffectsStarCache(int order, STMT query_a);
 
 	// For Affects*
 	STMTLST getStmtLstAffectingStmt(STMT s, STMTLST range);
@@ -93,6 +93,6 @@ private:
 	CFG * cfg;
 	vector<vector<int>> affectsCache;
 	vector<vector<int>> affectsStarCache;
-	vector<vector<STMTLST>> getAffectsStarCache;
+	vector<vector<vector<string>>> getAffectsStarCache;
 	int totalNoOfStatements;
 };

@@ -46,8 +46,8 @@ void Affects::initializeCache(void) {
 
 	// getAffectsStarCache
 	for(size_t i = 0; i < 2; ++i) {
-		vector<STMTLST> tempVector;
-		STMTLST notCheckedYet;
+		vector<vector<string>> tempVector;
+		vector<string> notCheckedYet;
 		for(size_t j = 0; j < totalNoOfStatements; ++j) {
 			tempVector.push_back(notCheckedYet);
 		}
@@ -741,8 +741,9 @@ vector<STMTLST> Affects::getAffectsStarRedesignedPathForwards(STMT a1, STMTLST r
 
 
 /* Used in redesigned version */
-STMTLST Affects::getAffectsStarRecurseRedesignedBackwards(STMT a2) {
+vector<string> Affects::getAffectsStarRecurseRedesignedBackwards(STMT a2) {
 	STMTLST newPath, results;
+	vector<string> stringResults;
 	STMTLST range = getRangeFromProcStart(a2);
 	
 	/* get all the unique results from here*/ 
@@ -750,16 +751,19 @@ STMTLST Affects::getAffectsStarRecurseRedesignedBackwards(STMT a2) {
 
 	for(size_t i = 0; i < allAffectsStarPaths.size(); ++i) {
 		for(size_t j = 0; j < allAffectsStarPaths[i].size(); ++j) {
-			if(!contains(allAffectsStarPaths[i][j], results))
+			if(!contains(allAffectsStarPaths[i][j], results)) {
 				results.push_back(allAffectsStarPaths[i][j]);
+				stringResults.push_back(to_string(allAffectsStarPaths[i][j]));
+			}
 		}
 	}
 	
-	return results;
+	return stringResults;
 }
 
-STMTLST Affects::getAffectsStarRecurseRedesignedForwards(STMT a1) {
+vector<string> Affects::getAffectsStarRecurseRedesignedForwards(STMT a1) {
 	STMTLST newPath, results;
+	vector<string> stringResults;
 	STMTLST range = getRangeTillProcEnd(a1);
 	
 	/* get all the unique results from here*/ 
@@ -767,19 +771,21 @@ STMTLST Affects::getAffectsStarRecurseRedesignedForwards(STMT a1) {
 
 	for(size_t i = 0; i < allAffectsStarPaths.size(); ++i) {
 		for(size_t j = 0; j < allAffectsStarPaths[i].size(); ++j) {
-			if(!contains(allAffectsStarPaths[i][j], results))
+			if(!contains(allAffectsStarPaths[i][j], results)) {
 				results.push_back(allAffectsStarPaths[i][j]);
+				stringResults.push_back(to_string(allAffectsStarPaths[i][j]));
+			}
 		}
 	}
 	
-	return results;
+	return stringResults;
 }
 
-STMTLST Affects::getAffectsStarCompute(int order, STMT a) {
-	STMTLST results;
+vector<string> Affects::getAffectsStarCompute(int order, STMT a) {
+	vector<string> stringResults;
 	// Is a2 a assignment statements?
 	if(stmttable->getNodeType(a) != 3)
-		return results;
+		return stringResults;
 
 	// a1 and a2 in the same procedure?
 	/*PROCNAME procedure = getSameProcedure(a1, a2);
@@ -804,16 +810,14 @@ STMTLST Affects::getAffectsStarCompute(int order, STMT a) {
 	else if(order == 1)
 		return getAffectsStarRecurseRedesignedForwards(a);
 	else 
-		return results;
+		return stringResults;
 }
 
 
-
-
-STMTLST Affects::getFromGetAffectsStarCache(int order, STMT query_a) {
+vector<string> Affects::getFromGetAffectsStarCache(int order, STMT query_a) {
 	
-	STMTLST cacheAnswer;
-	STMTLST algoAnswer;
+	vector<string> cacheAnswer;
+	vector<string> algoAnswer;
 
 	INDEX a = query_a - 1;
 	if(a < 0 || a >= affectsStarCache.size())
@@ -843,7 +847,7 @@ STMTLST Affects::getFromGetAffectsStarCache(int order, STMT query_a) {
 			getAffectsStarCache[order][a] = algoAnswer;
 		}
 		else {
-			algoAnswer.push_back(-1);
+			algoAnswer.push_back("-1");
 			getAffectsStarCache[order][a] = algoAnswer;
 		}
 		return getAffectsStarCache[order][a];
@@ -854,13 +858,13 @@ STMTLST Affects::getFromGetAffectsStarCache(int order, STMT query_a) {
 		return cacheAnswer;
 }
 
-STMTLST Affects::getAffects(int order, STMT a) {
-	STMTLST emptyResults;
-	STMTLST results = getFromGetAffectsStarCache(order, a);
+vector<string> Affects::getAffectsStar(int order, STMT a) {
+	vector<string> emptyResults;
+	vector<string> results = getFromGetAffectsStarCache(order, a);
 
 	if(results.empty())
 		return emptyResults;
-	else if(results[0] == -1)
+	else if(results[0] == "-1")
 		return emptyResults;
 	else
 		return results;
