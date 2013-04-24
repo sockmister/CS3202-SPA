@@ -18,9 +18,6 @@
 
 using namespace std;
 
-/*!  \class OptimisedCaller.
-	 \brief A quick look up of useful information for evaluator.
-*/
 
 class OptimisedCaller
 {
