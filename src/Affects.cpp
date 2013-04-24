@@ -43,6 +43,16 @@ void Affects::initializeCache(void) {
 		}
 		affectsStarCache.push_back(tempVector);
 	}
+
+	// getAffectsStarCache
+	for(size_t i = 0; i < 2; ++i) {
+		vector<STMTLST> tempVector;
+		STMTLST notCheckedYet;
+		for(size_t j = 0; j < totalNoOfStatements; ++j) {
+			tempVector.push_back(notCheckedYet);
+		}
+		getAffectsStarCache.push_back(tempVector);
+	}
 }
 
 void Affects::initializeStmtTable(StmtTable * st) {
@@ -476,8 +486,8 @@ bool Affects::isAffectsStarCompute(STMT a1, STMT a2) {
 
 	// Control flow from a1 to a2?
 	cfg = procTable->getCFG(a1);
-	/*if(!cfg->isNextStar(a1, a2))		// Not working with new isNext* in new CFG.cpp
-		return false;*/
+	if(!cfg->isNextStar(a1, a2))		// Not working with new isNext* in new CFG.cpp
+		return false;
 
 	// Is it Affects(a1, aX) & Affects*(aX, a2)
 	//if(isAffectsStarRecurse(a1, a2)) {		//		<-------- Unoptimised version
@@ -603,6 +613,274 @@ bool Affects::isAffects(STMT a1, STMT a2) {
 		return true;
 	else    // answer == 0
 		return false;
+}
+
+/* Used in redesigned Affects Star */
+vector<STMTLST> Affects::getAffectsStarRedesignedPathBackwards(STMT a2, STMTLST range, STMTLST path, bool firstPass) {
+	/*if(AbstractWrapper::GlobalStop) {    // Uncomment to exit if take too long
+		return false;
+	}*/
+	if(!firstPass) {
+		path.push_back(a2);
+		/*if(range[0] == a2) {
+			vector<STMTLST> allPaths;
+			allPaths.push_back(path);
+			return allPaths;
+		}*/
+	}
+	vector<STMTLST> allPaths;
+	STMTLST nextStatements = getStmtLstAffectingStmt(a2, range);
+	for(size_t i = 0; i < nextStatements.size(); ++i) {
+		if(nextStatements[i] != -1 && !contains(nextStatements[i], path)) {
+			vector<STMTLST> childPaths = getAffectsStarRedesignedPathBackwards(nextStatements[i], range, path, false);
+			for(size_t j = 0; j < childPaths.size(); ++j) {
+				allPaths.push_back(childPaths[j]);
+			}
+		}
+	}
+	allPaths.push_back(path);
+	return allPaths;
+}
+
+STMTLST Affects::getRangeFromProcStart(STMT a2) {
+	PROCNAME procName = stmttable->getCaller(a2);
+	STMT start = procTable->getFirstStmt(procName);
+	STMTLST range;
+	range.push_back(start);
+
+	STMT rootWhileA2 = rootwhile->getWhileRootOfStmt(a2);
+	STMT end = rootWhileA2;
+	if(end == 0) {
+		end = a2;
+	}
+	else { 
+		while(rootwhile->getWhileRootOfStmt(end) == rootWhileA2) {
+			++end;
+		}
+		--end;
+	}
+	range.push_back(end);
+	return range;
+}
+
+
+STMTLST Affects::getRangeTillProcEnd(STMT a1) {
+	/*if(a1 > a2) {
+		int temp = a2;
+		a2 = a1;
+		a1 = a2;
+	}*/
+	STMTLST range;
+	STMT start = rootwhile->getWhileRootOfStmt(a1);
+	if(start == 0) {
+		start = a1;
+	}
+	range.push_back(start);
+
+	PROCNAME procName = stmttable->getCaller(a1);
+	STMT end = procTable->getLastStmt(procName);
+	range.push_back(end);
+	return range;
+}
+
+
+
+/* Used in getAffectsStar */
+STMTLST Affects::getStmtLstAffectedByStmt(STMT s, STMTLST range) {
+	STMTLST affectedAssignList;
+	INDEXLST variableIndex = modifies->getVariable(s);		// Need check if > 1 variables are ever returned
+	if(variableIndex.empty())								// No variable to modify
+		return affectedAssignList;
+	VARNAME v = varTable->getVarName(variableIndex.at(0));
+	STMTLST usesList = uses->getStatement(v);
+	
+	for(size_t i = 0; i < usesList.size(); ++i) {
+		STMT currStmt = usesList.at(i);
+		if(currStmt >= range[0]) {
+			if(stmttable->getNodeType(currStmt) == 3 && !contains(currStmt, affectedAssignList)) {
+				if(isAffectsNoScan(s, currStmt)) {
+					affectedAssignList.push_back(currStmt);
+					/*if(isAffects(a1, currStmt))		<-------- Can optimise (If this is true then affectsStar is true already)
+						return true;*/					
+				}
+			}
+		}
+		if(currStmt > range[1] )
+			break;
+	}
+	return affectedAssignList;
+}
+
+
+vector<STMTLST> Affects::getAffectsStarRedesignedPathForwards(STMT a1, STMTLST range, STMTLST path, bool firstPass) {
+	/*if(AbstractWrapper::GlobalStop) {    // Uncomment to exit if take too long
+		return false;
+	}*/
+	if(!firstPass) {
+		path.push_back(a1);
+		/*if(range[0] == a2) {
+			vector<STMTLST> allPaths;
+			allPaths.push_back(path);
+			return allPaths;
+		}*/
+	}
+	vector<STMTLST> allPaths;
+	STMTLST nextStatements = getStmtLstAffectedByStmt(a1, range);    // <-------- Need modify
+	for(size_t i = 0; i < nextStatements.size(); ++i) {
+		if(nextStatements[i] != -1 && !contains(nextStatements[i], path)) {
+			vector<STMTLST> childPaths = getAffectsStarRedesignedPathForwards(nextStatements[i], range, path, false);
+			for(size_t j = 0; j < childPaths.size(); ++j) {
+				allPaths.push_back(childPaths[j]);
+			}
+		}
+	}
+	allPaths.push_back(path);
+	return allPaths;
+}
+
+
+
+/* Used in redesigned version */
+STMTLST Affects::getAffectsStarRecurseRedesignedBackwards(STMT a2) {
+	STMTLST newPath, results;
+	STMTLST range = getRangeFromProcStart(a2);
+	
+	/* get all the unique results from here*/ 
+	vector<STMTLST> allAffectsStarPaths = getAffectsStarRedesignedPathBackwards(a2, range, newPath, true);
+
+	for(size_t i = 0; i < allAffectsStarPaths.size(); ++i) {
+		for(size_t j = 0; j < allAffectsStarPaths[i].size(); ++j) {
+			if(!contains(allAffectsStarPaths[i][j], results))
+				results.push_back(allAffectsStarPaths[i][j]);
+		}
+	}
+	
+	return results;
+}
+
+STMTLST Affects::getAffectsStarRecurseRedesignedForwards(STMT a1) {
+	STMTLST newPath, results;
+	STMTLST range = getRangeTillProcEnd(a1);
+	
+	/* get all the unique results from here*/ 
+	vector<STMTLST> allAffectsStarPaths = getAffectsStarRedesignedPathForwards(a1, range, newPath, true);
+
+	for(size_t i = 0; i < allAffectsStarPaths.size(); ++i) {
+		for(size_t j = 0; j < allAffectsStarPaths[i].size(); ++j) {
+			if(!contains(allAffectsStarPaths[i][j], results))
+				results.push_back(allAffectsStarPaths[i][j]);
+		}
+	}
+	
+	return results;
+}
+
+STMTLST Affects::getAffectsStarCompute(int order, STMT a) {
+	STMTLST results;
+	// Is a2 a assignment statements?
+	if(stmttable->getNodeType(a) != 3)
+		return results;
+
+	// a1 and a2 in the same procedure?
+	/*PROCNAME procedure = getSameProcedure(a1, a2);
+	if(procedure == "-1")
+		return false;*/
+
+	// Control flow from a1 to a2?
+	//cfg = procTable->getCFG(a1);
+	//if(!cfg->isNextStar(a1, a2))		// Not working with new isNext* in new CFG.cpp
+	//	return false;
+
+	// Is it Affects(a1, aX) & Affects*(aX, a2)
+	//if(isAffectsStarRecurse(a1, a2)) {		//		<-------- Unoptimised version
+	//	return true;
+	//}
+	//if(isAffectsStarRecurseOptimised(a1, a2)) { //		<-------- Optimised version
+	//	return true;
+	//}
+	if(order == 0) {
+		return getAffectsStarRecurseRedesignedBackwards(a); //   <-------- Redesigned version
+	}
+	else if(order == 1)
+		return getAffectsStarRecurseRedesignedForwards(a);
+	else 
+		return results;
+}
+
+
+
+
+STMTLST Affects::getFromGetAffectsStarCache(int order, STMT query_a) {
+	
+	STMTLST cacheAnswer;
+	STMTLST algoAnswer;
+
+	INDEX a = query_a - 1;
+	if(a < 0 || a >= affectsStarCache.size())
+		return cacheAnswer;
+	
+	cacheAnswer = getAffectsStarCache[order][a];
+	
+	/* Answer not in cache */
+	/*if(cacheAnswer == -1 && scan) {
+		for(size_t i = 0; i < affectsStarCache[a1].size(); ++i) {
+			if(affectsStarCache[a1][i] == -1) {
+				query_a2 = i + 1;
+				algoAnswer = isAffectsStarCompute(query_a1, query_a2);
+				if(algoAnswer == true)
+					affectsStarCache[a1][i] = 1;
+				else
+					affectsStarCache[a1][i] = 0;
+			}
+		}
+		return affectsStarCache[a1][a2];
+	}*/
+
+	/* Answer not in cache */
+	if(cacheAnswer.empty()) {
+		algoAnswer = getAffectsStarCompute(order, query_a);
+		if(!algoAnswer.empty()) {
+			getAffectsStarCache[order][a] = algoAnswer;
+		}
+		else {
+			algoAnswer.push_back(-1);
+			getAffectsStarCache[order][a] = algoAnswer;
+		}
+		return getAffectsStarCache[order][a];
+	}
+
+	/* Answer is in cache */
+	else
+		return cacheAnswer;
+}
+
+STMTLST Affects::getAffects(int order, STMT a) {
+	STMTLST emptyResults;
+	STMTLST results = getFromGetAffectsStarCache(order, a);
+
+	if(results.empty())
+		return emptyResults;
+	else if(results[0] == -1)
+		return emptyResults;
+	else
+		return results;
+	//if(answer == 1)
+	//	return true;
+	//else    // answer == 0
+	//	return false;
+		
+		
+
+	/*STMTLST affectsList = getAffectsStarCompute(order, a2);
+	return affectsList;*/
+	
+
+
+	//int answer = getFromAffectsCache(a1, a2, true);
+	//if(answer == 1)
+	//	return true;
+	//else    // answer == 0
+	//	return false;
 }
 
 void Affects::testFindAllPaths(STMT a1, STMT a2) {
